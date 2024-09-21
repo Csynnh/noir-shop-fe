@@ -1,0 +1,86 @@
+// Flex utilities
+.flex {
+  display: flex;
+
+  &--inline {
+    display: inline-flex;
+  }
+
+  &--column {
+    flex-direction: column;
+  }
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+.grow-0 {
+  flex-grow: 0;
+}
+
+.justify {
+  &--center {
+    justify-content: center;
+  }
+
+  &--sa {
+    justify-content: space-around;
+  }
+
+  &--sb {
+    justify-content: space-between;
+  }
+
+  &--start {
+    justify-content: flex-start;
+  }
+
+  &--end {
+    justify-content: flex-end;
+  }
+}
+
+.align {
+  &--center {
+    align-items: center;
+  }
+
+  &--start {
+    align-items: flex-start;
+  }
+
+  &--end {
+    align-items: flex-end;
+  }
+
+  &--baseline {
+    align-items: baseline;
+  }
+}
+
+// Grid utilities
+.grid {
+  display: grid;
+  $sizes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12;
+
+  @each $size in $sizes {
+    &-cols-#{$size} {
+      grid-template-columns: repeat($size, minmax(0, 1fr));
+    }
+  }
+}
+
+.gap {
+  $gap-sizes:
+    5 5px,
+    8 8px,
+    16 16px,
+    24 24px;
+
+  @each $size, $sizepx in $gap-sizes {
+    &-#{$size} {
+      gap: $sizepx;
+    }
+  }
+}

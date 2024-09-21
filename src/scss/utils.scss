@@ -1,0 +1,157 @@
+.p {
+  &-page {
+    padding: var(--padding-page);
+  }
+
+  &x-page {
+    padding-left: var(--padding-page) !important;
+    padding-right: var(--padding-page) !important;
+  }
+
+  &y-page {
+    padding-top: var(--padding-page) !important;
+    padding-bottom: var(--padding-page) !important;
+  }
+
+  &t {
+    &-base {
+      padding-top: var(--padding-base);
+    }
+  }
+
+  &b {
+    &-base {
+      padding-bottom: var(--padding-base);
+    }
+  }
+
+  &-base {
+    padding: var(--padding-base);
+  }
+
+  &-title {
+    color: #212529;
+    font-size: 20px;
+    padding: 24px 0;
+    margin: 0;
+    font-weight: 600;
+
+    @include desktop {
+      font-size: 26px;
+    }
+  }
+
+  &-section {
+    font-size: 18px;
+    font-weight: 600;
+    color: #212529;
+
+    @include desktop {
+      font-size: 22px;
+    }
+  }
+}
+
+.text {
+  &--center {
+    text-align: center;
+  }
+}
+
+.transform {
+  &-r-90 {
+    transform: rotate(90deg);
+  }
+}
+
+.button {
+  &--wide {
+    width: 150px;
+  }
+
+  &--full {
+    width: 100%;
+  }
+  &--primary {
+    background-color: var(--primary-color);
+    &:hover {
+      background-color: var(--primary-color-100);
+    }
+  }
+}
+
+.mr-20 {
+  margin-right: 20px;
+}
+.w {
+  &-5 {
+    width: 20px;
+  }
+  &-6 {
+    width: 24px;
+  }
+}
+.h {
+  &-5 {
+    height: 20px;
+  }
+  &-6 {
+    width: 24px;
+  }
+}
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dark-blue-color-100) var(--white-color-100);
+}
+
+/* Works on Chrome, Edge, and Safari */
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--white-color);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--dark-blue-color-100);
+  border-radius: 4px;
+}
+
+/* Hover */
+.hover {
+  &-bg {
+    &-red {
+      &:hover {
+        --dark-blue-color-50: rgb(255, 234, 234);
+      }
+    }
+  }
+  &-text {
+    &-red {
+      &:hover {
+        --text-color: #ff9089;
+      }
+    }
+  }
+}
+
+/* Absolute */
+.abs {
+  position: absolute;
+  &-top-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  &-top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}

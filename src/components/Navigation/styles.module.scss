@@ -1,0 +1,30 @@
+.navigation {
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 600px;
+  :global {
+    .ant-menu-item {
+      padding-inline: 30px;
+      &:hover,
+      &.ant-menu-item-active,
+      &.ant-menu-item-selected {
+        &::after {
+          border-bottom-color: black !important;
+          height: 0;
+          border-width: 1px !important;
+        }
+      }
+      &.ant-menu-item-selected {
+        .ant-menu-title-content {
+          color: black;
+        }
+      }
+      &::after {
+        margin-inline: auto;
+        max-width: 21px;
+      }
+    }
+  }
+}

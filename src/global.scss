@@ -1,0 +1,32 @@
+@import './scss/variables.scss';
+@import './scss/utils.scss';
+@import './scss/animations.scss';
+@import './scss/grid.scss';
+@import './scss/components';
+@import './scss/overwrite.scss';
+@import './scss/language.scss';
+@import './scss/mixins.scss';
+
+html {
+  scroll-behavior: smooth;
+
+  body {
+    // Allow scroll body when open tour video
+    &.open-video-tour {
+      overflow-y: auto;
+      width: 100%;
+    }
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  --padding-page: var(--padding-middle);
+  --input-border-width: var(--input-border-width-middle);
+
+  @include desktop {
+    --padding-page: var(--padding-large);
+    --input-border-width: var(--input-border-width-large);
+  }
+}

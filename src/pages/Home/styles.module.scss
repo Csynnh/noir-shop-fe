@@ -1,0 +1,40 @@
+.home {
+  :global {
+    .home-banner {
+      &-container {
+        max-width: 43.8vw;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin-inline: auto;
+        margin-top: 43px;
+        margin-bottom: 60px;
+        @media screen and (max-width: 1280px) {
+          max-width: 65vw;
+        }
+      }
+      &-content {
+        line-height: 1.5;
+        text-align: center;
+        font-family: 'gilroy-light';
+        margin-bottom: 40px;
+        &-logo {
+          font-family: 'channe';
+        }
+      }
+      &-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 14px;
+        h3 {
+          font-family: 'channe';
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}

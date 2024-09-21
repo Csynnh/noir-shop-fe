@@ -1,0 +1,34 @@
+.Header {
+  width: 100%;
+  padding: 61.5px 64px 41.5px;
+  :global {
+    .header {
+      &-wrapper {
+        .header-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 35px;
+          .header-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 91px;
+            a {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 36px;
+              height: 36px;
+            }
+          }
+        }
+      }
+      &-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}

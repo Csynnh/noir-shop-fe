@@ -1,0 +1,87 @@
+.es-language {
+  .ant-tabs-left {
+    .ant-tabs-nav {
+      width: 100%;
+
+      .ant-tabs-nav-list {
+        width: 100%;
+
+        .ant-tabs-tab {
+          margin-bottom: 8px !important;
+          line-height: 24px !important;
+        }
+
+        .tab-label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: pre-wrap;
+          line-height: 1.2;
+          font-size: 14px !important;
+          display: flex;
+
+          @include desktop {
+            font-size: 15px !important;
+          }
+
+          > span {
+            &.tooltip-content {
+              display: flex;
+            }
+          }
+
+          .tab-point {
+            margin-right: 5px;
+            flex-grow: 0;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .ant-layout-sider {
+    .ant-menu {
+      > li {
+        &.ant-menu-submenu {
+          .ant-menu-title-content {
+            white-space: pre-wrap;
+            // Fix for safari
+            height: 100%;
+
+            > span {
+              overflow: hidden;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              display: -webkit-box;
+            }
+          }
+        }
+      }
+
+      .ant-menu-item {
+        span {
+          &.ant-menu-title-content {
+            white-space: nowrap;
+          }
+
+          a {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.label-with-langcode {
+  label {
+    > span {
+      font-size: 10px;
+      padding-left: 4px;
+
+      @include desktop {
+        font-size: 14px;
+      }
+    }
+  }
+}

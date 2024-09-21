@@ -1,0 +1,104 @@
+$browser-context: 14;
+$tablet-width: 1024px;
+$desktop-width: 1224px;
+$mid-desktop-width: 1345px;
+$large-desktop-width: 1440px;
+
+@function em($pixels, $context: $browser-context) {
+  @if (unitless($pixels)) {
+    $pixels: $pixels * 1px;
+  }
+
+  @if (unitless($context)) {
+    $context: $context * 1px;
+  }
+
+  @return math.div($pixels, $context) * 1em;
+}
+
+@mixin tablet {
+  @media (min-width: #{$tablet-width}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$desktop-width}) {
+    @content;
+  }
+}
+
+@mixin mid-desktop {
+  @media (min-width: #{$mid-desktop-width}) {
+    @content;
+  }
+}
+
+@mixin large-desktop {
+  @media (min-width: #{$large-desktop-width}) {
+    @content;
+  }
+}
+
+@mixin background-opacity($color, $opacity: 0.3) {
+  background: $color !important;
+  /* The Fallback */
+  background: rgba($color, $opacity) !important;
+}
+
+@mixin color-opacity($color, $opacity: 0.3) {
+  color: $color !important;
+  /* The Fallback */
+  color: rgba($color, $opacity) !important;
+}
+
+@mixin box-shadow() {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+@mixin placeholder-color($color) {
+  ::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: $color;
+    opacity: 1;
+    /* Firefox */
+  }
+
+  :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: $color;
+  }
+
+  ::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: $color;
+  }
+}
+
+@mixin focus-shadow() {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+@mixin truncate-text() {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin rotating-ani($s: 1.5s) {
+  -webkit-animation: rotating $s linear infinite;
+  -moz-animation: rotating $s linear infinite;
+  -ms-animation: rotating $s linear infinite;
+  -o-animation: rotating $s linear infinite;
+  animation: rotating $s linear infinite;
+}
+
+@mixin card-title {
+  font-size: 16px;
+  font-weight: 600;
+
+  @include desktop {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}

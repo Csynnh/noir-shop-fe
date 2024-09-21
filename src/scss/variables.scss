@@ -1,0 +1,87 @@
+:root {
+  --header-bg: #001529;
+  --page-bg: #eaeff6;
+  --header-bg-rgb: 0, 21, 41;
+  --primary-color: #66f2e4;
+  --primary-color-rgb: 102, 242, 228;
+  --dark-blue-color: #002237;
+  --dark-blue-color-rgb: 0, 34, 55;
+  --dark-blue-brand-color: #0059a7;
+  --dark-blue-brand-color-rgb: 0, 89, 167;
+  --dark-blue-color-50: #d7e5f3;
+  --dark-blue-color-50-rgb: 215, 229, 243;
+  --dark-blue-color-100: #c3d5e7;
+  --dark-blue-color-600: #074a85;
+  --dark-blue-color-700: #053c6c;
+  --dark-blue-color-800: #032a4d;
+  --teal-color-50: #e1fffc;
+  --teal-color-50-rgb: 225, 255, 252;
+  --teal-color-100: #d3fbf7;
+  --teal-color-300: #97fff5;
+  --teal-color-500: #66f2e4;
+  --teal-color-600: #56eadb;
+  --teal-color-700: #47dbcc;
+
+  --red-color-400: #ec170a;
+
+  --white-color: #fff;
+  --white-color-100: #f2f5f7;
+  --white-color-300: #e2e6e8;
+  --white-color-400: #d4d9dc;
+  --white-color-800: #a0a5a7;
+  --success-color: #3eeb89;
+  --error-color: #ff9089;
+  --progress-color: #8cd6ff;
+  --green-color-50: #e0ffee;
+  --green-color-200: #b9f0d1;
+  --green-color-800: #09a24b;
+
+  --dark-grey-300: #80909b;
+  --dark-grey-600: #2e3235;
+  --dark-grey-800: #212529;
+  --black-color: #000000;
+  --black-color-rgb: 0, 0, 0;
+  --grey-color: #d1d1d1;
+  --gray-color: #929292;
+  --grey-color-rgb: 209, 209, 209;
+  --border-color: rgba(var(--dark-blue-brand-color-rgb), 0.1);
+  --tag-bg-color: #cfcbcb;
+  --tag-bg-color-rgb: 207, 203, 203;
+
+  --text-color: #424c53;
+  --text-color-rgb: 66, 76, 83;
+  --blue-haze-color: #c9c7df;
+  --di-serria-color: #dfa165;
+  --linen-color: #fdf8f4;
+  --mine-shaft-color: #222222;
+  --pancho-color: #edc9a7;
+  --ochre-color: #d17823;
+  --link-color: #0059a7;
+  --dark-grey-color-300: #80909b;
+
+  --table-header-bg-color: #f4f6fa;
+  --table-even-row-color: #f3f7fb;
+  --table-hover-row-color: #ebfcfb;
+  --curious-blue-color: #3c92dc;
+  --dolly-color: #f5ff7c;
+  --porcelain-color: #f3f7f7;
+  --polo-blue-color: #88accf;
+  --steel-blue-color: #4f82b8;
+  --celadon-color: #b7e5b0;
+  --seaweed-color: #1f4a19;
+  --rose-bud-color: #f7a0a0;
+  --mahogany-color: #5d0808;
+  --anakiwa-color: #a3d2ff;
+  --regal-blue-color: #003970;
+  --sunset-orange-color: #ff4d4f;
+
+  --padding-small: 8px;
+  --padding-middle: 16px;
+  --padding-large: 24px;
+  --padding-xlarge: 32px;
+  --input-border-width-middle: 1px;
+  --input-border-width-large: 1.5px;
+  --input-border-width: var(--input-border-width-middle);
+  --padding-page: var(--padding-middle);
+  --padding-base: 10px;
+}
