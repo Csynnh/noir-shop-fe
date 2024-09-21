@@ -29,5 +29,5 @@ COPY --from=prerelease /usr/src/app .
 
 
 # Run the app
-EXPOSE 3000/tcp
+EXPOSE 80/tcp
 CMD ["npm", "run", "dev"]
