@@ -8,6 +8,10 @@ export default defineConfig({
   build: {
     outDir: 'build',
   },
+  server: {
+    host: true,
+    port: 3000,
+  },
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, 'src/components'),
