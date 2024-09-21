@@ -27,8 +27,7 @@ FROM base AS release
 COPY --from=install /temp/prod/node_modules ./node_modules
 COPY --from=prerelease /usr/src/app .
 
-COPY vite.config.ts /usr/src/app/vite.config.ts
 
 # Run the app
-EXPOSE 80/tcp
+EXPOSE 3000/tcp
 CMD ["npm", "run", "dev"]
