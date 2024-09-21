@@ -1,4 +1,4 @@
-import Right from '@icons/Right';
+import Right from '@components/Icons/Right';
 import styles from './styles.module.scss';
 
 export interface CardItemProps {

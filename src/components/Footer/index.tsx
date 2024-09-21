@@ -1,10 +1,10 @@
-import Address from '@icons/Address';
-import Fb from '@icons/Fb';
-import In from '@icons/In';
-import Insta from '@icons/Insta';
-import Mail from '@icons/Mail';
-import Phone from '@icons/Phone';
-import Up from '@icons/Up';
+import Address from '@components/Icons/Address';
+import Fb from '@components/Icons/Fb';
+import In from '@components/Icons/In';
+import Insta from '@components/Icons/Insta';
+import Mail from '@components/Icons/Mail';
+import Phone from '@components/Icons/Phone';
+import Up from '@components/Icons/Up';
 import styles from './styles.module.scss';
 
 const Footer = () => {

@@ -1,9 +1,9 @@
 import Navigation from '@components/Navigation';
-import Account from '@icons/Account';
-import Cart from '@icons/Cart';
-import Home from '@icons/Home';
-import Logo from '@icons/Logo';
-import Search from '@icons/Search';
+import Account from '@components/Icons/Account';
+import Cart from '@components/Icons/Cart';
+import Home from '@components/Icons/Home';
+import Logo from '@components/Icons/Logo';
+import Search from '@components/Icons/Search';
 import { Tooltip } from 'antd';
 import styles from './styles.module.scss';
 

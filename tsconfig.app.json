@@ -23,7 +23,6 @@
     /* Emit */
     "baseUrl": "./src",
     "paths": {
-      "@icons/*": ["components/Icons/*"],
       "@components/*": ["components/*"],
       "@ui/*": ["components/common/ui/*"],
       "@pages/*": ["pages/*"],

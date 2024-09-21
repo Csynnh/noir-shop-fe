@@ -1,6 +1,6 @@
 import Banner from '@components/Banner';
 import styles from './styles.module.scss';
-import Down from '@icons/Down';
+import Down from '@components/Icons/Down';
 import Collection from '@components/Collection';
 
 const Home = () => {

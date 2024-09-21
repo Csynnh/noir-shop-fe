@@ -13,7 +13,6 @@ export default defineConfig({
       '@components': path.resolve(__dirname, 'src/components'),
       '@assets': path.resolve(__dirname, 'src/assets'),
       '@pages': path.resolve(__dirname, 'src/pages'),
-      '@icons': path.resolve(__dirname, 'src/components/icons'),
       '@images': path.resolve(__dirname, 'src/assets/images'),
       '@': path.resolve(__dirname, 'src'),
     },
@@ -21,6 +20,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        api: 'modern-compiler',
         additionalData: '@use "sass:math";@import "@/scss/mixins.scss";',
       },
     },

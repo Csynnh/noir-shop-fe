@@ -1,9 +1,8 @@
-import Filter from '@icons/Filter';
 import styles from './styles.module.scss';
 import CardItem, { CardItemProps } from '@components/CardItem';
 import { useEffect, useRef, useState } from 'react';
-import ArrowLeft from '@icons/ArrowLeft';
-import ArrowRight from '@icons/ArrowRight';
+import ArrowLeft from '@components/Icons/ArrowLeft';
+import ArrowRight from '@components/Icons/ArrowRight';
 import card_image from '@images/card-item.png';
 
 interface CollectionProps {
