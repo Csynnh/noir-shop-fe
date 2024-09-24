@@ -24,21 +24,12 @@ function App() {
             <Route path='/contact' element={<Contact />} />
             <Route path='/about' element={<About />} />
             <Route path='/item/:item_id' element={<Item />} />
+            <Route path='/private-policy' element={<PrivatePolicy />} />
+            <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
+            <Route path='/membership-policy' element={<MembershipPolicy />} />
           </Routes>
           <Footer></Footer>
         </ScrollToTop>
-        <Header></Header>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/new-collection' element={<NewCollection />} />
-          <Route path='/gift-card' element={<GiftCard />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/private-policy' element={<PrivatePolicy />} />
-          <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
-          <Route path='/membership-policy' element={<MembershipPolicy />} />
-        </Routes>
-        <Footer></Footer>
       </>
     </Router>
   );

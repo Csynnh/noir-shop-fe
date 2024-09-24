@@ -1,15 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
 import styles from './MembershipPolicy.module.scss';
 
 const MembershipPolicy = () => {
-  const membershipRef = useRef(null);
-  useEffect(() => {
-    if (membershipRef.current) {
-      window.scrollTo(0, 0);
-    }
-  }, [membershipRef.current]);
   return (
-    <div ref={membershipRef} className={styles.MembershipPolicy}>
+    <div className={styles.MembershipPolicy}>
       <div className='MembershipPolicy-container' id='membership'>
         <h1 className='Membership-header'>
           <span>Membership Policy</span>
