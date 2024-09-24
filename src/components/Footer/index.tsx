@@ -6,6 +6,7 @@ import Mail from '@components/Icons/Mail';
 import Phone from '@components/Icons/Phone';
 import Up from '@components/Icons/Up';
 import styles from './styles.module.scss';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -57,13 +58,13 @@ const Footer = () => {
           <div className='footer-policy'>
             <h5>Policy</h5>
             <div className='footer-item-content'>
-              <span>Private Policy</span>
+              <Link to={'/private-policy'}>Private Policy</Link>
             </div>
             <div className='footer-item-content'>
-              <span>Shipping and Return Policy</span>
+              <Link to={'/shipping-and-return-policy'}>Shipping and Return Policy</Link>
             </div>
             <div className='footer-item-content'>
-              <span>Membership Policy</span>
+              <Link to={'/membership-policy'}>Membership Policy</Link>
             </div>
           </div>
         </div>
