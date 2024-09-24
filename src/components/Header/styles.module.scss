@@ -1,6 +1,7 @@
 .Header {
   width: 100%;
-  padding: 61.5px 64px 41.5px;
+  padding: 50px 64px 30px;
+  border-bottom: 0.5px solid var(--line-color);
   :global {
     .header {
       &-wrapper {

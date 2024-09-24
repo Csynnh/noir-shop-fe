@@ -1,0 +1,15 @@
+.About {
+  :global {
+    .About {
+      &-container {
+        padding: 0 64px;
+        width: 100%;
+        h1 {
+          display: flex;
+          justify-content: space-between;
+          padding: 40px 0;
+        }
+      }
+    }
+  }
+}
