@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
-
 const Filter = () => {
   return (
-    <Link to='#'>
+    <span>
       <svg
         width='15'
         height='15'
@@ -41,7 +39,7 @@ const Filter = () => {
           stroke-miterlimit='10'
         />
       </svg>
-    </Link>
+    </span>
   );
 };
 

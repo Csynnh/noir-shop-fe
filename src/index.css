@@ -28,6 +28,13 @@
 }
 
 @font-face {
+  font-family: 'gilroy-regular';
+  src: url('/fonts/gilroy/Gilroy-Regular.ttf') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'gilroy-bold';
   src: url('/fonts/gilroy/Gilroy-Bold.ttf') format('woff');
   font-weight: normal;
@@ -42,14 +49,29 @@
 }
 
 @font-face {
+  font-family: 'gilroy-semibold';
+  src: url('/fonts/gilroy/Gilroy-SemiBold.ttf') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'gilroy-light';
   src: url('/fonts/gilroy/Gilroy-Light.ttf') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'gilroy-light-italic';
+  src: url('/fonts/gilroy/Gilroy-LightItalic.ttf') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: 'gilroy', sans-serif;
+  scroll-behavior: smooth;
 }
 
 a {

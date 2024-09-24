@@ -2,8 +2,10 @@ import Banner from '@components/Banner';
 import styles from './styles.module.scss';
 import Down from '@components/Icons/Down';
 import Collection from '@components/Collection';
+import { useRef } from 'react';
 
 const Home = () => {
+  const collectionRef = useRef<HTMLDivElement>(null);
   return (
     <div className={styles.home}>
       <Banner></Banner>
@@ -17,11 +19,11 @@ const Home = () => {
         <div className='home-banner-button'>
           <h3>Shopping Now</h3>
           <span>
-            <Down></Down>
+            <Down to={collectionRef}></Down>
           </span>
         </div>
       </div>
-      <Collection type={'New Collection'}></Collection>
+      <Collection ref={collectionRef} type={'New Collection'}></Collection>
       <Collection type={'Bag'}></Collection>
       <Collection type={'Jacket'}></Collection>
     </div>

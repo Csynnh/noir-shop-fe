@@ -1,5 +1,6 @@
 import Right from '@components/Icons/Right';
 import styles from './styles.module.scss';
+import { Link } from 'react-router-dom';
 
 export interface CardItemProps {
   name: string;
@@ -29,7 +30,9 @@ const CardItem = (prop: CardItemProps) => {
           <div className='card-footer'>
             <span className='card-footer-title'>Shopping Now</span>
             <span className='card-footer-btn'>
-              <Right></Right>
+              <Link to='/item/14'>
+                <Right></Right>
+              </Link>
             </span>
           </div>
         </div>

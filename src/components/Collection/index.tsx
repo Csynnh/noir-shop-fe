@@ -1,6 +1,6 @@
 import styles from './styles.module.scss';
 import CardItem, { CardItemProps } from '@components/CardItem';
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import ArrowLeft from '@components/Icons/ArrowLeft';
 import ArrowRight from '@components/Icons/ArrowRight';
 import card_image from '@images/card-item.png';
@@ -63,7 +63,7 @@ const data: Array<CardItemProps> = [
   },
 ];
 
-const Collection = ({ type }: CollectionProps) => {
+const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type }, ref) => {
   const maxVisibleItems = 4;
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -108,7 +108,7 @@ const Collection = ({ type }: CollectionProps) => {
   }, [data]);
 
   return (
-    <div className={styles.Collection}>
+    <div ref={ref} className={styles.Collection}>
       {/* <div className='new-collection-fillter-btn'>
         <span className='new-collection-fillter-icon'>
           <Filter></Filter>
@@ -145,6 +145,6 @@ const Collection = ({ type }: CollectionProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default Collection;

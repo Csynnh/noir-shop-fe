@@ -29,7 +29,7 @@ export default tseslint.config({
 - Optionally add `...tseslint.configs.stylisticTypeChecked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-```js
+````js
 // eslint.config.js
 import react from 'eslint-plugin-react';
 
@@ -47,4 +47,6 @@ export default tseslint.config({
     ...react.configs['jsx-runtime'].rules,
   },
 });
-```
+```shell
+  mkdir -p ScrollToTop && cd ScrollToTop && touch index.tsx styles.module.scss
+````

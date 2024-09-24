@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
-
 const Cart = () => {
   return (
-    <Link to='#'>
+    <span>
       <svg
         width='17'
         height='16'
@@ -18,7 +16,7 @@ const Cart = () => {
           strokeLinejoin='round'
         />
       </svg>
-    </Link>
+    </span>
   );
 };
 

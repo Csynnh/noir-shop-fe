@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
-
 const ArrowRight = (props: any) => {
   return (
-    <Link to='#' {...props}>
+    <span {...props}>
       <svg
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
@@ -13,7 +11,7 @@ const ArrowRight = (props: any) => {
       >
         <path strokeLinecap='round' strokeLinejoin='round' d='m8.25 4.5 7.5 7.5-7.5 7.5' />
       </svg>
-    </Link>
+    </span>
   );
 };
 

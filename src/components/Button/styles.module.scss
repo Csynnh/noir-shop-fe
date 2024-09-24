@@ -1,0 +1,33 @@
+.Button {
+  min-width: 50px;
+  width: 100%;
+  border: 0.5px solid #837f83;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: center;
+  display: inline-block;
+  span {
+    font-family: 'gilroy-regular';
+    line-height: 1.2;
+    color: black;
+  }
+  :global {
+    .button {
+      padding: 15.5px 0;
+      transition: all ease-in-out 0.3s;
+      &.--primary {
+        background-color: #000;
+        span {
+          color: #fff;
+        }
+        &:hover {
+          background-color: #fff;
+          span {
+            color: #000;
+            font-family: 'gilroy';
+          }
+        }
+      }
+    }
+  }
+}

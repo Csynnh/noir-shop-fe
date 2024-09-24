@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
-
 const Up = () => {
   return (
-    <Link to='#'>
+    <span>
       <svg
         width='22'
         height='35'
@@ -33,7 +31,7 @@ const Up = () => {
           mask='url(#path-1-inside-1_509_853)'
         />
       </svg>
-    </Link>
+    </span>
   );
 };
 
