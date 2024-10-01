@@ -65,6 +65,33 @@
           }
         }
       }
+      &-nav-to-sign-up,
+      &-remember-forgot-pass {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 4px;
+        font-family: 'gilroy-light';
+        font-size: 13px;
+        cursor: pointer;
+        a {
+          font-family: 'gilroy-semibold';
+          text-decoration: underline;
+        }
+      }
+      &-remember-forgot-pass {
+        justify-content: space-between;
+        a {
+          font-family: 'gilroy';
+        }
+      }
+      &-button {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
     }
   }
 }

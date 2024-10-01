@@ -10,8 +10,6 @@ import ScrollToTop from '@components/ScrollToTop';
 import PrivatePolicy from '@pages/Policy/PrivatePolicy';
 import ShippingPolicy from '@pages/Policy/ShippingPolicy';
 import MembershipPolicy from '@pages/Policy/MembershipPolicy';
-import NewCollection from '@pages/NewConllection';
-import { Sign } from 'crypto';
 import SignIn from '@pages/SignIn/SignIn';
 
 function App() {
@@ -29,7 +27,7 @@ function App() {
             <Route path='/private-policy' element={<PrivatePolicy />} />
             <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
             <Route path='/membership-policy' element={<MembershipPolicy />} />
-            <Route path='/Sign-in' element={<SignIn />} />
+            <Route path='/sign-in' element={<SignIn />} />
           </Routes>
           <Footer></Footer>
         </ScrollToTop>

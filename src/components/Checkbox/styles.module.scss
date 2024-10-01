@@ -1,0 +1,26 @@
+.Checkbox {
+  user-select: none;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  :global {
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      span {
+        font-family: 'gilroy-light';
+        line-height: 1;
+      }
+      .checkbox-container {
+        width: 18px;
+        height: 18px;
+        border: 1px solid var(--line-color);
+      }
+    }
+    input {
+      display: none;
+    }
+  }
+}
