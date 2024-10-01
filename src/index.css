@@ -72,6 +72,7 @@
 body {
   font-family: 'gilroy', sans-serif;
   scroll-behavior: smooth;
+  min-height: 100vh;
 }
 
 a {
@@ -169,6 +170,7 @@ select,
 textarea {
   background-color: transparent;
   outline: none;
+  color: #000000;
 }
 button {
   cursor: pointer;
@@ -176,8 +178,10 @@ button {
   outline: none;
   border: 0;
 }
+
 body {
   min-height: 100vh;
+  height: 100%;
   font-weight: 400;
   font-size: 16px;
   line-height: 1;

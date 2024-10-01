@@ -4,6 +4,8 @@
   align-items: center;
   justify-content: center;
   min-width: 600px;
+  background-color: var(--background-color);
+
   :global {
     .ant-menu-item {
       padding-inline: 30px;

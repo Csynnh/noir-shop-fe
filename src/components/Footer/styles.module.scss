@@ -1,6 +1,8 @@
 .Footer {
   width: 100%;
-  padding: 49px 64px;
+  padding: 0px 64px 30px;
+  background-color: var(--background-color);
+
   :global {
     .footer {
       &-wrapper {
