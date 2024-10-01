@@ -1,0 +1,17 @@
+.Input {
+  :global {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    label {
+      font-family: 'gilroy-semibold';
+      font-size: 13px;
+    }
+    input {
+      font-family: 'gilroy-light';
+      font-size: 12px;
+      border: none;
+      border-bottom: 1px solid var(--line-color);
+    }
+  }
+}
