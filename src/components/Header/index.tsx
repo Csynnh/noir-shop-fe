@@ -14,12 +14,12 @@ const Header = () => {
         <div className='header-top'>
           <div className='header-container'>
             <Tooltip title='Home' arrow={false}>
-              <span>
+              <span className='icon'>
                 <Home></Home>
               </span>
             </Tooltip>
             <Tooltip title='Search' arrow={false}>
-              <span>
+              <span className='icon'>
                 <Search></Search>
               </span>
             </Tooltip>
@@ -31,12 +31,12 @@ const Header = () => {
           </div>
           <div className='header-container'>
             <Tooltip title='Cart' arrow={false}>
-              <span>
+              <span className='icon'>
                 <Cart></Cart>
               </span>
             </Tooltip>
             <Tooltip title='Account' arrow={false}>
-              <span>
+              <span className='icon'>
                 <Account></Account>
               </span>
             </Tooltip>

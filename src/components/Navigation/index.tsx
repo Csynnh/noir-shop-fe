@@ -23,12 +23,12 @@ const items: MenuItem[] = [
     key: MenuItemKeys.giftCard,
   },
   {
-    label: <Link to={'/contact'}>Contact</Link>,
-    key: MenuItemKeys.contact,
-  },
-  {
     label: <Link to={'/about'}>About us</Link>,
     key: MenuItemKeys.about,
+  },
+  {
+    label: <Link to={'/contact'}>Contact</Link>,
+    key: MenuItemKeys.contact,
   },
 ];
 

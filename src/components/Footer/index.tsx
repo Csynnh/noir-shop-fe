@@ -76,13 +76,13 @@ const Footer = () => {
             </span>
           </div>
           <div className='footer-meta'>
-            <span className='footer-meta-item'>
+            <span className='footer-meta-item icon'>
               <In></In>
             </span>
-            <span className='footer-meta-item'>
+            <span className='footer-meta-item icon'>
               <Fb></Fb>
             </span>
-            <span className='footer-meta-item'>
+            <span className='footer-meta-item icon'>
               <Insta></Insta>
             </span>
           </div>
