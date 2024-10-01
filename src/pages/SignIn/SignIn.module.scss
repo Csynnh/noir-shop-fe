@@ -1,0 +1,97 @@
+.SignIn {
+  width: 100%;
+  height: calc(100vh - 180px);
+
+  :global {
+    .SignIn {
+      &-container {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 33.5% 66.5%;
+        gap: 1px;
+        background-color: var(--line-color);
+      }
+      &-left,
+      &-right {
+        background-color: var(--background-color);
+      }
+      &-left {
+        justify-content: center;
+        align-items: center;
+        padding-left: 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        &-content {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          justify-content: center;
+          align-items: center;
+        }
+        p {
+          font-family: 'gilroy-light';
+          font-size: 13px;
+        }
+        span {
+          font-family: 'gilroy';
+          font-size: 13px;
+        }
+      }
+      &-right {
+        padding: 0px 64px 0px 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &-container {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 48px;
+        }
+        h3 {
+          font-size: 32px;
+          font-family: 'channe';
+        }
+        &-form {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        &-remember {
+          span {
+            font-size: 13px;
+            font-family: 'gilroy-light';
+          }
+        }
+      }
+      &-nav-to-sign-up,
+      &-remember-forgot-pass {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 4px;
+        font-family: 'gilroy-light';
+        font-size: 13px;
+        cursor: pointer;
+        a {
+          font-family: 'gilroy-semibold';
+          text-decoration: underline;
+        }
+      }
+      &-remember-forgot-pass {
+        justify-content: space-between;
+        a {
+          font-family: 'gilroy';
+        }
+      }
+      &-button {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+    }
+  }
+}

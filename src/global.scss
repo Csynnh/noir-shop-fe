@@ -22,6 +22,8 @@ html {
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--background-color);
+
   --padding-page: var(--padding-middle);
   --input-border-width: var(--input-border-width-middle);
 
