@@ -11,6 +11,8 @@ import PrivatePolicy from '@pages/Policy/PrivatePolicy';
 import ShippingPolicy from '@pages/Policy/ShippingPolicy';
 import MembershipPolicy from '@pages/Policy/MembershipPolicy';
 import SignIn from '@pages/SignIn/SignIn';
+import SignUp from '@pages/SignUp';
+import Checkout from '@pages/Checkout';
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
             <Route path='/membership-policy' element={<MembershipPolicy />} />
             <Route path='/sign-in' element={<SignIn />} />
+            <Route path='/sign-up' element={<SignUp />} />
+            <Route path='/checkout' element={<Checkout />} />
           </Routes>
           <Footer></Footer>
         </ScrollToTop>
