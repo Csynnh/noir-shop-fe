@@ -65,7 +65,7 @@
       }
       &-container {
         border: 0.5px solid var(--line-color);
-        padding: 30px 26.5px;
+        padding: 30px ;
         &-header {
           font-family: 'gilroy-semibold';
           margin-bottom: 36px;
@@ -75,6 +75,12 @@
           }
           &.--mb34 {
             margin-bottom: 34px;
+          }
+          &.--mb24 {
+            margin-bottom: 24px;
+          }
+          &.--mb0 {
+            margin-bottom: 0px;
           }
           span {
             font-family: 'gilroy-light-italic';
@@ -95,6 +101,35 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+      }
+      &-oder {
+        &-top {
+          margin-bottom: 24px;
+        }
+        &-top ,&-bottom {
+          display:flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        &-bottom {
+          padding-top: 20px;
+          border-top: 0.5px solid var(--line-color);
+        }
+        &-subtitle {
+          font-family: 'gilroy';
+          font-size: 14px;
+          span {
+            font-family: 'gilroy-semibold';
+          }
+        }
+        &-subtotalOder {
+          font-family: 'gilroy-light';
+        }
+        &-list-wrap.scrollable {
+          max-height: calc(4 * 64px + 24px * 3);
+          overflow-y: auto;
+          scroll-behavior: smooth;
         }
       }
     }

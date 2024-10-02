@@ -1,0 +1,83 @@
+.OderItem {
+  :global {
+    .oder-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      &-image {
+        width: 64px;
+        height: 64px;
+        padding: 3px;
+        border: 0.5px solid var(--line-color);
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      &-info {
+        width: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      &-name {
+        font-family: 'gilroy-semibold';
+        line-height: 20px;
+      }
+      &-price, &-colors {
+        font-family: 'gilroy-light';
+        line-height: 18px;
+        span {
+          font-family: 'gilroy';
+        }
+      }
+      &-color {
+        &s {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        &-list {
+          display: flex;
+          align-items: center;
+          gap: 3px;
+        }
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: black;
+        &.--red {
+          background: #f23939;
+        }
+        &.--purple {
+          background-color: #9971a9;
+        }
+        &.--brown {
+          background-color: #af4420;
+        }
+        &.--green {
+          background-color: #167148;
+        }
+        &.--blue {
+          background-color: #1e68af;
+        }
+        &.--white {
+          background-color: #edece8;
+        }
+      }
+      &-count {
+        min-width: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      &-btn {
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+  }
+}

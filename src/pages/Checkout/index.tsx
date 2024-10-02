@@ -2,8 +2,12 @@ import { Form, Radio, Space } from 'antd';
 import styles from './styles.module.scss';
 import Input from '@components/Input';
 import DatePicker from '@components/DatePicker';
+import { useState } from 'react';
+import OderItem from '@components/OderItem';
 
 const Checkout = () => {
+  const [summaryOder, setSummaryOder] = useState(10);
+  const [subtotalOder, setSubtotalOder] = useState(360);
   return (
     <div className={styles.Checkout}>
       <div className='checkout-wrapper'>
@@ -59,7 +63,25 @@ const Checkout = () => {
               </Form.Item>
             </Form>
           </div>
-          <div className='checkout-container'>container 1</div>
+          <div className='checkout-container flex flex-col justify-between'>
+            <div className='checkout-oder-top'>
+              <h5 className='checkout-container-header --mb0'>My oder</h5>
+              <div className='checkout-oder-subtitle'>
+                Summary: <span>{summaryOder}</span> items
+              </div>
+            </div>
+            <div className='checkout-oder-list flex-1'>
+              <div className='checkout-oder-list-wrap w-full flex justify-center gap-6 flex-col pr-4 scrollable'>
+                {[...Array(10)].map((_, index) => (
+                  <OderItem key={index} />
+                ))}
+              </div>
+            </div>
+            <div className='checkout-oder-bottom'>
+              <h5 className='checkout-container-header --mb0'>Subtotal: </h5>
+              <div className='checkout-oder-subtotalOder'>${subtotalOder.toFixed(2)}</div>
+            </div>
+          </div>
           <div className='checkout-container'>container 1</div>
         </div>
       </div>
