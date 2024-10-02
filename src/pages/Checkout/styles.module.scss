@@ -49,8 +49,8 @@
               height: 0.5px;
               z-index: 1;
               background-color: var(--line-color);
-              transform: translate(0, -50%);
-              left: 0;
+              transform: translate(-50%, -50%);
+              left: 50%;
               top: 50%;
             }
           }
@@ -80,6 +80,9 @@
             font-family: 'gilroy-light-italic';
           }
         }
+        &-label {
+          font-family: 'gilroy-semibold';
+        }
       }
       &-info {
         &-form {
@@ -87,6 +90,11 @@
         }
         &-shipping {
           margin-bottom: 40px;
+        }
+        &-date .ant-form-item-control-input-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
       }
     }

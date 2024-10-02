@@ -1,6 +1,7 @@
 import { Form, Radio, Space } from 'antd';
 import styles from './styles.module.scss';
 import Input from '@components/Input';
+import DatePicker from '@components/DatePicker';
 
 const Checkout = () => {
   return (
@@ -49,8 +50,12 @@ const Checkout = () => {
                   </Space>
                 </Radio.Group>
               </Form.Item>
-              <h5 className='checkout-container-header --mb20'>Select your appointment date <span>(*If you go to store)</span></h5>
+              <h5 className='checkout-container-header --mb20'>
+                Select your appointment date <span>(*If you go to store)</span>
+              </h5>
               <Form.Item className='checkout-info-date'>
+                <h5 className='checkout-container-label'>Date: </h5>
+                <DatePicker></DatePicker>
               </Form.Item>
             </Form>
           </div>
