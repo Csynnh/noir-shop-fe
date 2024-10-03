@@ -3,6 +3,12 @@ import styles from './Contact.module.scss';
 import In from '@components/Icons/In';
 import Fb from '@components/Icons/Fb';
 import Insta from '@components/Icons/Insta';
+import Address from '@components/Icons/Address';
+import Phone from '@components/Icons/Phone';
+import Mail from '@components/Icons/Mail';
+import Input from '@components/Input';
+import Button from '@components/Button';
+import { Form, Select } from 'antd';
 
 const Contact = () => {
   return (
@@ -28,21 +34,21 @@ const Contact = () => {
               </p>
               <div className='Contact-title'>
                 <span>
-                  <Support></Support>
+                  <Mail></Mail>
                 </span>
                 <span className='title'>Email :</span>
                 <p>123abc@gmail.com</p>
               </div>
               <div className='Contact-title'>
                 <span>
-                  <Support></Support>
+                  <Address></Address>
                 </span>
                 <span className='title'>Address :</span>
                 <p>Ho Chi Minh City, Vietnam</p>
               </div>
               <div className='Contact-title'>
                 <span>
-                  <Support></Support>
+                  <Phone></Phone>
                 </span>
                 <span className='title'>Phone :</span>
                 <p>+(84) 28 366 400 874</p>
@@ -73,8 +79,53 @@ const Contact = () => {
               </div>
             </div>
           </div>
-
-          <div className='Contact-form'></div>
+          <Form className='Contact-form'>
+            <div className='Contact-senTo'>
+              <div className='Contact-title'>
+                <span>
+                  <Mail></Mail>
+                </span>
+                <span className='title'>SEND TO US</span>
+              </div>
+              <p>* All fields marked with a asterisk are requied</p>
+            </div>
+            <div className='Contact-infor'>
+              <Input name='name' label='Your Name' required></Input>
+              <div className='Contact-select'>
+                <p>* Your Gender</p>
+                <Select
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={[
+                    { value: '1', label: 'Mr' },
+                    { value: '2', label: 'Ms' },
+                    { value: '3', label: 'Other' },
+                  ]}
+                />
+              </div>
+              <Input name='phone' label='Your Phone' required></Input>
+            </div>
+            <div className='Contact-infor'>
+              <p>* What subject do you want to know ?</p>
+              <Select
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+                options={[
+                  { value: 'Collection', label: 'Collection' },
+                  { value: 'Bag', label: 'Bag' },
+                  { value: 'Jacket', label: 'Jacket' },
+                ]}
+              />
+              <Input name='message' label='Your massage' required></Input>
+            </div>
+            <Button className='btn_submitContact' onClick={() => {}} isPrimary>
+              Send now
+            </Button>
+          </Form>
         </div>
       </div>
     </div>

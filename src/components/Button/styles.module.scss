@@ -20,7 +20,7 @@
       justify-content: center;
       gap: 8px;
       &.--primary {
-        background-color: #000;
+        background-color: var(--main-color);
         span {
           color: #fff;
         }

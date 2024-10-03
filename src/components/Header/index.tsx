@@ -6,8 +6,16 @@ import Logo from '@components/Icons/Logo';
 import Search from '@components/Icons/Search';
 import { Tooltip } from 'antd';
 import styles from './styles.module.scss';
+import { useState } from 'react';
+import MyCart from '@components/MyCartTab';
+import MyCartTab from '@components/MyCartTab';
 
 const Header = () => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
   return (
     <div className={`${styles.Header}`}>
       <div className='header-wrapper'>
@@ -31,7 +39,7 @@ const Header = () => {
           </div>
           <div className='header-container'>
             <Tooltip title='Cart' arrow={false}>
-              <span className='icon'>
+              <span className='icon' onClick={toggleCart}>
                 <Cart></Cart>
               </span>
             </Tooltip>
@@ -45,6 +53,7 @@ const Header = () => {
         <div className='header-nav'>
           <Navigation></Navigation>
         </div>
+        <MyCartTab isOpen={isCartOpen} toggleCart={toggleCart}></MyCartTab>
       </div>
     </div>
   );
