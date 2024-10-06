@@ -9,9 +9,9 @@ COPY package.json /temp/dev/
 RUN cd /temp/dev && npm install --frozen-lockfile
 
 # Install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json /temp/prod/
-RUN cd /temp/prod && npm install --production --frozen-lockfile
+# RUN mkdir -p /temp/prod
+# COPY package.json /temp/prod/
+# RUN cd /temp/prod && npm install --production --frozen-lockfile
 
 # Copy node_modules from the temporary directory
 FROM base AS prerelease
@@ -23,9 +23,9 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Copy production dependencies and source code into the final image
-FROM base AS release
-COPY --from=install /temp/prod/node_modules ./node_modules
-COPY --from=prerelease /usr/src/app .
+# FROM base AS release
+# COPY --from=install /temp/prod/node_modules ./node_modules
+# COPY --from=prerelease /usr/src/app .
 
 
 # Run the app
