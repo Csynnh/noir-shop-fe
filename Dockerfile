@@ -2,32 +2,30 @@
 FROM node:22.3.0 AS base
 WORKDIR /usr/src/app
 
-# Install dependencies into a temporary directory
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json /temp/dev/
-RUN cd /temp/dev && npm install --frozen-lockfile
+# Install dependencies
+FROM base AS dependencies
+COPY package.json package-lock.json ./
+RUN npm install --frozen-lockfile --production
 
-# Install with --production (exclude devDependencies)
-# RUN mkdir -p /temp/prod
-# COPY package.json /temp/prod/
-# RUN cd /temp/prod && npm install --production --frozen-lockfile
-
-# Copy node_modules from the temporary directory
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules ./node_modules
+# Build the application
+FROM dependencies AS build
 COPY . .
-
-# [optional] tests & build
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 RUN npm run build
 
-# Copy production dependencies and source code into the final image
-# FROM base AS release
-# COPY --from=install /temp/prod/node_modules ./node_modules
-# COPY --from=prerelease /usr/src/app .
+# Create the production image
+FROM node:22.3.0 AS release
+WORKDIR /usr/src/app
 
+# Copy built files and node_modules
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
 
-# Run the app
-EXPOSE 80/tcp
-CMD [ "npm", "run", "dev" ]
+# Install a lightweight server for serving static files
+RUN npm install -g serve
+
+# Expose the port the app runs on
+EXPOSE 80
+
+# Command to run the application
+CMD ["serve", "-s", "dist", "-l", "80"]
