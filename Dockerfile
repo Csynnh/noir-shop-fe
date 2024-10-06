@@ -2,10 +2,10 @@
 FROM node:22.3.0 AS base
 WORKDIR /usr/src/app
 
-# Install dependencies
+# Install all dependencies
 FROM base AS dependencies
 COPY package.json package-lock.json ./
-RUN npm install --frozen-lockfile --production
+RUN npm install --frozen-lockfile
 
 # Build the application
 FROM dependencies AS build
