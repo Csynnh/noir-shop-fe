@@ -4,6 +4,7 @@ import Input from '@components/Input';
 import DatePicker from '@components/DatePicker';
 import { useState } from 'react';
 import OderItem from '@components/OderItem';
+import Button from '@components/Button';
 
 const Checkout = () => {
   const [summaryOder] = useState(10);
@@ -82,7 +83,65 @@ const Checkout = () => {
               <div className='checkout-oder-subtotalOder'>${subtotalOder.toFixed(2)}</div>
             </div>
           </div>
-          <div className='checkout-container'>container 1</div>
+          <div className='checkout-container flex flex-col'>
+            <div className='checkout-oder-top'>
+              <h5 className='checkout-container-header --mb0'>Payment Method</h5>
+            </div>
+            <Form className='checkout-info-form !mb-14'>
+              <Form.Item className='mb-24'>
+                <Radio.Group onChange={() => {}}>
+                  <Space direction='vertical' className='grid grid-cols-2 gap-x-10'>
+                    <Radio value={1} >Credit Card</Radio>
+                    <Radio value={2}>Go to store</Radio>
+                    <Radio value={3}>Bank Transfers</Radio>
+                    <Radio value={4}>Momo (Apple Pay)</Radio>
+                  </Space>
+                </Radio.Group>
+              </Form.Item>
+              <h5 className='checkout-container-header --mb0'>Credit Card Required Fields</h5>
+              <Form.Item className='mb-0'>
+                <div className=' flex items-end gap-[20px] w-full justify-between'>
+                  <span className=''>Cardholder Name:</span>
+                  <Input name='card-holder-name' maxWidth={220}></Input>
+                </div>
+              </Form.Item>
+              <Form.Item className='mb-0'>
+                <div className=' flex items-end gap-[20px] w-full justify-between'>
+                  <span className=''>Card number:</span>
+                  <Input name='card-holder-number' maxWidth={220}></Input>
+                </div>
+              </Form.Item>
+              <Form.Item className='mb-0'>
+                <div className=' flex items-end gap-[20px] w-full justify-between'>
+                  <span className=''>Expiration Date(MM/DD):</span>
+                  <Input name='card-holder-expire' maxWidth={220} maxLen={4} isExpire></Input>
+                </div>
+              </Form.Item>
+              <Form.Item className='mb-0'>
+                <div className=' flex items-end gap-[20px] w-full justify-between'>
+                  <span className=''>CVV/CVC:</span>
+                  <Input name='card-holder-cvv' maxWidth={220} maxLen={3}></Input>
+                </div>
+              </Form.Item>
+            </Form>
+            <div className='checkout-oder-bottom flex flex-col w-full !border-t-[0px]'>
+              <div className='checkout-container-subtotal flex items-center justify-between w-full mb-4'>
+                <span className='font-[gilroy-light] text-[16px]'>Subtotal:</span>
+                <span className='font-[gilroy-light] text-[16px]'>${3600}</span>
+              </div>
+              <div className='checkout-container-shipping flex items-center justify-between w-full mb-4'>
+                <span className='font-[gilroy-light] text-[16px]'>Shipping:</span>
+                <span className='font-[gilroy-light] text-[16px]'>${360}</span>
+              </div>
+              <div className='checkout-container-total  flex items-center justify-between w-full border-t border-t-black pt-4 mb-6'>
+                <h5 className='checkout-container-header --mb0'>Subtotal: </h5>
+                <div className='checkout-oder-subtotalOder !font-[gilroy] text-[16px]'>
+                  ${subtotalOder.toFixed(2)}
+                </div>
+              </div>
+              <Button onClick={() => {}} isPrimary>Buy Now</Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

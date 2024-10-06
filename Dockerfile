@@ -19,7 +19,7 @@ COPY --from=install /temp/dev/node_modules ./node_modules
 COPY . .
 
 # [optional] tests & build
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 RUN npm run build
 
 # Copy production dependencies and source code into the final image
@@ -30,4 +30,4 @@ RUN npm run build
 
 # Run the app
 EXPOSE 80/tcp
-CMD ["npm", "run", "dev"]
+CMD [ "npm", "run", "dev" ]

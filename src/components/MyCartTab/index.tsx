@@ -30,17 +30,11 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
   const [isEmpty, setIsEmpty] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching data from a database
-    // const fetchCartItems = async () => {
-    //   const data = await fetch('/api/cart-items'); // Replace with your API endpoint
-    //   const items = await data.json();
-    //   setCartItems(items);
-    // };
     if (data.length > 0) {
       setIsEmpty(false);
       setCartItemList(data);
     }
-  }, [data]);
+  }, []);
 
   return (
     <div className={`${styles.MyCart}`}>
