@@ -4,16 +4,16 @@ import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
 
 const OderItem = () => {
-  const [price, setPrice] = useState(120);
+  const [price] = useState(120);
   const [count, setCount] = useState(2);
   const handleIncrease = () => {
     setCount(count + 1);
-  }
+  };
   const handleDecrease = () => {
     if (count > 1) {
       setCount(count - 1);
     }
-  }
+  };
   return (
     <div className={styles.OderItem}>
       <div className='oder-item'>

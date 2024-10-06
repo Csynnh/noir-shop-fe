@@ -18,7 +18,7 @@ interface myCartProp {
 }
 const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
-  const [subtotal, setSubtotal] = useState(0);
+  const [subtotal] = useState(0);
 
   const data = [
     { name: 'Item 1', price: '$10', color: 'Red', count: 2 },

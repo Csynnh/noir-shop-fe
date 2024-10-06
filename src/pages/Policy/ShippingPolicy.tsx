@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './ShippingPolicy.module.scss';
 
 const ShippingPolicy = () => {

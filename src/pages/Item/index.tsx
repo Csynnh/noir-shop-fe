@@ -8,18 +8,18 @@ import Button from '@components/Button';
 import Star from '@components/Icons/Star';
 const Item = () => {
   const { item_id } = useParams();
-  const [itemCount, setItemCount] = useState(1);
+  const [itemCount] = useState(1);
   console.log('item_id', item_id);
 
-  const handleIncrement = () => {
-    setItemCount(itemCount + 1);
-  };
+  // const handleIncrement = () => {
+  //   setItemCount(itemCount + 1);
+  // };
 
-  const handleDecrement = () => {
-    if (itemCount > 1) {
-      setItemCount(itemCount - 1);
-    }
-  };
+  // const handleDecrement = () => {
+  //   if (itemCount > 1) {
+  //     setItemCount(itemCount - 1);
+  //   }
+  // };
 
   const handleAddToCart = () => {
     console.log('Add to cart');

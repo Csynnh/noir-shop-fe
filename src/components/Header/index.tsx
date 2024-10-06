@@ -7,7 +7,6 @@ import Search from '@components/Icons/Search';
 import { Tooltip } from 'antd';
 import styles from './styles.module.scss';
 import { useState } from 'react';
-import MyCart from '@components/MyCartTab';
 import MyCartTab from '@components/MyCartTab';
 
 const Header = () => {

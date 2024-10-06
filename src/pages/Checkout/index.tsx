@@ -6,8 +6,8 @@ import { useState } from 'react';
 import OderItem from '@components/OderItem';
 
 const Checkout = () => {
-  const [summaryOder, setSummaryOder] = useState(10);
-  const [subtotalOder, setSubtotalOder] = useState(360);
+  const [summaryOder] = useState(10);
+  const [subtotalOder] = useState(360);
   return (
     <div className={styles.Checkout}>
       <div className='checkout-wrapper'>
