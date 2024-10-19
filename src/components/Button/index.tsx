@@ -5,16 +5,28 @@ interface ButtonProps {
   isPrimary?: boolean;
   icon?: React.ReactNode;
   className?: string;
+  loading?: boolean;
 }
 
 const Button = (props: ButtonProps) => {
-  const { children, onClick, isPrimary, icon, className } = props;
+  const { children, onClick, isPrimary, icon, className, loading } = props;
 
   return (
-    <div onClick={onClick} className={styles.Button}>
-      <div className={'button ' + (isPrimary ? ' --primary ' : '') + className}>
-        {icon}
-        <span>{children}</span>
+    <div className={styles.Button}>
+      <div
+        onClick={loading ? () => {} : onClick}
+        className={
+          'button ' + (isPrimary ? ' --primary ' : '') + className + (loading ? ' disable ' : '')
+        }
+      >
+        {loading ? (
+          <div className='loading'></div>
+        ) : (
+          <>
+            {icon}
+            <span>{children}</span>
+          </>
+        )}
       </div>
     </div>
   );

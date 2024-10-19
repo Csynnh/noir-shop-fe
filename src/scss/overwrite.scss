@@ -5,7 +5,17 @@
     }
   }
 }
-
+.ant-modal-content {
+  padding: 30px 40px !important;
+  .ant-modal-header {
+    margin-bottom: 24px;
+  }
+  .ant-modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
 .radio-group {
   .ant-radio-group {
     label {

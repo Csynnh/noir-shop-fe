@@ -91,7 +91,7 @@ const Checkout = () => {
               <Form.Item className='mb-24'>
                 <Radio.Group onChange={() => {}}>
                   <Space direction='vertical' className='grid grid-cols-2 gap-x-10'>
-                    <Radio value={1} >Credit Card</Radio>
+                    <Radio value={1}>Credit Card</Radio>
                     <Radio value={2}>Go to store</Radio>
                     <Radio value={3}>Bank Transfers</Radio>
                     <Radio value={4}>Momo (Apple Pay)</Radio>
@@ -139,7 +139,9 @@ const Checkout = () => {
                   ${subtotalOder.toFixed(2)}
                 </div>
               </div>
-              <Button onClick={() => {}} isPrimary>Buy Now</Button>
+              <Button onClick={() => {}} isPrimary>
+                Buy Now
+              </Button>
             </div>
           </div>
         </div>

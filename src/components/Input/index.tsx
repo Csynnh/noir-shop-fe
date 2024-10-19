@@ -30,13 +30,20 @@ const Input = ({ label, name, required, type, maxWidth, maxLen, isExpire }: Inpu
       }
       inputRef.current.value = value;
     }
-  }
+  };
   return (
-    <div className={styles.Input} style={{maxWidth: maxWidth}}>
+    <div className={styles.Input} style={{ maxWidth: maxWidth }}>
       <label htmlFor={name}>
         {required ? '*' : ''} {label}
       </label>
-      <input onChange={handleInputChange} ref={inputRef} type={typeValue} id={name} name={name} maxLength={maxLen && maxLen + (isExpire ? 1 : 0) }/>
+      <input
+        onChange={handleInputChange}
+        ref={inputRef}
+        type={typeValue}
+        id={name}
+        name={name}
+        maxLength={maxLen && maxLen + (isExpire ? 1 : 0)}
+      />
       {typeValue === 'password' && (
         <span onClick={handleShowPassword} className='input-icon'>
           {showPassword ? <CloseEye /> : <OpenEye />}

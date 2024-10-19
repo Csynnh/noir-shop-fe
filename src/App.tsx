@@ -13,6 +13,7 @@ import MembershipPolicy from '@pages/Policy/MembershipPolicy';
 import SignIn from '@pages/SignIn/SignIn';
 import SignUp from '@pages/SignUp';
 import Checkout from '@pages/Checkout';
+import Account from '@pages/Account';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path='/sign-in' element={<SignIn />} />
             <Route path='/sign-up' element={<SignUp />} />
             <Route path='/checkout' element={<Checkout />} />
+            <Route path='/account' element={<Account />} />
           </Routes>
           <Footer></Footer>
         </ScrollToTop>
