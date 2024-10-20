@@ -11,7 +11,7 @@ module.exports = {
   ],
   theme: {
     container: {
-      center: true,
+      center: 'true',
       padding: '2rem',
       screens: {
         '2xl': '1400px',
@@ -54,8 +54,8 @@ module.exports = {
         },
       },
       borderRadius: {
-        lg: `var(--radius)`,
-        md: `calc(var(--radius) - 2px)`,
+        lg: '`var(--radius)`',
+        md: '`calc(var(--radius) - 2px)`',
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
@@ -63,24 +63,48 @@ module.exports = {
       },
       keyframes: {
         'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' },
+          from: {
+            height: '0',
+          },
+          to: {
+            height: 'var(--radix-accordion-content-height)',
+          },
         },
         'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' },
+          from: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+          to: {
+            height: '0',
+          },
         },
         'rotate-90': {
-          '0%': { transform: 'rotate(30deg)' },
-          '40%': { transform: 'rotate(00deg)' },
-          '60%': { transform: 'rotate(00deg)' },
-          '100%': { transform: 'rotate(-30deg)' },
+          '0%': {
+            transform: 'rotate(30deg)',
+          },
+          '40%': {
+            transform: 'rotate(00deg)',
+          },
+          '60%': {
+            transform: 'rotate(00deg)',
+          },
+          '100%': {
+            transform: 'rotate(-30deg)',
+          },
         },
         '-rotate-90': {
-          '0%': { transform: 'rotate(30deg)' },
-          '40%': { transform: 'rotate(00deg)' },
-          '60%': { transform: 'rotate(00deg)' },
-          '100%': { transform: 'rotate(-30deg)' },
+          '0%': {
+            transform: 'rotate(30deg)',
+          },
+          '40%': {
+            transform: 'rotate(00deg)',
+          },
+          '60%': {
+            transform: 'rotate(00deg)',
+          },
+          '100%': {
+            transform: 'rotate(-30deg)',
+          },
         },
       },
       animation: {

@@ -1,0 +1,36 @@
+.Header {
+  width: 100%;
+  padding: 30px 64px 30px;
+  border-bottom: 0.5px solid var(--line-color);
+  background-color: var(--background-color);
+  :global {
+    .header {
+      &-wrapper {
+        .header-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 35px;
+          .header-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 91px;
+            a {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 36px;
+              height: 36px;
+            }
+          }
+        }
+      }
+      &-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}
