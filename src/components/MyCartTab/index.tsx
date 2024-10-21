@@ -6,8 +6,9 @@ import Button from '@components/Button';
 import CartItem from '@components/CartItem';
 
 interface CartItemData {
+  index: number;
   name: string;
-  price: string;
+  price: number;
   color: string;
   count: number;
 }
@@ -18,16 +19,16 @@ interface myCartProp {
 }
 const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
-  const [subtotal] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [isEmpty, setIsEmpty] = useState(true);
 
   const data = [
-    { name: 'Item 1', price: '$10', color: 'Red', count: 2 },
-    { name: 'Item 2', price: '$20', color: 'Blue', count: 1 },
-    { name: 'Item 3', price: '$15', color: 'Green', count: 3 },
-    { name: 'Item 4', price: '$25', color: 'Yellow', count: 1 },
-    { name: 'Item 5', price: '$25', color: 'Yellow', count: 1 },
+    { index: 1, name: 'Item 1', price: 10, color: 'Red', count: 2 },
+    { index: 2, name: 'Item 2', price: 20, color: 'Blue', count: 1 },
+    { index: 3, name: 'Item 3', price: 15, color: 'Green', count: 3 },
+    { index: 4, name: 'Item 4', price: 25, color: 'Yellow', count: 1 },
+    { index: 5, name: 'Item 5', price: 25, color: 'Yellow', count: 1 },
   ];
-  const [isEmpty, setIsEmpty] = useState(true);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -35,6 +36,27 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
       setCartItemList(data);
     }
   }, []);
+
+  useEffect(() => {
+    const newSubtotal = cartItemList.reduce((acc, item) => acc + item.price * item.count, 0);
+    setSubtotal(newSubtotal);
+  }, [cartItemList]);
+
+  const handleCountChange = (index: number, operator: string) => {
+    const updatedItems = cartItemList.map((item) => {
+      if (item.index === index) {
+        if (operator === '+') {
+          return { ...item, count: item.count + 1 };
+        } else if (operator === '-') {
+          return { ...item, count: item.count - 1 };
+        }
+        console.log(item.count);
+      }
+      return item;
+    });
+    console.log('updatedItems :>> ', updatedItems);
+    setCartItemList(updatedItems);
+  };
 
   return (
     <div className={`${styles.MyCart}`}>
@@ -44,8 +66,8 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
           <div className='MyCart-header'>
             <p>My card</p>
             <div className='MyCart-count'>
-              <span>Summary</span>
-              <p> 0 </p>
+              <span>Summary: </span>
+              <p> {cartItemList.length} </p>
               <span>items</span>
             </div>
           </div>
@@ -64,10 +86,12 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
               <div className='MyCart-items'>
                 {cartItemList.map((item) => (
                   <CartItem
+                    index={item.index}
                     color={item.color}
                     name={item.name}
                     price={item.price}
                     count={item.count}
+                    handleCountChange={handleCountChange}
                   />
                 ))}
               </div>

@@ -8,6 +8,7 @@ import { Tooltip } from 'antd';
 import styles from './styles.module.scss';
 import { useState } from 'react';
 import MyCartTab from '@components/MyCartTab';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -44,7 +45,9 @@ const Header = () => {
             </Tooltip>
             <Tooltip title='Account' arrow={false}>
               <span className='icon'>
-                <Account></Account>
+                <Link to='/Account'>
+                  <Account></Account>
+                </Link>
               </span>
             </Tooltip>
           </div>
