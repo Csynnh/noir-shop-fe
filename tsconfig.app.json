@@ -26,6 +26,7 @@
       "@ui/*": ["components/ui/*"],
       "@mocks/*": ["mocks/*"],
       "@constant/*": ["constant/*"],
+      "@contexts/*": ["contexts/*"],
       "@components/*": ["components/*"],
       "@lib/*": ["lib/*"],
       "@pages/*": ["pages/*"],
