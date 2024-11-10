@@ -4,10 +4,15 @@
       &-container {
         padding: 0 64px;
         width: 100%;
+        margin-bottom: 40px;
         h1 {
           display: flex;
           justify-content: space-between;
           padding: 40px 0;
+        }
+        p {
+          font-family: 'gilroy-semibold';
+          font-size: 13px;
         }
       }
       &-content {
@@ -23,14 +28,14 @@
       }
       &-intro,
       &-collect > p {
-        font-size: 14px;
-        font-family: 'gilroy';
+        font-size: 13px;
+        font-family: 'gilroy-semibold';
         line-height: 1.5;
       }
       &-intro span,
       &-collect li,
       &-collect ul {
-        font-size: 14px;
+        font-size: 13px;
         font-family: 'gilroy-light';
         line-height: 2;
       }

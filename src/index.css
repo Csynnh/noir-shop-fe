@@ -79,9 +79,11 @@ a {
   font-weight: 500;
   color: #000000;
   text-decoration: inherit;
+  font-size: 13px;
 }
 a:hover {
   color: #4d0f95;
+  font-size: 13px;
 }
 
 body {

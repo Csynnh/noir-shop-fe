@@ -32,6 +32,25 @@ const Item = () => {
     <div className={styles.Item}>
       <div className='item-wrapper'>
         <div className='item-detail'>
+          <div className='item-detail-images'>
+            <div className='item-detail-media'>
+              <div className='item-detail-media-item'>
+                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
+              </div>
+              <div className='item-detail-media-item'>
+                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
+              </div>
+              <div className='item-detail-media-item'>
+                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
+              </div>
+              <div className='item-detail-media-item'>
+                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
+              </div>
+            </div>
+            <div className='item-detai-image'>
+              <img src='https://via.placeholder.com/495' alt='' width={495} height={495} />
+            </div>
+          </div>
           <div className='item-detail-info'>
             <div className='item-detail-top'>
               <h5 className='item-name'>Celestial</h5>
@@ -45,18 +64,20 @@ const Item = () => {
                   <div className='item-color-item --blue'></div>
                 </div>
               </div>
-              <div className='item-price'>
-                <span className='item-label'>Price: </span>
-                <span className='item-value'>$100</span>
-              </div>
-              <div className='item-demention'>
-                <span className='item-label'>Demention: </span>
-                <span className='item-value'>1 inc x 2 inc</span>
-              </div>
             </div>
 
-            <div className='item-detail-bottom'>
+            <div className='item-price'>
+              <span className='item-label'>Price: </span>
               <p className='item-price-total'>$150.00</p>
+            </div>
+            <div className='item-size'>
+              <span className='item-label'>Size: </span>
+              <span className='item-value'>S</span>
+              <span className='item-value'>M</span>
+              <span className='item-value'>L</span>
+              <span className='item-value'>XL</span>
+            </div>
+            <div className='item-detail-bottom'>
               <div className='item-price-tools'>
                 <div className='item-price-btns'>
                   <div className='item-price-btn-minus'>
@@ -80,25 +101,6 @@ const Item = () => {
               </div>
             </div>
           </div>
-          <div className='item-detail-images'>
-            <div className='item-detai-image'>
-              <img src='https://via.placeholder.com/495' alt='' width={495} height={495} />
-            </div>
-            <div className='item-detail-media'>
-              <div className='item-detail-media-item'>
-                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
-              </div>
-              <div className='item-detail-media-item'>
-                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
-              </div>
-              <div className='item-detail-media-item'>
-                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
-              </div>
-              <div className='item-detail-media-item'>
-                <img src='https://via.placeholder.com/103' alt='' width={103} height={103} />
-              </div>
-            </div>
-          </div>
         </div>
         <div className='item-more-info'>
           <h5 className='item-more-info-title'>More Information</h5>
@@ -108,72 +110,30 @@ const Item = () => {
             printer took a galley of type and scrambled it to make a type specimen book.
           </p>
           <div className='item-more-info-prod-name'>
-            <span className='item-more-info-lable'>Product Name:</span>
+            <span className='item-more-info-lable'>Product Number:</span>
             <span className='item-more-info-value'>E-Temp Thermometer</span>
           </div>
-          <div className='item-more-info-model-number'>
-            <span className='item-more-info-lable'>Model Number:</span>
-            <span className='item-more-info-value'>ET-1234</span>
+          <div className='item-more-info-prod-name'>
+            <span className='item-more-info-lable'>Material:</span>
+            <span className='item-more-info-value'>Genuine Leather</span>
           </div>
-          <div className='item-more-info-features'>
-            <span className='item-more-info-lable'>Features:</span>
-            <ul className='item-more-info-value list'>
-              <li className='item-more-info-value-item'>
-                Accurate Temperature Measurement: Provides precise readings in both Fahrenheit and
-                Celsius.
-              </li>
-              <li className='item-more-info-value-item'>
-                Fast Response Time: Quickly measures temperature changes for immediate results.
-              </li>
-              <li className='item-more-info-value-item'>
-                Easy-to-Read Display: Large, backlit LCD screen for clear visibility in low-light
-                conditions.
-              </li>
-              <li className='item-more-info-value-item'>
-                Fever Alarm: Audible and visual alerts for temperatures above a predefined
-                threshold.
-              </li>
-              <li className='item-more-info-value-item'>
-                Memory Function: Stores recent readings for easy tracking and comparison.
-              </li>
-              <li className='item-more-info-value-item'>
-                Waterproof Design: Safe for use in wet environments or for cleaning.
-              </li>
-              <li className='item-more-info-value-item'>
-                Compact and Portable: Small and lightweight, making it convenient to carry anywhere.
-              </li>
-              <li className='item-more-info-value-item'>
-                Battery-Powered: Operates on easily replaceable batteries.
-              </li>
-            </ul>
+          <div className='item-more-info-prod-name'>
+            <span className='item-more-info-lable'>Waterproof:</span>
+            <span className='item-more-info-value'>Genuine Leather</span>
           </div>
-          <div className='item-more-info-specifications'>
-            <span className='item-more-info-lable'>Specifications:</span>
-            <ul className='item-more-info-value list'>
-              <li className='item-more-info-value-item'>
-                Measurement Range: 32°F to 109.4°F (0°C to 43°C)
-              </li>
-              <li className='item-more-info-value-item'>Accuracy: ±0.1°F (±0.06°C)</li>
-              <li className='item-more-info-value-item'>Response Time: 10 seconds</li>
-              <li className='item-more-info-value-item'>Display: LCD screen</li>
-              <li className='item-more-info-value-item'>Power Supply: Two AAA batteries</li>
-              <li className='item-more-info-value-item'>
-                Dimensions: 2.5 inches (6.4 cm) x 1.5 inches (3.8 cm) x 0.5 inches (1.3 cm)
-              </li>
-              <li className='item-more-info-value-item'>Weight: 1.5 ounces (43 grams)</li>
-            </ul>
+          <div className='item-more-info-prod-name'>
+            <span className='item-more-info-lable'>Care Instructions:</span>
+            <span className='item-more-info-value'>Genuine Leather</span>
           </div>
-          <div className='item-more-info-additional-information'>
-            <span className='item-more-info-lable'>Additional Information:</span>
-            <ul className='item-more-info-value list'>
-              <li className='item-more-info-value-item'>
-                FDA-Approved: Meets FDA requirements for medical devices.
-              </li>
-              <li className='item-more-info-value-item'>Warranty: One-year limited warranty.</li>
-              <li className='item-more-info-value-item'>
-                Includes: Thermometer, user manual, and two AAA batteries.
-              </li>
-            </ul>
+          <div className='item-more-info-prod-name'>
+            <span className='item-more-info-lable'>Dimensions:</span>
+            <span className='item-more-info-value'>Genuine Leather</span>
+          </div>
+          <div className='item-more-info-prod-name'>
+            <span className='item-more-info-lable'>Origin:</span>
+            <span className='item-more-info-value'>
+              Noir - District 9, Ho Chi Minh City, VietNam
+            </span>
           </div>
           <div className='item-more-info-note'>
             <span className='item-more-info-lable'>Please note:</span>

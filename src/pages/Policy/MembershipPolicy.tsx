@@ -13,8 +13,8 @@ const MembershipPolicy = () => {
             <p>Introduction</p>
             <ul>
               This Membership Policy outlines the terms and conditions governing membership in our
-              [Brand Name] loyalty program. By joining our membership program, you agree to abide by
-              these terms.
+              NOIR loyalty program. By joining our membership program, you agree to abide by these
+              terms.
             </ul>
           </div>
           <div className='MembershipPolicy-intro'>

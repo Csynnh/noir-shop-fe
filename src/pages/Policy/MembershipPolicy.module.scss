@@ -4,10 +4,15 @@
       &-container {
         padding: 0 64px;
         width: 100%;
+        margin-bottom: 40px;
         h1 {
           display: flex;
           justify-content: space-between;
           padding: 40px 0;
+        }
+        p {
+          font-family: 'gilroy-semibold';
+          font-size: 13px;
         }
       }
       &-content {
@@ -22,14 +27,14 @@
       }
       &-intro li,
       &-intro ul {
-        font-size: 14px;
+        font-size: 13px;
         font-family: 'gilroy-light';
         line-height: 2;
       }
       &-intro li {
         margin-left: 20px;
         &::marker {
-          font-size: 8px; // Adjust the size as needed
+          font-size: 10px; // Adjust the size as needed
         }
       }
     }
