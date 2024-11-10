@@ -50,6 +50,12 @@ export enum OrderStatus {
   RETURNING = 'RETURNING',
 }
 
+export enum ModelState {
+  ACCOUNT_INFO = 'ACCOUNT_INFO',
+  SHIPPING_INFO = 'SHIPPING_INFO',
+  CHANGE_PASSWORD = 'CHANGE_PASSWORD',
+}
+
 const mockData = {
   id: '00131991293',
   prods: [
@@ -100,6 +106,7 @@ const Account = () => {
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [shippingInfoData, setShippingInfoData] = useState<ShippingInfo[] | []>([]);
+  const [modelState, setModelState] = useState<ModelState | null>(null);
   // pre-check if user is logged in
   useEffect(() => {
     if (userInfo) {
@@ -222,8 +229,10 @@ const Account = () => {
     setLoading(false);
   };
 
-  const handleOk = () => {
-    // setIsAccountInfoModalOpen(false);
+  const handleChangeAccountInfo = async () => {
+    setModelState(ModelState.ACCOUNT_INFO);
+    await handleSendOTP();
+    setIsAccountInfoModalOpen(false);
   };
 
   const handleSendOTP = async () => {
@@ -256,6 +265,41 @@ const Account = () => {
     !isOTPModalOpen && setIsOTPModalOpen(true);
   };
 
+  // const handleRefetchAccountInfo = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/login`, {
+  //       username: userInfo?.username,
+  //       password: userInfo?.password,
+  //     });
+  //     if (response.status === 200) {
+  //       toast.success('Succesfully!', {
+  //         description: response.data.messageToClient,
+  //       });
+
+  //       const userInfo = {
+  //         username: userInfo?.username,
+  //         token: response.data.responseData?.token,
+  //         expiredTime: response.data.responseData?.expiredTime,
+  //         account_id: response.data.responseData?.accountId,
+  //         email: response.data.responseData?.email,
+  //         phone: response.data.responseData?.phoneNumber,
+  //         name : response.data.responseData?.name
+  //       };
+  //       saveUserInfo(userInfo);
+  //       setTimeout(() => {
+  //         navigater('/');
+  //       }, 2000);
+  //     }
+  //   } catch (error: any) {
+  //     console.log('error', error);
+  //     toast.error('Error!', {
+  //       description: error.response.data.messageToClient,
+  //     });
+  //   }
+  //   setLoading(false);
+  // }
+
   const handleSubmitOTP = async () => {
     setLoading(true);
     try {
@@ -273,16 +317,23 @@ const Account = () => {
         },
       );
       if (response.status === 201) {
-        toast.success('Succesfully!', {
-          description: response.data.messageToClient,
-        });
+        if (modelState === ModelState.CHANGE_PASSWORD)
+          toast.success('Succesfully!', {
+            description: response.data.messageToClient,
+          });
+        else if (modelState === ModelState.ACCOUNT_INFO)
+        {
+          toast.success('Succesfully!', {
+            description: "Your information has been updated",
+          });
+        }
         const isCorrectOTP = response.data.responseData;
         if (isCorrectOTP) {
           setIsOTPModalOpen(false);
         }
       } else {
         toast.error('Error!', {
-          description: response.data.responseData
+          description: response.data.responseData,
         });
         setLoading(false);
         return;
@@ -292,10 +343,16 @@ const Account = () => {
         description: error.response.data.responseData,
       });
       setLoading(false);
+      setModelState(null);
       return;
     }
     setIsOTPModalOpen(false);
-    setIsChangePasswordModalOpen(true);
+    if (modelState === ModelState.CHANGE_PASSWORD) {
+      setIsChangePasswordModalOpen(true);
+    } else if (modelState === ModelState.ACCOUNT_INFO) {
+      handleChangeAccountInfo();
+    }
+    setModelState(null);
     setLoading(false);
   };
 
@@ -361,6 +418,9 @@ const Account = () => {
     if (isChangePasswordModalOpen) {
       setIsChangePasswordModalOpen(false);
     }
+    if (isOTPModalOpen) {
+      setIsOTPModalOpen(false);
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -387,6 +447,7 @@ const Account = () => {
 
   const handleOpenChangePasswordModel = () => {
     setIsEmailModalOpen(true);
+    setModelState(ModelState.CHANGE_PASSWORD);
   };
 
   const handleSelectOrderTracking = (status: OrderStatus) => {
@@ -426,9 +487,9 @@ const Account = () => {
             </h5>
             <div className='flex flex-col gap-[14px] mb-7'>
               <div className='flex items-center justify-between'>
-                <span className='text-[15px] min-w-[110px]'>Username:</span>
+                <span className='text-[15px] min-w-[110px]'>Name:</span>
                 <span className='text-[14px] font-[gilroy-light] min-w-[180px]'>
-                  {userInfo?.username}
+                  {userInfo?.name}
                 </span>
               </div>
               <div className='flex items-center justify-between'>
@@ -610,9 +671,10 @@ const Account = () => {
         <ChangeInformationModel
           handleCancel={handleCancel}
           handleUserInfoChange={handleUserInfoChange}
-          handleOk={handleOk}
+          handleOk={handleChangeAccountInfo}
           isAccountInfoModalOpen={isAccountInfoModalOpen}
           userInfo={userInfo}
+          loading={loading}
           userInfoState={userInfoState}
         ></ChangeInformationModel>
       </>

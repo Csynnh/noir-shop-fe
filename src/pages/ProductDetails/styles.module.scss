@@ -86,8 +86,8 @@
               gap: 8px;
             }
             &-item {
-              width: 20px;
-              height: 20px;
+              width: 24px;
+              height: 24px;
               border-radius: 50%;
               background-color: #333;
               &.--red {
@@ -134,15 +134,10 @@
               gap: 14px;
             }
             &-images {
-              max-width: 41.64vw;
+              max-height: 500px;
+              height: 100%;
               display: flex;
               gap: 30px;
-            }
-            &-image {
-              img {
-                max-width: 32.27vw;
-                height: auto;
-              }
             }
             &-media {
               display: flex;
@@ -150,7 +145,7 @@
               flex-direction: column;
               img {
                 max-width: 6.8vw;
-                height: auto;
+                height: 100%;
               }
             }
           }

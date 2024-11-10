@@ -3,73 +3,22 @@ import CardItem, { CardItemProps } from '@components/CardItem';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import ArrowLeft from '@components/Icons/ArrowLeft';
 import ArrowRight from '@components/Icons/ArrowRight';
-import card_image from '@images/card-item.png';
 
 interface CollectionProps {
   type: string;
+  products: CardItemProps[];
 }
 const enum Direction {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }
-const data: Array<CardItemProps> = [
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-  {
-    name: 'Opulence',
-    price: 120.0,
-    color: ['red', 'blue'],
-    img_url: card_image,
-  },
-];
 
-const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type }, ref) => {
+const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type, products }, ref) => {
   const maxVisibleItems = 4;
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(data?.length > maxVisibleItems);
+  const [canScrollRight, setCanScrollRight] = useState(products?.length > maxVisibleItems);
   const [scrolling, setScrolling] = useState(false);
-
   // Check scroll state when items or scroll position changes
   const checkScrollPosition = () => {
     if (scrollRef.current) {
@@ -88,7 +37,6 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type }, ref) =
         scrollRef.current.clientWidth / maxVisibleItems -
         (gapWidth * (maxVisibleItems - 1)) / maxVisibleItems;
       const scrollAmount = itemScrollWidth + gapWidth;
-      console.log('clientWidth', scrollAmount);
       scrollRef.current.scrollBy({
         left: direction === Direction.RIGHT ? scrollAmount : -scrollAmount - 0.1,
         behavior: 'smooth',
@@ -105,7 +53,7 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type }, ref) =
       scrollContainer.addEventListener('scroll', checkScrollPosition);
       return () => scrollContainer.removeEventListener('scroll', checkScrollPosition);
     }
-  }, [data]);
+  }, [products]);
 
   return (
     <div ref={ref} className={styles.Collection}>
@@ -126,7 +74,7 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type }, ref) =
           )}
 
           <div ref={scrollRef} className='collection-container'>
-            {data.map((item, index) => (
+            {products?.map((item, index) => (
               <div key={index} className='collection-item'>
                 <CardItem {...item}></CardItem>
               </div>

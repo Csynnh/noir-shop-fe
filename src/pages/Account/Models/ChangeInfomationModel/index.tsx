@@ -11,6 +11,7 @@ interface ChangeInformationModelProps {
   handleUserInfoChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   userInfoState: UserInfoState;
   userInfo: UserInfo | null;
+  loading: boolean;
 }
 
 const ChangeInformationModel = ({
@@ -19,7 +20,7 @@ const ChangeInformationModel = ({
   handleCancel,
   handleUserInfoChange,
   userInfoState,
-  userInfo,
+  loading,
 }: ChangeInformationModelProps) => {
   return (
     <>
@@ -29,10 +30,10 @@ const ChangeInformationModel = ({
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
-          <Button key='back' onClick={handleCancel} loading={false}>
+          <Button key='back' onClick={handleCancel} disabled={loading}>
             Cancle
           </Button>,
-          <Button key='submit' isPrimary loading={false} onClick={handleOk}>
+          <Button key='submit' isPrimary loading={loading} onClick={handleOk}>
             Save
           </Button>,
         ]}
@@ -40,10 +41,11 @@ const ChangeInformationModel = ({
         <Form className=''>
           <Form.Item>
             <Input
-              name='username'
-              label='Username'
+              name='name'
+              label='Name'
               onChange={handleUserInfoChange}
-              defaultValue={userInfoState.username}
+              defaultValue={userInfoState.name}
+              disabled={loading}
             ></Input>
           </Form.Item>
           <Form.Item>
@@ -52,15 +54,18 @@ const ChangeInformationModel = ({
               label='Email'
               type='email'
               onChange={handleUserInfoChange}
-              defaultValue={userInfo?.email}
+              defaultValue={userInfoState?.email}
+              disabled={loading}
             ></Input>
           </Form.Item>
           <Form.Item>
             <Input
-              name='password'
-              label='Password'
-              type='password'
+              name='phone'
+              label='Phone number'
+              type='phone'
+              defaultValue={userInfoState?.phone}
               onChange={handleUserInfoChange}
+              disabled={loading}
             ></Input>
           </Form.Item>
         </Form>

@@ -5,7 +5,7 @@ import GiftCard from '@pages/GiftCard';
 import Contact from '@pages/Contact/Contact';
 import About from '@pages/About/About';
 import Footer from '@components/Footer';
-import Item from '@pages/Item';
+import ProductDetails from '@pages/ProductDetails';
 import ScrollToTop from '@components/ScrollToTop';
 import PrivatePolicy from '@pages/Policy/PrivatePolicy';
 import ShippingPolicy from '@pages/Policy/ShippingPolicy';
@@ -28,7 +28,7 @@ function App() {
             <Route
               path='/admin/*'
               element={
-                <>
+                <div className='flex flex-col'>
                   <HeaderAdmin />
                   <Routes>
                     <Route path='/' element={<ManagementProduct />} />
@@ -38,30 +38,32 @@ function App() {
                     <Route path='/sign-up' element={<SignUp />} />
                   </Routes>
                   <FooterAdmin />
-                </>
+                </div>
               }
             />
             <Route
               path='/*'
               element={
-                <>
+                <div className='flex flex-col min-h-screen'>
                   <Header />
-                  <Routes>
-                    <Route path='/' element={<Home />} />
-                    <Route path='/gift-card' element={<GiftCard />} />
-                    <Route path='/contact' element={<Contact />} />
-                    <Route path='/about' element={<About />} />
-                    <Route path='/item/:item_id' element={<Item />} />
-                    <Route path='/private-policy' element={<PrivatePolicy />} />
-                    <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
-                    <Route path='/membership-policy' element={<MembershipPolicy />} />
-                    <Route path='/sign-in' element={<SignIn />} />
-                    <Route path='/sign-up' element={<SignUp />} />
-                    <Route path='/checkout' element={<Checkout />} />
-                    <Route path='/account' element={<Account />} />
-                  </Routes>
+                  <div className='flex-1'>
+                    <Routes>
+                      <Route path='/' element={<Home />} />
+                      <Route path='/gift-card' element={<GiftCard />} />
+                      <Route path='/contact' element={<Contact />} />
+                      <Route path='/about' element={<About />} />
+                      <Route path='/products/:name' element={<ProductDetails />} />
+                      <Route path='/private-policy' element={<PrivatePolicy />} />
+                      <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
+                      <Route path='/membership-policy' element={<MembershipPolicy />} />
+                      <Route path='/sign-in' element={<SignIn />} />
+                      <Route path='/sign-up' element={<SignUp />} />
+                      <Route path='/checkout' element={<Checkout />} />
+                      <Route path='/account' element={<Account />} />
+                    </Routes>
+                  </div>
                   <Footer />
-                </>
+                </div>
               }
             />
           </Routes>

@@ -3,6 +3,7 @@ import styles from './styles.module.scss';
 import { Link } from 'react-router-dom';
 
 export interface CardItemProps {
+  id: string;
   name: string;
   price: number;
   color: string[];
@@ -10,7 +11,7 @@ export interface CardItemProps {
 }
 // @ts-ignore
 const CardItem = (prop: CardItemProps) => {
-  const { name, price, color, img_url } = prop;
+  const { id, name, price, color, img_url } = prop;
   return (
     <div className={styles.Card}>
       <div className='card-wrapper'>
@@ -23,14 +24,16 @@ const CardItem = (prop: CardItemProps) => {
             <p className='card-price'>${price}</p>
             <ul className='card-color'>
               {color.map((item, index) => (
-                <li key={index} className={`card-color-item --${item}`}></li>
+                <li key={index} className={`card-color-item`} style={{
+                  backgroundColor: item,
+                }}></li>
               ))}
             </ul>
           </div>
           <div className='card-footer'>
             <span className='card-footer-title'>Shopping Now</span>
             <span className='card-footer-btn'>
-              <Link to='/item/14'>
+              <Link to={`/products/${name}`} state={{ id: id }}>
                 <Right></Right>
               </Link>
             </span>

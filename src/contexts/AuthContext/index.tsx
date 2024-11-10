@@ -8,6 +8,7 @@ interface AuthContextType {
 }
 
 export type UserInfo = {
+  name: string;
   username: string;
   token: string;
   account_id: string;

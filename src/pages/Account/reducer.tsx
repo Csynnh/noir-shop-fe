@@ -6,10 +6,10 @@ export interface FormShippingInfoState {
 }
 
 export interface UserInfoState {
-  username: string;
   email: string;
   phone: string;
   password: string;
+  name: string;
 }
 
 export interface EmailState {
@@ -34,7 +34,7 @@ export const initialEmailState: EmailState = {
 }
 
 export const initialUserInfoState: UserInfoState = {
-  username: '',
+  name: '',
   email: '',
   phone: '',
   password: '',

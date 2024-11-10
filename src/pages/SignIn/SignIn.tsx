@@ -68,6 +68,7 @@ const SignIn = () => {
           account_id: response.data.responseData?.accountId,
           email: response.data.responseData?.email,
           phone: response.data.responseData?.phoneNumber,
+          name : response.data.responseData?.name
         };
         saveUserInfo(userInfo);
         setTimeout(() => {
