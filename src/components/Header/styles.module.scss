@@ -5,12 +5,14 @@
   background-color: var(--background-color);
   :global {
     .header {
+
       &-wrapper {
         .header-top {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 35px;
+          margin-bottom: 20px; 
+
           .header-container {
             display: flex;
             align-items: center;

@@ -5,7 +5,7 @@ const GiftCard = () => {
     <div>
       <div className=''>
         <div className='mb-16 px-16 py-20 max-w-[48vw] w-full mx-auto text-center'>
-          <h1 className='text-5xl font-bold text-center leading-[1.5] mb-6'>Gift Card (4)</h1>
+          <h1 className='text-5xl font-bold text-center leading-[1.5] mb-6'>Gift Card</h1>
           <p className='font-[gilroy-light] text-[13px] leading-[1.5]'>
             Our Noir Gift Cards offer the ultimate flexibility. Whether your recipient is a fashion
             enthusiast or simply appreciates a thoughtful gift, they can choose the perfect handbag

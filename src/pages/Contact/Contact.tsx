@@ -90,36 +90,42 @@ const Contact = () => {
               <p>* All fields marked with a asterisk are requied</p>
             </div>
             <div className='Contact-infor'>
-              <Input name='name' label='Your Name' required></Input>
               <div className='Contact-select'>
-                <p>* Your Gender</p>
+                <Input name='name' label='Your Name' required></Input>
+                <div className='Contact-gender'>
+                  <p>* Your Gender</p>
+                  <Select
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={[
+                      { value: '1', label: 'Mr' },
+                      { value: '2', label: 'Ms' },
+                      { value: '3', label: 'Other' },
+                    ]}
+                  />
+                </div>
+              </div>
+              <div className='Contact-select'>
+                <Input name='phone' label='Your Phone' required></Input>
+              </div>
+            </div>
+            <div className='Contact-infor'>
+              <div className='Contact-type'>
+                <p>* What subject do you want to know ?</p>
                 <Select
                   showSearch
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
                   options={[
-                    { value: '1', label: 'Mr' },
-                    { value: '2', label: 'Ms' },
-                    { value: '3', label: 'Other' },
+                    { value: 'Collection', label: 'Collection' },
+                    { value: 'Bag', label: 'Bag' },
+                    { value: 'Jacket', label: 'Jacket' },
                   ]}
                 />
               </div>
-              <Input name='phone' label='Your Phone' required></Input>
-            </div>
-            <div className='Contact-infor'>
-              <p>* What subject do you want to know ?</p>
-              <Select
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                options={[
-                  { value: 'Collection', label: 'Collection' },
-                  { value: 'Bag', label: 'Bag' },
-                  { value: 'Jacket', label: 'Jacket' },
-                ]}
-              />
               <Input name='message' label='Your massage' required></Input>
             </div>
             <Button className='btn_submitContact' onClick={() => {}} isPrimary>

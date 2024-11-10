@@ -4,7 +4,29 @@
       &-wrapper {
         padding: 0 64px;
         margin-top: 14px;
+        span {
+          font-size: 13px;
+          letter-spacing: 0cm;
+        }
         .item {
+          &-size {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: center;
+          }
+          &-value {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0.5px solid var(--line-color);
+            &:hover {
+              background-color: var(--main-color);
+              color: white;
+            }
+          }
           &-name {
             font-family: 'gilroy-semibold';
             font-size: 20px;
@@ -17,17 +39,19 @@
           &-label,
           &-value {
             line-height: 1.21;
-            font-size: 14px;
+            font-size: 13px;
           }
           &-value {
             font-family: 'gilroy-light';
           }
           &-price {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
             &-total {
               font-family: 'gilroy-regular';
               font-size: 20px;
               line-height: 1.2;
-              margin-bottom: 20px;
             }
             &-tools {
               display: flex;
@@ -45,8 +69,7 @@
           &-inventory {
             line-height: 1.2;
             font-family: 'gilroy-light';
-            font-size: 14px;
-            margin-bottom: 24px;
+            font-size: 13px;
           }
           &-btns {
             display: flex;
@@ -89,17 +112,21 @@
           }
           &-detail {
             padding: 30px 48.5px;
-            border: 0.5px solid #837f83;
+            border: 0.5px solid var(--line-color);
             display: flex;
-            justify-content: space-between;
-            gap: 105px;
+            gap: 40px;
             margin-bottom: 20px;
             &-info {
-              max-width: 32.58vw;
-              width: 100%;
+              padding-top: 20px;
+              width: 60%;
               display: flex;
               justify-content: space-between;
               flex-direction: column;
+            }
+            &-bottom {
+              display: flex;
+              flex-direction: column;
+              gap: 30px;
             }
             &-top {
               display: flex;
@@ -129,7 +156,7 @@
           }
           &-more-info {
             padding: 35px 48.5px;
-            border: 0.5px solid #837f83;
+            border: 0.5px solid var(--line-color);
             display: flex;
             flex-direction: column;
             margin-bottom: 66px;
@@ -140,18 +167,19 @@
               line-height: 1.5;
             }
             &-desc {
+              font-size: 13px;
               font-family: 'gilroy-light';
               line-height: 2;
             }
             &-lable {
               font-family: 'gilroy';
-              font-size: 14px;
+              font-size: 13px;
               line-height: 1.5;
               margin-right: 8px;
             }
             &-value {
               font-family: 'gilroy-light';
-              font-size: 14px;
+              font-size: 13px;
               line-height: 1.5;
               &-list {
                 margin-top: 6px;
@@ -168,8 +196,7 @@
           }
           &-feedback {
             margin-bottom: 55.5px;
-            padding-bottom: 75.5px;
-            border-bottom: 0.5px solid #837f83;
+            padding-bottom: 40px;
             &-header {
               margin-bottom: 42px;
               font-size: 20px;
@@ -186,6 +213,8 @@
               display: flex;
               flex-direction: column;
               gap: 4px;
+              padding-bottom: 30px;
+              border-bottom: 0.5px solid var(--line-color);
             }
             &-author {
               line-height: 1.5;
@@ -208,9 +237,10 @@
             }
             &-date,
             &-desc {
-              font-size: 14px;
+              font-size: 13px;
               line-height: 2;
               font-family: 'gilroy-light-italic';
+              margin-bottom: 8px;
             }
             &-desc {
               font-family: 'gilroy-light';
