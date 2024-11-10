@@ -11,8 +11,22 @@ interface InputProps {
   maxWidth?: number;
   maxLen?: number;
   isExpire?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  defaultValue?: string;
+  disabled?: boolean;
 }
-const Input = ({ label, name, required, type, maxWidth, maxLen, isExpire }: InputProps) => {
+const Input = ({
+  label,
+  name,
+  required,
+  type,
+  maxWidth,
+  maxLen,
+  isExpire,
+  onChange,
+  defaultValue,
+  disabled
+}: InputProps) => {
   const typeValue = type || 'text';
   const inputRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -37,12 +51,15 @@ const Input = ({ label, name, required, type, maxWidth, maxLen, isExpire }: Inpu
         {required ? '*' : ''} {label}
       </label>
       <input
-        onChange={handleInputChange}
+        disabled={disabled}
+        onChange={onChange ? onChange : handleInputChange}
         ref={inputRef}
         type={typeValue}
         id={name}
         name={name}
         maxLength={maxLen && maxLen + (isExpire ? 1 : 0)}
+        defaultValue={defaultValue}
+        className={`${disabled ? 'opacity-30' : ''}`}
       />
       {typeValue === 'password' && (
         <span onClick={handleShowPassword} className='input-icon'>

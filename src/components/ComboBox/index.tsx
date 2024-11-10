@@ -22,7 +22,7 @@ export interface ComboBoxProps {
   setValue: React.Dispatch<React.SetStateAction<ComboBoxValueProps | null>>;
 }
 export const ComboBox = ({ data, value, setValue }: ComboBoxProps) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
