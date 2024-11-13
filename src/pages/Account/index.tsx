@@ -9,8 +9,8 @@ import Preparing from '@components/Icons/Preparing';
 import Returning from '@components/Icons/Returning';
 import Shipping from '@components/Icons/Shipping';
 import { ShippingInfo, ShippingResponse } from '@constant/Account';
-import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { useAuth } from '@contexts/AuthContext';
+import { API_BACKEND_ENDPOINT, JwtPayload, PASSWORD } from '@constant/Api';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
 import { snakeToCapitalCase } from '@lib/utils';
 import {
   AlertDialog,
@@ -33,6 +33,7 @@ import ChangePasswordModel from './Models/ChangePasswordModel';
 import ChangeShippingInfoModel from './Models/ChangeShippingInfoModel';
 import SenOTPModel from './Models/SendOTPModel';
 import SubmitOTPModel from './Models/SubmitOTPModel';
+import { jwtDecode } from 'jwt-decode';
 import {
   formPasswordReducer,
   formShippingInfoReducer,
@@ -88,7 +89,7 @@ const mockData = {
 
 const Account = () => {
   const navigate = useNavigate();
-  const { user: userInfo, removeToken } = useAuth();
+  const { user: userInfo, removeToken, saveUserInfo } = useAuth();
   const [userInfoState, dispatchUserInfo] = useReducer(formUserInfoReducer, initialUserInfoState);
   const [passwordState, dispatchPassword] = useReducer(formPasswordReducer, initialPasswordState);
   const [formShippingInfoState, dispatchShippingInfo] = useReducer(
@@ -265,40 +266,77 @@ const Account = () => {
     !isOTPModalOpen && setIsOTPModalOpen(true);
   };
 
-  // const handleRefetchAccountInfo = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/login`, {
-  //       username: userInfo?.username,
-  //       password: userInfo?.password,
-  //     });
-  //     if (response.status === 200) {
-  //       toast.success('Succesfully!', {
-  //         description: response.data.messageToClient,
-  //       });
+  const handleUpdateAccountInfo = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.put(
+        `${API_BACKEND_ENDPOINT}/api/auth/accounts/${userInfo?.account_id}`,
+        {
+          name: userInfoState.name,
+          email: userInfoState.email,
+          phone_number: userInfoState.phone,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo?.token}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        toast.success('Succesfully!', {
+          description: response.data.messageToClient,
+        });
+        const newUserInfo: UserInfo = {
+          username: userInfo?.username!,
+          token: userInfo?.token!,
+          expiredTime: userInfo?.expiredTime!,
+          account_id: userInfo?.account_id!,
+          email: userInfoState.email,
+          phone: userInfoState.phone,
+          name: userInfoState.name,
+        };
+        saveUserInfo(newUserInfo);
+      }
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: error.response.data.messageToClient,
+      });
+    }
+    setLoading(false);
+  }
 
-  //       const userInfo = {
-  //         username: userInfo?.username,
-  //         token: response.data.responseData?.token,
-  //         expiredTime: response.data.responseData?.expiredTime,
-  //         account_id: response.data.responseData?.accountId,
-  //         email: response.data.responseData?.email,
-  //         phone: response.data.responseData?.phoneNumber,
-  //         name : response.data.responseData?.name
-  //       };
-  //       saveUserInfo(userInfo);
-  //       setTimeout(() => {
-  //         navigater('/');
-  //       }, 2000);
-  //     }
-  //   } catch (error: any) {
-  //     console.log('error', error);
-  //     toast.error('Error!', {
-  //       description: error.response.data.messageToClient,
-  //     });
-  //   }
-  //   setLoading(false);
-  // }
+  const handleRefetchAccountInfo = async () => {
+    setLoading(true);
+    try {
+      const decoded = jwtDecode<JwtPayload>(userInfo?.token!);
+      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/login`, {
+        username: userInfo?.username,
+        password: decoded[PASSWORD],
+      });
+      if (response.status === 200) {
+        toast.success('Succesfully!', {
+          description: response.data.messageToClient,
+        });
+
+        const newUserInfo: UserInfo = {
+          username: userInfo?.username!,
+          token: response.data.responseData?.token,
+          expiredTime: response.data.responseData?.expiredTime,
+          account_id: response.data.responseData?.accountId,
+          email: response.data.responseData?.email,
+          phone: response.data.responseData?.phoneNumber,
+          name: response.data.responseData?.name,
+        };
+        saveUserInfo(newUserInfo);
+      }
+    } catch (error: any) {
+      console.log('error', error);
+      toast.error('Error!', {
+        description: error.response.data.messageToClient,
+      });
+    }
+    setLoading(false);
+  };
 
   const handleSubmitOTP = async () => {
     setLoading(true);
@@ -321,11 +359,8 @@ const Account = () => {
           toast.success('Succesfully!', {
             description: response.data.messageToClient,
           });
-        else if (modelState === ModelState.ACCOUNT_INFO)
-        {
-          toast.success('Succesfully!', {
-            description: "Your information has been updated",
-          });
+        else if (modelState === ModelState.ACCOUNT_INFO) {
+          await handleUpdateAccountInfo();
         }
         const isCorrectOTP = response.data.responseData;
         if (isCorrectOTP) {
@@ -349,8 +384,8 @@ const Account = () => {
     setIsOTPModalOpen(false);
     if (modelState === ModelState.CHANGE_PASSWORD) {
       setIsChangePasswordModalOpen(true);
-    } else if (modelState === ModelState.ACCOUNT_INFO) {
-      handleChangeAccountInfo();
+    }else {
+      setOtpValue('');
     }
     setModelState(null);
     setLoading(false);
