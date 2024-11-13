@@ -1,34 +1,40 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styles from './styles.module.scss';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
+import { CartItemData } from '@components/MyCartTab';
 interface CartItemProps {
-  // image: string;
+  id: string;
+  image: string;
   count: number;
   name: string;
-  price: string;
+  price: number;
   color: string;
+  onChange: Dispatch<SetStateAction<CartItemData[]>>;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ count, name, price, color }) => {
-  const [Count, setCount] = useState(count);
+const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, image, onChange }) => {
   const handleIncreseCount = () => {
-    setCount(Count + 1);
+    onChange((prevItems) =>
+      prevItems.map((item) => (item.id === id ? { ...item, count: item.count + 1 } : item)),
+    );
   };
   const handleDecreseCount = () => {
-    if (Count == 1) {
-      return;
-    }
-    setCount(Count - 1);
+    onChange((prevItems) => {
+      const updatedItems = prevItems.map((item) => {
+        if (item.id === id) {
+          return { ...item, count: count - 1 };
+        }
+        return item;
+      });
+      return updatedItems.filter((item) => item.count);
+    });
   };
 
   return (
     <div className={styles.CartItem}>
       <div className='CartItem-content'>
-        <img
-          src='https://images.unsplash.com/photo-1727619949691-f12d6ea1a8ed?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-          alt={name}
-        />
+        <img src={image} alt={name} />
         <div className='CartItem-info'>
           <p>{name}</p>
           <div className='CartItem-price'>
@@ -45,7 +51,7 @@ const CartItem: React.FC<CartItemProps> = ({ count, name, price, color }) => {
         <span onClick={handleDecreseCount}>
           <Minus></Minus>
         </span>
-        <p>{Count}</p>
+        <p>{count}</p>
         <span onClick={handleIncreseCount}>
           <Plus></Plus>
         </span>

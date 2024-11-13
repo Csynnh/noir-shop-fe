@@ -1,40 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import styles from './styles.module.scss';
-import EmptyCard from '@components/Icons/EmptyCard';
-import Right from '@components/Icons/Right';
 import Button from '@components/Button';
 import CartItem from '@components/CartItem';
+import EmptyCard from '@components/Icons/EmptyCard';
+import Right from '@components/Icons/Right';
+import SignInAlert from '@components/Icons/SignInAlert';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import styles from './styles.module.scss';
 
-interface CartItemData {
+export interface CartItemData {
+  id: string;
   name: string;
-  price: string;
+  price: number;
+  image: string;
   color: string;
   count: number;
 }
 
 interface myCartProp {
   isOpen: boolean;
+  isSignedIn: boolean;
+  onToggle: any;
   toggleCart: () => void;
+  account_id: any;
 }
-const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
+const MyCartTab: React.FC<myCartProp> = ({
+  isOpen,
+  isSignedIn,
+  onToggle,
+  toggleCart,
+  account_id,
+}) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
   const [subtotal] = useState(0);
-
-  const data = [
-    { name: 'Item 1', price: '$10', color: 'Red', count: 2 },
-    { name: 'Item 2', price: '$20', color: 'Blue', count: 1 },
-    { name: 'Item 3', price: '$15', color: 'Green', count: 3 },
-    { name: 'Item 4', price: '$25', color: 'Yellow', count: 1 },
-    { name: 'Item 5', price: '$25', color: 'Yellow', count: 1 },
-  ];
   const [isEmpty, setIsEmpty] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/carts/${account_id}`);
+        const data: CartItemData[] = response.data.responseData.map((item: any) => ({
+          id: item.id,
+          name: item.product_name,
+          color: item.product_color,
+          image: item.product_image,
+          price: item.product_price,
+          count: item.product_quantity,
+        }));
+        setCartItemList(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    if (account_id) {
+      fetchData();
+    }
+  }, [account_id]); // condition loop of useEffect'
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (cartItemList.length > 0) {
       setIsEmpty(false);
-      setCartItemList(data);
+    } else {
+      setIsEmpty(true);
     }
-  }, []);
+  }, [cartItemList]);
 
   return (
     <div className={`${styles.MyCart}`}>
@@ -45,11 +75,11 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
             <p>My card</p>
             <div className='MyCart-count'>
               <span>Summary</span>
-              <p> 0 </p>
+              <p>{cartItemList.reduce((sum, item) => sum + item.count, 0)}</p>
               <span>items</span>
             </div>
           </div>
-          {isEmpty && (
+          {isEmpty && isSignedIn && (
             <div className='MyCart-empty'>
               <EmptyCard></EmptyCard>
               <span>Your shopping cart is currently empty.</span>
@@ -59,22 +89,48 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
               </div>
             </div>
           )}
-          {!isEmpty && (
+          {!isSignedIn && (
+            <div className='MyCart-notSignIn'>
+              <SignInAlert></SignInAlert>
+              <span>You need to Sign In to see list cart.</span>
+              <div className='MyCart-notSignIn'>
+                <Link to='sign-in'>
+                  <Button
+                    isPrimary
+                    onClick={() => {
+                      onToggle(false);
+                    }}
+                  >
+                    Sign In Now
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+          {!isEmpty && isSignedIn && (
             <div className='MyCart-list'>
               <div className='MyCart-items'>
                 {cartItemList.map((item) => (
                   <CartItem
+                    id={item.id}
                     color={item.color}
                     name={item.name}
                     price={item.price}
                     count={item.count}
+                    image={item.image}
+                    onChange={setCartItemList}
                   />
                 ))}
               </div>
               <div className='MyCart-total'>
                 <div className='MyCart-subTotal'>
                   <p>Subtotal :</p>
-                  <p>${subtotal.toFixed(2)}</p>
+                  <p>
+                    $
+                    {cartItemList
+                      .reduce((sum, item) => sum + item.price * item.count, 0)
+                      .toFixed(2)}
+                  </p>
                 </div>
                 <div className='MyCart-subTotal'>
                   <p>Shipping: </p>
@@ -83,7 +139,12 @@ const MyCartTab: React.FC<myCartProp> = ({ isOpen, toggleCart }) => {
                 <hr />
                 <div className='MyCart-subTotal'>
                   <p className='total'>Total :</p>
-                  <p className='total'>$360.00</p>
+                  <p className='total'>
+                    $
+                    {cartItemList
+                      .reduce((sum, item) => sum + item.price * item.count, 0)
+                      .toFixed(2)}
+                  </p>
                 </div>
                 <Button className='btn_submitContact' onClick={() => {}} isPrimary>
                   Buy now
