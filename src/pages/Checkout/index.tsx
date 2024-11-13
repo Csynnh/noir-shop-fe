@@ -5,8 +5,26 @@ import DatePicker from '@components/DatePicker';
 import { useState } from 'react';
 import OderItem from '@components/OderItem';
 import Button from '@components/Button';
+import { useLocation } from 'react-router-dom';
+import { ProductDetailsType } from '@pages/ProductDetails';
+
+export interface ProductCheckoutType {
+  id?: string;
+  name?: string;
+  price?: number;
+  variants?: {
+    id?: string;
+    color?: string;
+    image?: string;
+    count?: number;
+  }[];
+}
 
 const Checkout = () => {
+  // ProductDetailsType | undefined
+  const location = useLocation();
+  const { products } = (location.state || {}) as { products: ProductCheckoutType[] | undefined };
+  console.log('product', products);
   const [summaryOder] = useState(10);
   const [subtotalOder] = useState(360);
   return (
@@ -73,8 +91,8 @@ const Checkout = () => {
             </div>
             <div className='checkout-oder-list flex-1'>
               <div className='checkout-oder-list-wrap w-full flex justify-center gap-6 flex-col pr-4 scrollable'>
-                {[...Array(10)].map((_, index) => (
-                  <OderItem key={index} />
+                {products?.map((product) => (
+                  <OderItem key={product.id} data={product}/>
                 ))}
               </div>
             </div>

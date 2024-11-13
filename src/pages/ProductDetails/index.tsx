@@ -1,18 +1,22 @@
+import Button from '@components/Button';
 import Collection from '@components/Collection';
-import styles from './styles.module.scss';
-import { useLocation, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
-import Button from '@components/Button';
 import Star from '@components/Icons/Star';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { useAuth } from '@contexts/AuthContext';
 import { CollectionType, ProductType, ProductVariantType } from '@pages/Home';
-import { toast } from 'sonner';
-import axios from 'axios';
 import { Toaster } from '@ui/sonner';
+import { Modal } from 'antd';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import styles from './styles.module.scss';
+import { ProductCheckoutType } from '@pages/Checkout';
 
 interface ProductVariantSelectedType {
+  id?: string;
   color: string;
   size: string;
   count: number;
@@ -28,6 +32,7 @@ interface SizeType {
 }
 
 interface VariantType {
+  id?: string;
   color: string;
   sizes: SizeType[];
   images: {
@@ -36,7 +41,7 @@ interface VariantType {
   };
 }
 
-interface ProductDetailsType {
+export interface ProductDetailsType {
   id?: string;
   name: string;
   description: string;
@@ -56,10 +61,14 @@ const ProductDetails = () => {
   const { name } = useParams();
   const location = useLocation();
   const { id } = location.state || {};
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [product, setProduct] = useState<ProductDetailsType>();
   const [collection, setCollection] = useState<CollectionType>();
+  const [isModelSignInOpen, setIsModelSignInOpen] = useState<boolean>(false);
   const [ProductVariantSelected, setProductVariantSelected] = useState<ProductVariantSelectedType>({
+    id: '',
     color: '',
     size: '',
     count: 1,
@@ -80,7 +89,6 @@ const ProductDetails = () => {
       const existingColor = result.find((entry) => entry.color === item.color);
 
       if (existingColor) {
-        // Add size to the existing color entry if it’s not already there
         if (
           !existingColor.sizes.includes({
             size: item.size,
@@ -93,7 +101,6 @@ const ProductDetails = () => {
           });
         }
       } else {
-        // Create a new entry if the color doesn’t exist
         result.push({
           color: item.color,
           images: item.images,
@@ -118,9 +125,9 @@ const ProductDetails = () => {
           variants: transformData(responseData.variants),
           details: responseData.details,
         };
-        console.log('responseData.variants', responseData.variants);
         setProduct(productData);
         setProductVariantSelected({
+          id: responseData.variants[0]?.id,
           color: responseData.variants[0].color,
           size: responseData.variants[0].size,
           count: 1,
@@ -169,13 +176,45 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
-    console.log('Buy now');
+    // pre-check user loged in
+    // if (!user) {
+    //   setIsModelSignInOpen(true);
+    //   return;
+    // }
+    const productCheckout: ProductCheckoutType = {
+      id,
+      name: product?.name,
+      price: product?.price,
+      variants: [
+        {
+          id: ProductVariantSelected?.id || '',
+          color: ProductVariantSelected.color,
+          image: ProductVariantSelected.images.imageThumbnail,
+          count: ProductVariantSelected.count,
+        },
+      ],
+    };
+    navigate('/checkout', {
+      state: {
+        products: [productCheckout],
+      },
+    });
   };
+
+  const handleRedirectToSignIn = () => {
+    navigate('/sign-in');
+    setIsModelSignInOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModelSignInOpen(false);
+  };
+
   return (
     <>
       {loading ? (
         <div className='min-h-40 flex items-center justify-center'>
-          <div className="w-10 h-10 rounded-full border-4 border-black border-r-white animate-spin"></div>
+          <div className='w-10 h-10 rounded-full border-4 border-black border-r-white animate-spin'></div>
         </div>
       ) : (
         <div className={styles.Item}>
@@ -198,6 +237,7 @@ const ProductDetails = () => {
                           onClick={() => {
                             setProductVariantSelected({
                               ...ProductVariantSelected,
+                              id: variant?.id,
                               color: variant.color,
                               size: variant.sizes[0].size,
                               images: {
@@ -227,6 +267,11 @@ const ProductDetails = () => {
                           onClick={() => {
                             setProductVariantSelected({
                               ...ProductVariantSelected,
+                              id: product?.variants?.find(
+                                (item: VariantType) =>
+                                  item.color === ProductVariantSelected.color &&
+                                  item.sizes.find((size) => size.size === variant.size),
+                              )?.id,
                               size: variant.size,
                             });
                           }}
@@ -506,21 +551,43 @@ const ProductDetails = () => {
             {collection?.type ? (
               <Collection
                 type={collection?.type || ''}
-                products={collection?.products.map((product: ProductType) => {
-                  return {
-                    id: product.id || '',
-                    name: product.name,
-                    price: product.price,
-                    color: product.variants?.map((variant) => variant.color) || [],
-                    img_url: product.variants[0].images.imageThumbnail,
-                  };
-                }) || []}
+                products={
+                  collection?.products.map((product: ProductType) => {
+                    return {
+                      id: product.id || '',
+                      name: product.name,
+                      price: product.price,
+                      color: product.variants?.map((variant) => variant.color) || [],
+                      img_url: product.variants[0].images.imageThumbnail,
+                    };
+                  }) || []
+                }
               ></Collection>
             ) : null}
           </div>
           <Toaster position='top-right' richColors />
         </div>
       )}
+      <>
+        <Modal
+          open={isModelSignInOpen}
+          onOk={handleRedirectToSignIn}
+          onCancel={handleCancel}
+          footer={[
+            <Button key='back' onClick={handleCancel} disabled={loading}>
+              Cancle
+            </Button>,
+            <Button key='submit' isPrimary loading={loading} onClick={handleRedirectToSignIn}>
+              Go to Sign In
+            </Button>,
+          ]}
+        >
+          <div className=''>
+            <h4 className='text-xl text-left mb-4'>Please sign in to continue</h4>
+            <p className='text-sm mb-5'>You need to sign in to continue the purchase process</p>
+          </div>
+        </Modal>
+      </>
     </>
   );
 };
