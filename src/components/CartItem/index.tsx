@@ -3,6 +3,8 @@ import styles from './styles.module.scss';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
 import { CartItemData } from '@components/MyCartTab';
+import axios from 'axios';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
 interface CartItemProps {
   id: string;
   image: string;
@@ -19,7 +21,7 @@ const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, imag
       prevItems.map((item) => (item.id === id ? { ...item, count: item.count + 1 } : item)),
     );
   };
-  const handleDecreseCount = () => {
+  const handleDecreseCount = async () => {
     onChange((prevItems) => {
       const updatedItems = prevItems.map((item) => {
         if (item.id === id) {
@@ -27,8 +29,12 @@ const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, imag
         }
         return item;
       });
+
+      // Update data
       return updatedItems.filter((item) => item.count);
     });
+    const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/carts/${id}/${count - 1}`);
+    console.log('response :>> ', response);
   };
 
   return (
