@@ -36,13 +36,16 @@ const Input = ({
       inputRef.current.type = showPassword ? 'password' : 'text';
     }
   };
-  const handleInputChange = () => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (inputRef?.current?.value && maxLen && isExpire) {
       let value = inputRef.current.value.replace(/\//g, '');
       if (value.length > 2) {
         value = value.slice(0, 2) + '/' + value.slice(2);
       }
       inputRef.current.value = value;
+    }
+    if (onChange) {
+      onChange(e);
     }
   };
   return (
@@ -52,7 +55,7 @@ const Input = ({
       </label>
       <input
         disabled={disabled}
-        onChange={onChange ? onChange : handleInputChange}
+        onChange={handleInputChange}
         ref={inputRef}
         type={typeValue}
         id={name}

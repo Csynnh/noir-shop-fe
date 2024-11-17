@@ -21,7 +21,7 @@ export interface PasswordState {
   confirmNewPassword: string;
 }
 
-type Action = { type: 'SET_FIELD'; field: string; value: any } | { type: 'RESET' };
+export type Action = { type: 'SET_FIELD'; field: string; value: any } | { type: 'RESET' };
 
 export const initialShippingInfoState: FormShippingInfoState = {
   address: '',
