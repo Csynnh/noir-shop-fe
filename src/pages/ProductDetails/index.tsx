@@ -337,7 +337,7 @@ const ProductDetails = () => {
                 </div>
               </div>
               <div className='item-detail-images'>
-                <div className='item-detai-image border-[0.5px] border-black'>
+                <div className='item-detai-image border-[0.5px] border-[#c9c5c9]'>
                   <img
                     src={ProductVariantSelected.images.imageThumbnail}
                     alt=''

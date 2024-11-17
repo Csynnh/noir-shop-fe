@@ -2,30 +2,36 @@ import { useState } from 'react';
 import styles from './styles.module.scss';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
-import { ProductCheckoutType } from '@pages/Checkout';
+import { ProductCheckoutType, ProductOperation } from '@pages/Checkout';
 interface OderItemProps {
   data?: ProductCheckoutType;
+  onChange?: (method: ProductOperation, id: string, variant_id: string, quality: number) => void;
+  variant?: {
+    id?: string;
+    color?: string;
+    image?: string;
+    count?: number;
+  };
 }
-const OderItem = ({ data }: OderItemProps) => {
-  console.log('data', data)
-  const [price] = useState(120);
-  const [count, setCount] = useState(2);
+const OderItem = ({ data, onChange, variant }: OderItemProps) => {
+  const [count, setCount] = useState(
+    data?.variants?.reduce((acc, item) => acc + item?.count!, 0) || 1,
+  );
   const handleIncrease = () => {
     setCount(count + 1);
+    onChange && onChange(ProductOperation.IN_CREASE, data?.id!, variant?.id!, count + 1);
   };
   const handleDecrease = () => {
     if (count > 1) {
       setCount(count - 1);
+      onChange && onChange(ProductOperation.DECREASE, data?.id!, variant?.id!, count - 1);
     }
   };
   return (
     <div className={styles.OderItem}>
       <div className='oder-item'>
         <div className='oder-item-image'>
-          <img
-            src={data?.variants?.[0].image}
-            alt='oder item'
-          />
+          <img src={data?.variants?.[0].image} alt='oder item' />
         </div>
         <div className='oder-item-info'>
           <div className='oder-item-name'>{data?.name}</div>
@@ -35,8 +41,11 @@ const OderItem = ({ data }: OderItemProps) => {
           <div className='oder-item-colors'>
             <p>Colors:</p>
             <div className='oder-item-color-list'>
-              <div className='oder-item-color --red'></div>
-              <div className='oder-item-color --blue'></div>
+              <div
+                key={variant?.id}
+                className='oder-item-color'
+                style={{ backgroundColor: variant?.color }}
+              ></div>
             </div>
           </div>
         </div>
