@@ -18,6 +18,7 @@ import HeaderAdmin from '@components/HeaderAdmin';
 import FooterAdmin from '@components/FooterAdmin';
 import ManagementProduct from '@pages/ManagementProduct';
 import ManagementOder from '@pages/ManagementOder';
+import SearchingResult from '@pages/SearchingResult';
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
                       <Route path='/sign-up' element={<SignUp />} />
                       <Route path='/checkout' element={<Checkout />} />
                       <Route path='/account' element={<Account />} />
+                      <Route path='/search/:name' element={<SearchingResult />} />
                     </Routes>
                   </div>
                   <Footer />
