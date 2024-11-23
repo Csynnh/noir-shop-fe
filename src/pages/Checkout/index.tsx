@@ -16,13 +16,15 @@ import {
   SelectValue,
 } from '@ui/select';
 import { Toaster } from '@ui/sonner';
-import { Form, Modal, Radio, Space } from 'antd';
+import { Form, Modal, Radio, RadioChangeEvent, Space } from 'antd';
 import axios from 'axios';
 import { useEffect, useReducer, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
+  FormCheckoutError,
   formCheckoutReducer,
+  FormCheckoutValues,
   initialCheckoutState,
   PaymentMethodType,
   ShippingMethodType,
@@ -98,7 +100,7 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    dispatchCheckout({ type: 'SET_FIELD', field: 'products', value: products });
+    dispatchCheckout({ type: 'UPDATE_FIELD', field: 'products', value: products });
   }, []);
 
   useEffect(() => {
@@ -109,41 +111,37 @@ const Checkout = () => {
     const shippingInfo = shippingInfoData?.find((item) => item.id === value);
     if (shippingInfo) {
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'name',
         value: shippingInfo.name,
       });
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'phone',
         value: shippingInfo.phone,
       });
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'address',
         value: shippingInfo.address,
       });
     } else {
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'name',
         value: '',
       });
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'phone',
         value: '',
       });
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'address',
         value: '',
       });
     }
-  };
-
-  const handleCheckoutChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    dispatchCheckout({ type: 'SET_FIELD', field: e.target.name, value: e.target.value });
   };
 
   const handleProductChange = (
@@ -163,7 +161,7 @@ const Checkout = () => {
       }
       setSubTotoal(summary);
       dispatchCheckout({
-        type: 'SET_FIELD',
+        type: 'UPDATE_FIELD',
         field: 'products',
         value: products?.map((item) => {
           if (item.id === prod_id) {
@@ -188,6 +186,34 @@ const Checkout = () => {
 
   const handleCreateOder = async () => {
     setLoading(true);
+    // Validate the entire form
+    const errors: Partial<FormCheckoutError> = {};
+    let isValid = true;
+
+    for (const [field, value] of Object.entries(checkoutState.values)) {
+      const error = validateField(field as keyof FormCheckoutValues, value.toString());
+      if (error) {
+        isValid = false;
+        errors[field as keyof FormCheckoutError] = error;
+      }
+    }
+
+    // Update errors in state
+    for (const [field, error] of Object.entries(errors)) {
+      dispatchCheckout({
+        type: 'VALIDATE_FIELD',
+        field: field as keyof FormCheckoutError,
+        error,
+      });
+    }
+
+    dispatchCheckout({ type: 'SET_IS_VALID', isValid });
+
+    if (isValid) {
+      console.log('Form submitted:', checkoutState.values);
+    } else {
+      console.log('Form has errors:', checkoutState.errors);
+    }
     // try {
     //   const response = await axios.post(
     //     `${API_BACKEND_ENDPOINT}/api/order`,
@@ -221,11 +247,87 @@ const Checkout = () => {
     // }
     setLoading(false);
     setIsConfirmModalOpen(false);
-  }
+  };
 
   const handleCancel = () => {
     setIsConfirmModalOpen(false);
-  }
+  };
+
+  // Handle field change
+  const handleCheckoutChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | RadioChangeEvent,
+  ) => {
+    const { name, value } = e.target;
+
+    // reset error if payment method change
+    if (name === 'paymentMethod') {
+      const paymentValues = ['cardName', 'cardNumber', 'cardExpired', 'cardCvv'];
+      paymentValues.forEach((field) => {
+        dispatchCheckout({
+          type: 'VALIDATE_FIELD',
+          field: field as keyof FormCheckoutError,
+          error: '',
+        });
+      });
+    }
+
+    // Update field value
+    dispatchCheckout({ type: 'UPDATE_FIELD', field: name as keyof FormCheckoutValues, value });
+
+    // Validate field
+    const error = validateField(name as keyof FormCheckoutValues, value);
+    dispatchCheckout({ type: 'VALIDATE_FIELD', field: name as keyof FormCheckoutError, error });
+  };
+
+  const validateField = (field: keyof FormCheckoutError, value: string): string => {
+    switch (field) {
+      case 'name':
+        return value ? '' : 'Name is required';
+      case 'phone':
+        return value ? '' : 'Phone is required';
+      case 'address':
+        return value ? '' : 'Address is required';
+      case 'paymentMethod':
+        return value ? '' : 'Payment Method is required';
+      case 'cardName':
+        return value ? '' : 'Cardholder Name is required';
+      case 'cardNumber':
+        return value ? '' : 'Card Number is required';
+      case 'cardExpired':
+        console.log('value', value)
+        return value ? '' : 'Expiration Date is required';
+      case 'cardCvv':
+        return value ? '' : 'CVV/CVC is required';
+      default:
+        return '';
+    }
+  };
+
+  const handleValidateForm = () => {
+    const errors: Partial<FormCheckoutError> = {};
+    let isValid = true;
+
+    for (const [field, value] of Object.entries(checkoutState.values)) {
+      const error = validateField(field as keyof FormCheckoutValues, value.toString());
+      if (error) {
+        isValid = false;
+        errors[field as keyof FormCheckoutError] = error;
+      }
+    }
+
+    // Update errors in state
+    for (const [field, error] of Object.entries(errors)) {
+      dispatchCheckout({
+        type: 'VALIDATE_FIELD',
+        field: field as keyof FormCheckoutError,
+        error,
+      });
+    }
+
+    dispatchCheckout({ type: 'SET_IS_VALID', isValid });
+
+    return isValid;
+  };
 
   return (
     <div className={styles.Checkout}>
@@ -282,8 +384,8 @@ const Checkout = () => {
                   label='Your Name'
                   required
                   onChange={handleCheckoutChange}
-                  defaultValue={checkoutState.name}
-                  disabled={!!checkoutState.name}
+                  error={checkoutState.errors.name}
+                  defaultValue={checkoutState.values.name}
                 ></Input>
               </Form.Item>
               <Form.Item>
@@ -293,8 +395,8 @@ const Checkout = () => {
                   required
                   type='nunber'
                   onChange={handleCheckoutChange}
-                  defaultValue={checkoutState.phone}
-                  disabled={!!checkoutState.phone}
+                  error={checkoutState.errors.phone}
+                  defaultValue={checkoutState.values.phone}
                 ></Input>
               </Form.Item>
               <Form.Item>
@@ -303,8 +405,8 @@ const Checkout = () => {
                   label='Your Address'
                   required
                   onChange={handleCheckoutChange}
-                  defaultValue={checkoutState.address}
-                  disabled={!!checkoutState.address}
+                  error={checkoutState.errors.address}
+                  defaultValue={checkoutState.values.address}
                 ></Input>
               </Form.Item>
               <h5 className='checkout-container-header --mb20'>Shipping Method</h5>
@@ -313,12 +415,12 @@ const Checkout = () => {
                   name='shippingMethod'
                   onChange={(e) => {
                     dispatchCheckout({
-                      type: 'SET_FIELD',
-                      field: e.target.name!,
+                      type: 'UPDATE_FIELD',
+                      field: e.target.name! as keyof FormCheckoutValues,
                       value: e.target.value,
                     });
                   }}
-                  value={checkoutState.shippingMethod}
+                  value={checkoutState.values.shippingMethod}
                 >
                   <Space direction='vertical'>
                     {Object.entries(ShippingMethodType).map(([value, label]) => (
@@ -372,17 +474,8 @@ const Checkout = () => {
               <Form.Item className='mb-24'>
                 <Radio.Group
                   name='paymentMethod'
-                  onChange={(e) => {
-                    dispatchCheckout({
-                      type: 'SET_FIELD',
-                      field: e.target.name!,
-                      value: {
-                        method: e.target.value,
-                        values: JSON.stringify({}),
-                      },
-                    });
-                  }}
-                  value={checkoutState.paymentMethod.method}
+                  onChange={handleCheckoutChange}
+                  value={checkoutState.values.paymentMethod}
                 >
                   <Space direction='vertical'>
                     {Object.entries(PaymentMethodType).map(([value, label]) => (
@@ -394,31 +487,18 @@ const Checkout = () => {
                 </Radio.Group>
               </Form.Item>
               <div className=''>
-                {checkoutState.paymentMethod.method === PaymentMethodType.CREDIT_CARD ? (
+                {checkoutState.values.paymentMethod === PaymentMethodType.CREDIT_CARD ? (
                   <>
                     <h5 className='checkout-container-header --mb0'>Credit Card Required Fields</h5>
                     <Form.Item className='mb-0'>
                       <div className=' flex items-end gap-[20px] w-full justify-between'>
                         <span className=''>Cardholder Name:</span>
                         <Input
-                          name='card-holder-name'
+                          name='cardName'
                           maxWidth={220}
-                          onChange={(e) => {
-                            dispatchCheckout({
-                              type: 'SET_FIELD',
-                              field: 'paymentMethod',
-                              value: {
-                                method: checkoutState.paymentMethod.method,
-                                values: JSON.stringify({
-                                  ...JSON.parse(checkoutState.paymentMethod.values),
-                                  [e.target.name!]: e.target.value,
-                                }),
-                              },
-                            });
-                          }}
-                          defaultValue={
-                            JSON.parse(checkoutState.paymentMethod.values)['card-holder-name']
-                          }
+                          error={checkoutState.errors.cardName}
+                          onChange={handleCheckoutChange}
+                          defaultValue={checkoutState.values.cardName}
                         ></Input>
                       </div>
                     </Form.Item>
@@ -426,24 +506,11 @@ const Checkout = () => {
                       <div className=' flex items-end gap-[20px] w-full justify-between'>
                         <span className=''>Card number:</span>
                         <Input
-                          name='card-holder-number'
+                          name='cardNumber'
                           maxWidth={220}
-                          onChange={(e) => {
-                            dispatchCheckout({
-                              type: 'SET_FIELD',
-                              field: 'paymentMethod',
-                              value: {
-                                method: checkoutState.paymentMethod.method,
-                                values: JSON.stringify({
-                                  ...JSON.parse(checkoutState.paymentMethod.values),
-                                  [e.target.name!]: e.target.value,
-                                }),
-                              },
-                            });
-                          }}
-                          defaultValue={
-                            JSON.parse(checkoutState.paymentMethod.values)['card-holder-number']
-                          }
+                          onChange={handleCheckoutChange}
+                          error={checkoutState.errors.cardNumber}
+                          defaultValue={checkoutState.values.cardNumber}
                         ></Input>
                       </div>
                     </Form.Item>
@@ -451,26 +518,13 @@ const Checkout = () => {
                       <div className=' flex items-end gap-[20px] w-full justify-between'>
                         <span className=''>Expiration Date(MM/DD):</span>
                         <Input
-                          name='card-holder-expire'
+                          name='cardExpired'
                           maxWidth={220}
                           maxLen={4}
                           isExpire
-                          onChange={(e) => {
-                            dispatchCheckout({
-                              type: 'SET_FIELD',
-                              field: 'paymentMethod',
-                              value: {
-                                method: checkoutState.paymentMethod.method,
-                                values: JSON.stringify({
-                                  ...JSON.parse(checkoutState.paymentMethod.values),
-                                  [e.target.name!]: e.target.value,
-                                }),
-                              },
-                            });
-                          }}
-                          defaultValue={
-                            JSON.parse(checkoutState.paymentMethod.values)['card-holder-expire']
-                          }
+                          onChange={handleCheckoutChange}
+                          error={checkoutState.errors.cardExpired}
+                          defaultValue={checkoutState.values.cardExpired}
                         ></Input>
                       </div>
                     </Form.Item>
@@ -478,35 +532,25 @@ const Checkout = () => {
                       <div className=' flex items-end gap-[20px] w-full justify-between'>
                         <span className=''>CVV/CVC:</span>
                         <Input
-                          name='card-holder-cvv'
+                          name='cardCvv'
+                          error={checkoutState.errors.cardCvv}
                           maxWidth={220}
                           maxLen={3}
-                          onChange={(e) => {
-                            dispatchCheckout({
-                              type: 'SET_FIELD',
-                              field: 'paymentMethod',
-                              value: {
-                                method: checkoutState.paymentMethod.method,
-                                values: JSON.stringify({
-                                  ...JSON.parse(checkoutState.paymentMethod.values),
-                                  [e.target.name!]: e.target.value,
-                                }),
-                              },
-                            });
-                          }}
-                          defaultValue={
-                            JSON.parse(checkoutState.paymentMethod.values)['card-holder-cvv']
-                          }
+                          onChange={handleCheckoutChange}
+                          defaultValue={checkoutState.values.cardCvv}
                         ></Input>
                       </div>
                     </Form.Item>
                   </>
-                ) : // : checkoutState.paymentMethod.method === PaymentMethodType.BANK_TRANSFER ? (
-                //   <div className="w-[60%] mx-auto">
-                //     <img src="https://noirstorage.blob.core.windows.net/images/IMG_7005.jpg" alt="" className="" />
-                //   </div>
-                // )
-                null}
+                ) : checkoutState.values.paymentMethod === PaymentMethodType.BANK_TRANSFER ? (
+                  <div className='w-[60%] mx-auto'>
+                    <img
+                      src='https://noirstorage.blob.core.windows.net/images/IMG_7005.jpg'
+                      alt=''
+                      className=''
+                    />
+                  </div>
+                ) : null}
               </div>
             </Form>
             <div className='checkout-oder-bottom flex flex-col w-full !border-t-[0px] mt-auto'>
@@ -524,7 +568,13 @@ const Checkout = () => {
                   ${subtotalOder?.toFixed(2)}
                 </div>
               </div>
-              <Button onClick={() => setIsConfirmModalOpen(true)} isPrimary>
+              <Button
+                onClick={() => {
+                  const isValid = handleValidateForm();
+                  if (isValid) setIsConfirmModalOpen(true);
+                }}
+                isPrimary
+              >
                 Buy Now
               </Button>
             </div>
@@ -545,7 +595,9 @@ const Checkout = () => {
               </Button>,
             ]}
           >
-            <div className='mb-10 italic'>Please confirm your information before proceeding with the order</div>
+            <div className='mb-10 italic'>
+              Please confirm your information before proceeding with the order
+            </div>
           </Modal>
         </>
         <Toaster position='top-right' richColors />

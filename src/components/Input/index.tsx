@@ -14,6 +14,7 @@ interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   defaultValue?: string;
   disabled?: boolean;
+  error?: string;
 }
 const Input = ({
   label,
@@ -25,7 +26,8 @@ const Input = ({
   isExpire,
   onChange,
   defaultValue,
-  disabled
+  disabled,
+  error,
 }: InputProps) => {
   const typeValue = type || 'text';
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +52,7 @@ const Input = ({
   };
   return (
     <div className={styles.Input} style={{ maxWidth: maxWidth }}>
-      <label htmlFor={name}>
+      <label htmlFor={name} className={`${error ? 'text-red-400': ''}`}>
         {required ? '*' : ''} {label}
       </label>
       <input
@@ -62,7 +64,8 @@ const Input = ({
         name={name}
         maxLength={maxLen && maxLen + (isExpire ? 1 : 0)}
         defaultValue={defaultValue}
-        className={`${disabled ? 'opacity-30' : ''}`}
+        placeholder={error}
+        className={`${disabled ? 'opacity-30' : ''} ${error ? 'text-red-600 !font-[gilroy-light-italic] !italic !border-red-500' : ''} placeholder:text-red-600`}
       />
       {typeValue === 'password' && (
         <span onClick={handleShowPassword} className='input-icon'>
