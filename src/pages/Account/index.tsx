@@ -303,7 +303,7 @@ const Account = () => {
       });
     }
     setLoading(false);
-  }
+  };
 
   const handleRefetchAccountInfo = async () => {
     setLoading(true);
@@ -384,7 +384,7 @@ const Account = () => {
     setIsOTPModalOpen(false);
     if (modelState === ModelState.CHANGE_PASSWORD) {
       setIsChangePasswordModalOpen(true);
-    }else {
+    } else {
       setOtpValue('');
     }
     setModelState(null);

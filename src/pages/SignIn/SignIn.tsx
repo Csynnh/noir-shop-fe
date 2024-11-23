@@ -13,6 +13,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './SignIn.module.scss';
 import { toast } from 'sonner';
 import { Toaster } from '@ui/sonner';
+import ChangePasswordModel from '@pages/Account/Models/ChangePasswordModel';
+import SenOTPModel from '@pages/Account/Models/SendOTPModel';
+import SubmitOTPModel from '@pages/Account/Models/SubmitOTPModel';
+import { formPasswordReducer, initialPasswordState } from '@pages/Account/reducer';
+import { ModelState } from '@pages/Account';
 
 interface FormState {
   username: string;
@@ -48,6 +53,13 @@ const SignIn = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     dispatch({ type: 'SET_FIELD', field: e.target.name, value: e.target.value });
   };
+  const [openTypeEmailModel, setOpenTypeEmailModel] = useState(false);
+  const [openSubmitOTP, setOpenSubmitOTP] = useState(false);
+  const [openChangePass, setOpenChangePass] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [OTPSubmited, setOTPSubmited] = useState('');
+  const [passwordState, dispatchPassword] = useReducer(formPasswordReducer, initialPasswordState);
+  const [modelState, setModelState] = useState<ModelState | null>(null);
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -68,7 +80,7 @@ const SignIn = () => {
           account_id: response.data.responseData?.accountId,
           email: response.data.responseData?.email,
           phone: response.data.responseData?.phoneNumber,
-          name : response.data.responseData?.name
+          name: response.data.responseData?.name,
         };
         saveUserInfo(userInfo);
         setTimeout(() => {
@@ -84,6 +96,116 @@ const SignIn = () => {
     setLoading(false);
   };
 
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserEmail(event.target.value);
+  };
+
+  const handleSendOTP = async () => {
+    setLoading(true);
+    try {
+      const email = userEmail;
+      console.log('email :>> ', email);
+      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/request-otp/`, {
+        email: email,
+      });
+      if (response.status === 201) {
+        toast.success('Succesfully!', {
+          description: response.data.messageToClient,
+        });
+      }
+      setOpenSubmitOTP(true);
+      setOpenTypeEmailModel(false);
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: error.response.data.responseData,
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    await handleSendOTP();
+    OTPSubmited && setOTPSubmited('');
+    setLoading(false);
+  };
+
+  const handleChangePassword = async () => {
+    const isMatchPassword = passwordState.newPassword === passwordState.confirmNewPassword;
+    if (!isMatchPassword) {
+      toast.error('Error!', {
+        description: 'Password does not match',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const email = userEmail;
+      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/change-password`, {
+        email: email,
+        newPassword: passwordState.newPassword,
+        otp: OTPSubmited,
+      });
+      if (response.status === 201) {
+        toast.success('Succesfully!', {
+          description: response.data.messageToClient,
+        });
+      } else {
+        toast.error('Error!', {
+          description: response.data.messageToClient,
+        });
+        setLoading(false);
+
+        return;
+      }
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: error.response.data.messageToClient,
+      });
+    }
+    setOTPSubmited('');
+    setLoading(false);
+    setOpenChangePass(false);
+  };
+
+  const handleSubmitOTP = async () => {
+    setLoading(true);
+    try {
+      const email = userEmail;
+      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/confirm-otp`, {
+        email: email,
+        otp: OTPSubmited,
+      });
+      if (response.status === 201) {
+        const isCorrectOTP = response.data.responseData;
+        if (isCorrectOTP) {
+          setOpenSubmitOTP(false);
+        }
+      } else {
+        toast.error('Error!', {
+          description: response.data.responseData,
+        });
+        setLoading(false);
+        return;
+      }
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: error.response.data.responseData,
+      });
+      setLoading(false);
+      setModelState(null);
+      return;
+    }
+    setOpenSubmitOTP(false);
+    if (modelState === ModelState.CHANGE_PASSWORD) {
+      setOpenChangePass(true);
+    } else {
+      setOTPSubmited('');
+    }
+    setModelState(null);
+    setLoading(false);
+  };
   return (
     <>
       <div className={styles.SignIn}>
@@ -110,7 +232,13 @@ const SignIn = () => {
                 <div className='SignIn-remember-forgot-pass'>
                   <Checkbox name='remember-me' label='Remember Me' />
                   <div className='SignIn-forgot'>
-                    <Link to={'/forgot-password'}>Forgot password</Link>
+                    <span
+                      onClick={() => {
+                        setOpenTypeEmailModel(true);
+                      }}
+                    >
+                      Forgot password
+                    </span>
                   </div>
                 </div>
               </Form>
@@ -147,6 +275,52 @@ const SignIn = () => {
           </div>
         </div>
       </div>
+
+      <SubmitOTPModel
+        handleCancel={() => {
+          setOpenSubmitOTP(false);
+        }}
+        handleResendOtp={handleResendOtp}
+        handleSubmitOTP={() => {
+          setOpenChangePass(true);
+          setOpenSubmitOTP(false);
+        }}
+        isOTPModalOpen={openSubmitOTP}
+        loading={loading}
+        otpValue={OTPSubmited}
+        setOtpValue={setOTPSubmited}
+        userInfo={{}}
+      ></SubmitOTPModel>
+
+      <SenOTPModel
+        handleCancel={() => {
+          setOpenTypeEmailModel(false);
+        }}
+        handleSendOTP={() => {
+          handleSendOTP();
+        }}
+        isEmailModalOpen={openTypeEmailModel}
+        loading={loading}
+        title='Type your Email to reset your password'
+        handleOnChange={handleOnChange}
+      ></SenOTPModel>
+
+      <ChangePasswordModel
+        handleCancel={() => {
+          setOpenChangePass(false);
+        }}
+        handleChangePassword={handleChangePassword}
+        handlePasswordStateChange={(e) =>
+          dispatchPassword({
+            type: 'SET_FIELD',
+            field: e.target.name,
+            value: e.target.value,
+          })
+        }
+        isChangePasswordModalOpen={openChangePass}
+        loading={loading}
+      ></ChangePasswordModel>
+
       <Toaster position='top-right' richColors />
     </>
   );

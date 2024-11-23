@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 enum Routes {
   ManageProduct = '',
   ManageOder = 'manage-oder',
-  AnalyzeRevenue = 'analyze-revenue',
+  AnalyzeRevenue = 'analyze',
 }
 
 const HeaderAdmin = () => {

@@ -19,6 +19,7 @@ import FooterAdmin from '@components/FooterAdmin';
 import ManagementProduct from '@pages/ManagementProduct';
 import ManagementOder from '@pages/ManagementOder';
 import SearchingResult from '@pages/SearchingResult';
+import AnalyzeRevenue from '@pages/Analyze';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
                     <Route path='/analyze-revenue' element={<ManagementProduct />} />
                     <Route path='/sign-in' element={<SignIn />} />
                     <Route path='/sign-up' element={<SignUp />} />
+                    <Route path='/analyze' element={<AnalyzeRevenue />} />
                   </Routes>
                   <FooterAdmin />
                 </div>

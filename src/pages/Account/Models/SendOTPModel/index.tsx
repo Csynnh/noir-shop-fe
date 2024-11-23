@@ -6,21 +6,25 @@ interface SendOTPModelProps {
   isEmailModalOpen: boolean;
   handleSendOTP: () => void;
   handleCancel: () => void;
+  handleOnChange?: any;
   loading: boolean;
-  userInfo: any;
+  userInfo?: any;
+  title?: string;
 }
 
 const SenOTPModel = ({
   isEmailModalOpen,
   handleSendOTP,
   handleCancel,
+  handleOnChange,
   loading,
   userInfo,
+  title,
 }: SendOTPModelProps) => {
   return (
     <>
       <Modal
-        title='Change Password'
+        title={title ? title : 'Change Password'}
         open={isEmailModalOpen}
         onOk={handleSendOTP}
         onCancel={handleCancel}
@@ -40,7 +44,8 @@ const SenOTPModel = ({
               label='Email'
               type='email'
               defaultValue={userInfo?.email}
-              disabled
+              disabled={!!!handleOnChange}
+              onChange={handleOnChange}
             ></Input>
           </Form.Item>
         </Form>
