@@ -383,7 +383,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               </div>
               <div className='h-[242px] mb-8'>
                 <div className='checkout-oder-list-wrap w-full flex gap-6 flex-col pr-4 overflow-y-auto h-full'>
-                  {selectedOder.details?.map((_, index) => <OderItem key={index} />)}
+                  {selectedOder.details?.map((order, index) => <OderItem key={index} variant={order} />)}
                 </div>
               </div>
               <div className='pt-3 border-t-[0.5px] border-t-[#837F83] flex items-center justify-between'>

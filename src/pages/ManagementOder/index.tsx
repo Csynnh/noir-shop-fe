@@ -86,7 +86,7 @@ const ManagementOder = () => {
       },);
       console.log('Orders API Response:', response.data); // Log dữ liệu API
       if (response.status === 200) {
-        const mappedOrders = response.data.responseData.map((item: any) => ({
+        const mappedOrders : Order[] = response.data.responseData.map((item: any) => ({
           id: item.id,
           customer: {
             name: item.user_info.name,
@@ -115,9 +115,11 @@ const ManagementOder = () => {
   };
 
   useEffect(() => {
-    fetchOrderStatus();
-    fetchOrdersByStatus(OderType.ALL);
-  }, []);
+    if (user){
+      fetchOrderStatus();
+      fetchOrdersByStatus(OderType.ALL);
+    }
+  }, [user]);
 
   const handleTabChange = (value: string) => {
     const status = value as OderType;

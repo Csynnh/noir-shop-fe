@@ -14,6 +14,7 @@ interface OderItemProps {
   };
 }
 const OderItem = ({ data, onChange, variant }: OderItemProps) => {
+  console.log(data);
   const [count, setCount] = useState(
     data?.variants?.reduce((acc, item) => acc + item?.count!, 0) || 1,
   );
