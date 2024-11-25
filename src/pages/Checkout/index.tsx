@@ -19,7 +19,7 @@ import { Toaster } from '@ui/sonner';
 import { Form, Modal, Radio, RadioChangeEvent, Space } from 'antd';
 import axios from 'axios';
 import { useEffect, useReducer, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   FormCheckoutError,
@@ -51,6 +51,7 @@ export enum ProductOperation {
 const Checkout = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const navigator = useNavigate();
   const { products } = (location.state || {}) as { products: ProductCheckoutType[] | undefined };
   const [checkoutState, dispatchCheckout] = useReducer(formCheckoutReducer, initialCheckoutState);
   const [shippingInfoData, setShippingInfoData] = useState<ShippingInfo[]>([]);
@@ -186,65 +187,46 @@ const Checkout = () => {
 
   const handleCreateOder = async () => {
     setLoading(true);
-    // Validate the entire form
-    const errors: Partial<FormCheckoutError> = {};
-    let isValid = true;
-
-    for (const [field, value] of Object.entries(checkoutState.values)) {
-      const error = validateField(field as keyof FormCheckoutValues, value.toString());
-      if (error) {
-        isValid = false;
-        errors[field as keyof FormCheckoutError] = error;
+    try {
+      const response = await axios.post(
+        `${API_BACKEND_ENDPOINT}/api/oder`,
+        {
+          account_id: user?.account_id,
+          shipping_info: {
+            name: checkoutState.values.name,
+            phone: checkoutState.values.phone,
+            address: checkoutState.values.address,
+          },
+          shipping_method: checkoutState.values.shippingMethod,
+          payment_method: checkoutState.values.paymentMethod,
+          products: checkoutState.values.products,
+          userInfo: {
+            address: checkoutState.values.address,
+            name: checkoutState.values.name,
+            phone: checkoutState.values.phone,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.status === 201) {
+        toast.success('Success!', {
+          description: 'Order created successfully',
+        });
+        dispatchCheckout({ type: 'RESET' });
+        setTimeout(() => {
+          navigator('/');
+        }
+        , 2000);
       }
-    }
-
-    // Update errors in state
-    for (const [field, error] of Object.entries(errors)) {
-      dispatchCheckout({
-        type: 'VALIDATE_FIELD',
-        field: field as keyof FormCheckoutError,
-        error,
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: error.response.data.messageToClient,
       });
     }
-
-    dispatchCheckout({ type: 'SET_IS_VALID', isValid });
-
-    if (isValid) {
-      console.log('Form submitted:', checkoutState.values);
-    } else {
-      console.log('Form has errors:', checkoutState.errors);
-    }
-    // try {
-    //   const response = await axios.post(
-    //     `${API_BACKEND_ENDPOINT}/api/order`,
-    //     {
-    //       account_id: user?.account_id,
-    //       shipping_info: {
-    //         name: checkoutState.name,
-    //         phone: checkoutState.phone,
-    //         address: checkoutState.address,
-    //       },
-    //       shipping_method: checkoutState.shippingMethod,
-    //       payment_method: checkoutState.paymentMethod,
-    //       products: checkoutState.products,
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${user?.token}`,
-    //       },
-    //     },
-    //   );
-    //   if (response.status === 200) {
-    //     toast.success('Success!', {
-    //       description: 'Order created successfully',
-    //     });
-    //     dispatchCheckout({ type: 'RESET' });
-    //   }
-    // } catch (error: any) {
-    //   toast.error('Error!', {
-    //     description: error.response.data.messageToClient,
-    //   });
-    // }
     setLoading(false);
     setIsConfirmModalOpen(false);
   };
@@ -290,14 +272,21 @@ const Checkout = () => {
       case 'paymentMethod':
         return value ? '' : 'Payment Method is required';
       case 'cardName':
-        return value ? '' : 'Cardholder Name is required';
+        return value || checkoutState.values.paymentMethod !== PaymentMethodType.CREDIT_CARD
+          ? ''
+          : 'Cardholder Name is required';
       case 'cardNumber':
-        return value ? '' : 'Card Number is required';
+        return value || checkoutState.values.paymentMethod !== PaymentMethodType.CREDIT_CARD
+          ? ''
+          : 'Card Number is required';
       case 'cardExpired':
-        console.log('value', value)
-        return value ? '' : 'Expiration Date is required';
+        return value || checkoutState.values.paymentMethod !== PaymentMethodType.CREDIT_CARD
+          ? ''
+          : 'Expiration Date is required';
       case 'cardCvv':
-        return value ? '' : 'CVV/CVC is required';
+        return value || checkoutState.values.paymentMethod !== PaymentMethodType.CREDIT_CARD
+          ? ''
+          : 'CVV/CVC is required';
       default:
         return '';
     }
@@ -325,7 +314,7 @@ const Checkout = () => {
     }
 
     dispatchCheckout({ type: 'SET_IS_VALID', isValid });
-
+    console.log(isValid);
     return isValid;
   };
 

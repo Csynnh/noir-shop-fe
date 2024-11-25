@@ -9,7 +9,7 @@ import { useAuth } from '@contexts/AuthContext';
 import { Form } from 'antd';
 import axios from 'axios';
 import { useReducer, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import styles from './SignIn.module.scss';
 import { toast } from 'sonner';
 import { Toaster } from '@ui/sonner';
@@ -48,6 +48,8 @@ const formReducer = (state: FormState, action: Action): FormState => {
 const SignIn = () => {
   const [formState, dispatch] = useReducer(formReducer, initialState);
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const { from } = location.state || {};
   const { saveUserInfo } = useAuth();
   const navigater = useNavigate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -83,9 +85,14 @@ const SignIn = () => {
           name: response.data.responseData?.name,
         };
         saveUserInfo(userInfo);
-        setTimeout(() => {
-          navigater('/');
-        }, 2000);
+        console.log(from.pathname);
+          if (location.pathname === '/admin/sign-in') {
+            navigater(from.pathname);
+          } else {
+            navigater(from ? from.pathname : '/', {
+              state: { id: from?.productId ?? 'null' },
+            });
+          }
       }
     } catch (error: any) {
       console.log('error', error);

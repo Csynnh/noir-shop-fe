@@ -177,10 +177,10 @@ const ProductDetails = () => {
 
   const handleBuyNow = () => {
     // pre-check user loged in
-    // if (!user) {
-    //   setIsModelSignInOpen(true);
-    //   return;
-    // }
+    if (!user) {
+      setIsModelSignInOpen(true);
+      return;
+    }
     const productCheckout: ProductCheckoutType = {
       id,
       name: product?.name,
@@ -202,7 +202,14 @@ const ProductDetails = () => {
   };
 
   const handleRedirectToSignIn = () => {
-    navigate('/sign-in');
+    navigate('/sign-in',{
+      state: {
+        from: {
+          pathname: location.pathname,
+          productId: id,
+        }
+      }
+    });
     setIsModelSignInOpen(false);
   };
 

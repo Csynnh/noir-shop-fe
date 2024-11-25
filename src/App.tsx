@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Outlet, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Header from '@components/Header';
 import Home from '@pages/Home';
 import GiftCard from '@pages/GiftCard';
@@ -19,7 +19,9 @@ import FooterAdmin from '@components/FooterAdmin';
 import ManagementProduct from '@pages/ManagementProduct';
 import ManagementOder from '@pages/ManagementOder';
 import SearchingResult from '@pages/SearchingResult';
+import { Navigate } from 'react-router-dom';
 import AnalyzeRevenue from '@pages/Analyze';
+import { JwtPayload, ROLE } from '@constant/Api';
 
 function App() {
   return (
@@ -30,18 +32,25 @@ function App() {
             <Route
               path='/admin/*'
               element={
-                <div className='flex flex-col'>
-                  <HeaderAdmin />
-                  <Routes>
+                <Routes>
+                  <Route
+                    element={
+                      <ProtectedRoute>
+                        <div className='flex flex-col'>
+                          <HeaderAdmin />
+                          <Outlet />
+                          <FooterAdmin />
+                        </div>
+                      </ProtectedRoute>
+                    }
+                  >
                     <Route path='/' element={<ManagementProduct />} />
                     <Route path='/manage-oder' element={<ManagementOder />} />
                     <Route path='/analyze-revenue' element={<ManagementProduct />} />
-                    <Route path='/sign-in' element={<SignIn />} />
-                    <Route path='/sign-up' element={<SignUp />} />
                     <Route path='/analyze' element={<AnalyzeRevenue />} />
-                  </Routes>
-                  <FooterAdmin />
-                </div>
+                  </Route>
+                  <Route path='/sign-in' element={<SignIn />} />
+                </Routes>
               }
             />
             <Route
@@ -74,6 +83,25 @@ function App() {
         </ScrollToTop>
       </>
     </Router>
+  );
+}
+
+function ProtectedRoute({ children }: any) {
+  const token = JSON.parse(localStorage.getItem('user') ?? '{}')?.token;
+
+  const decodedToken: JwtPayload = token ? JSON.parse(atob(token?.split('.')[1])) : {};
+  if (decodedToken[ROLE] === 'Admin') {
+    return children;
+  }
+  return (
+    <Navigate
+      to='/admin/sign-in'
+      state={{
+        from: {
+          pathname: window.location.pathname,
+        },
+      }}
+    />
   );
 }
 
