@@ -85,14 +85,15 @@ const SignIn = () => {
           name: response.data.responseData?.name,
         };
         saveUserInfo(userInfo);
-        console.log(from.pathname);
-          if (location.pathname === '/admin/sign-in') {
-            navigater(from.pathname);
+        setTimeout(() => {
+          if (location?.pathname === '/admin/sign-in') {
+            navigater(from?.pathname);
           } else {
-            navigater(from ? from.pathname : '/', {
+            navigater(from ? from?.pathname : '/', {
               state: { id: from?.productId ?? 'null' },
             });
           }
+        }, 1200);
       }
     } catch (error: any) {
       console.log('error', error);
