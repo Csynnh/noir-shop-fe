@@ -1,4 +1,7 @@
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import axios from 'axios';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { useAuth } from '@contexts/AuthContext';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -199,10 +202,49 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
     : null;
   const [oderValues, setOderValues] = React.useState<Order[] | null>(defaultValue as Order[]);
 
-  const handleSubmitOder = () => {
-    const selectedOder = rowSelection;
-    console.log(Object.keys(selectedOder).length);
+  const handleSubmitOder = async () => {
+    // Get selected row data
+    const selectedOrderIds = Object.keys(rowSelection).map(
+      (index) => oderValues && oderValues[parseInt(index)].id
+    );
+
+    if (!selectedOrderIds.length) {
+      alert('No orders selected.');
+      return;
+    }
+  
+    const confirmUpdate = window.confirm(`Update status for ${selectedOrderIds.length} orders?`);
+    if (!confirmUpdate) return;
+  
+    try {
+      const promises = selectedOrderIds.map(async (id) => {
+        const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      });
+  
+      const results = await Promise.allSettled(promises);
+      const successCount = results.filter((result) => result.status === 'fulfilled').length;
+      const failureCount = results.filter((result) => result.status === 'rejected').length;
+  
+      alert(
+        `${successCount} order(s) updated successfully.\n${failureCount} order(s) failed to update.`
+      );
+  
+      if (successCount > 0) {
+        setRowSelection({});
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error updating orders:', error);
+      alert('An error occurred while updating orders.');
+    }
   };
+  
+  
 
   const handleShowOderDetails = (data: Order) => {
     setSelectedOder(data);

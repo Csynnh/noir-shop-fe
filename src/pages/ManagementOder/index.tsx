@@ -8,8 +8,8 @@ import { useAuth } from '@contexts/AuthContext';
 
 export enum OderType {
   ALL = 'ALL',
-  NEED_CONFIRM = 'NEED_CONFIRM',
-  PREPAIRING = 'PREPAIRING',
+  NEED_CONFIRM = 'CONFIRMING',
+  PREPAIRING = 'PREPARING',
   SHIPPING = 'SHIPPING',
   SUCCESSFULLY = 'SUCCESSFULLY',
 }
@@ -56,25 +56,42 @@ const ManagementOder = () => {
   // Fetch order status
   const fetchOrderStatus = async () => {
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/orders/total-grouped-by-status`,  {
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/orders/total-grouped-by-status`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },
-      },);
-      
+      });
+  
       console.log('Order Status API Response:', response.data); // Log dữ liệu API
+  
       if (response.status === 200) {
-        const mappedStatus = response.data.map((item: { status: string; total: number }) => ({
-          status: item.status as OderType,
-          count: item.total,
+        // Mặc định tất cả status với count = 0
+        const defaultStatus: Record<OderType, number> = Object.values(OderType).reduce(
+          (acc, type) => {
+            acc[type] = 0;
+            return acc;
+          },
+          {} as Record<OderType, number> // Cung cấp kiểu rõ ràng
+        );
+  
+        // Ghi đè giá trị count từ API lên defaultStatus
+        response.data.forEach((item: { status: string; total: number }) => {
+          defaultStatus[item.status as OderType] = item.total;
+        });
+  
+        // Chuyển đổi defaultStatus thành mảng để sử dụng trong component
+        const mappedStatus = Object.entries(defaultStatus).map(([status, count]) => ({
+          status: status as OderType,
+          count,
         }));
+  
         setOderStatus(mappedStatus);
       }
     } catch (error) {
       console.error('Failed to fetch order status:', error);
     }
   };
-
+  
   // Fetch orders by status
   const fetchOrdersByStatus = async (status: OderType) => {
     setLoading(true);
