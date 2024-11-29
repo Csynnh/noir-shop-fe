@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import styles from './styles.module.scss';
-
-const Logo = () => {
+interface LogoProps {
+  path?: string;
+}
+const Logo = ({path}: LogoProps) => {
   return (
-    <Link to='/' className={styles.Logo}>
+    <Link to={path ?? '/'} className={styles.Logo}>
       <svg
         width='72'
         height='29'
