@@ -1,10 +1,15 @@
-import { DAYSOFWEEK, ChartType, TableRevenueRow, ChartDataPoint } from '@constant/Date';
+import { ChartDataPoint, ChartType, DAYSOFWEEK, TableRevenueRow } from '@constant/Date';
 import { clsx, type ClassValue } from 'clsx';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+dayjs.extend(timezone);
+dayjs.extend(utc);
 
 export const snakeToCapitalCase = (str: string) => {
   return str
@@ -124,4 +129,29 @@ export const generateChartData = (
     total,
   }));
   return result;
+};
+
+/**
+ * Function to get the time elapsed from a given date
+ * @param Date - The date string
+ * @returns string - The time elapsed
+ */
+export const getTimeElapsed = (Date: string): string => {
+  const diff = dayjs.utc().diff(dayjs.utc(Date), 'minutes');
+  if (diff < 60) {
+    return `${diff} minutes ago`;
+  }
+  if (diff < 1440) {
+    return `${Math.floor(diff / 60)} hours ago`;
+  }
+  if (diff < 10080) {
+    return `${Math.floor(diff / 1440)} days ago`;
+  }
+  if (diff < 40320) {
+    return `${Math.floor(diff / 10080)} weeks ago`;
+  }
+  if (diff < 525600) {
+    return `${Math.floor(diff / 40320)} months ago`;
+  }
+  return `${Math.floor(diff / 525600)} years ago`;
 };

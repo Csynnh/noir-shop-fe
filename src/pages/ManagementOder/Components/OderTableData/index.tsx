@@ -1,7 +1,7 @@
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { useAuth } from '@contexts/AuthContext';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -39,6 +39,7 @@ import {
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
 import OderItem from '@components/OderItem';
+import { useLocation } from 'react-router-dom';
 
 const OderColumns: ColumnDef<Order>[] = [
   {
@@ -190,32 +191,48 @@ export interface OderTableDataProps {
   oderType?: OderType | null;
 }
 export function OderTableData({ data, oderType }: OderTableDataProps) {
+  const { user } = useAuth();
+  const location = useLocation();
+  const oderId = location.state?.id;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedOder, setSelectedOder] = React.useState<Order | null>(null);
-  const defaultValue = oderType
-    ? oderType === OderType.ALL
-      ? data
-      : data?.filter((item) => item.status === oderType)
-    : null;
-  const [oderValues, setOderValues] = React.useState<Order[] | null>(defaultValue as Order[]);
+  const [oderValues, setOderValues] = React.useState<Order[] | null>(data as Order[]);
+
+  React.useEffect(() => {
+    if (data?.length) {
+      let values = data;
+      if (oderType !== OderType.ALL) {
+        values = data?.filter((item) => item.status === oderType);
+      }
+      setOderValues(values);
+      setSelectedOder(values[0]);
+      setRowSelection({ 0: true });
+    }
+  }, [data, oderType]);
+
+  React.useEffect(() => {
+    if (user && oderId) {
+      fetchOrderById(user, oderId);
+    }
+  }, [oderId]);
 
   const handleSubmitOder = async () => {
     // Get selected row data
     const selectedOrderIds = Object.keys(rowSelection).map(
-      (index) => oderValues && oderValues[parseInt(index)].id
+      (index) => oderValues && oderValues[parseInt(index)].id,
     );
 
     if (!selectedOrderIds.length) {
       alert('No orders selected.');
       return;
     }
-  
+
     const confirmUpdate = window.confirm(`Update status for ${selectedOrderIds.length} orders?`);
     if (!confirmUpdate) return;
-  
+
     try {
       const promises = selectedOrderIds.map(async (id) => {
         const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
@@ -225,15 +242,15 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
           },
         });
       });
-  
+
       const results = await Promise.allSettled(promises);
       const successCount = results.filter((result) => result.status === 'fulfilled').length;
       const failureCount = results.filter((result) => result.status === 'rejected').length;
-  
+
       alert(
-        `${successCount} order(s) updated successfully.\n${failureCount} order(s) failed to update.`
+        `${successCount} order(s) updated successfully.\n${failureCount} order(s) failed to update.`,
       );
-  
+
       if (successCount > 0) {
         setRowSelection({});
         window.location.reload();
@@ -243,8 +260,6 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       alert('An error occurred while updating orders.');
     }
   };
-  
-  
 
   const handleShowOderDetails = (data: Order) => {
     setSelectedOder(data);
@@ -268,6 +283,44 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       rowSelection,
     },
   });
+
+  const fetchOrderById = async (user: UserInfo, id: string) => {
+    try {
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/orders/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 200) {
+        const data = response.data.responseData;
+        const order: Order = {
+          id: '#' + data.id.slice(0, 8),
+          customer: {
+            name: data.user_info.name,
+            address: data.user_info.address,
+            phone: data.user_info.phone,
+          },
+          date: data.created_at,
+          total: data.total,
+          status: data.status,
+          details: data.list_products.map((product: any) => ({
+            id: product.id,
+            name: product.name,
+            color: product.variants[0].Color,
+            quantity: product.variants[0].Quantity,
+            price: product.price,
+            image: product.variants[0].Images,
+          })),
+        };
+        setSelectedOder(order);
+        const oderIndex = oderValues?.findIndex((item) => item.id === order.id).toString();
+        const rowSelection = { [oderIndex as string]: true };
+        setRowSelection(rowSelection);
+      }
+    } catch (error) {
+      console.error('Failed to fetch order by id:', error);
+    }
+  };
 
   return (
     <div className='flex gap-10'>
@@ -425,7 +478,9 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               </div>
               <div className='h-[242px] mb-8'>
                 <div className='checkout-oder-list-wrap w-full flex gap-6 flex-col pr-4 overflow-y-auto h-full'>
-                  {selectedOder.details?.map((order, index) => <OderItem key={index} variant={order} />)}
+                  {selectedOder.details?.map((order, index) => (
+                    <OderItem key={index} variant={order} />
+                  ))}
                 </div>
               </div>
               <div className='pt-3 border-t-[0.5px] border-t-[#837F83] flex items-center justify-between'>

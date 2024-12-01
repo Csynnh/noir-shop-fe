@@ -2,11 +2,11 @@ import Logo from '@components/Icons/Logo';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@components/Button';
-import Ring from '@components/Icons/Ring';
 import AccountAdmin from '@components/Icons/AccountAdmin';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 import { useAuth } from '@contexts/AuthContext';
+import Notification from '@components/Notification';
 
 enum Routes {
   ManageProduct = '/admin',
@@ -91,9 +91,7 @@ const HeaderAdmin = () => {
                 </Button>
               </div>
             </div>
-            <div className='p-5 border-x border-[#c9c5c9]'>
-              <Ring></Ring>
-            </div>
+            <Notification></Notification>
             <div className='p-5 border-r border-[#c9c5c9]'>
               <AccountAdmin></AccountAdmin>
             </div>

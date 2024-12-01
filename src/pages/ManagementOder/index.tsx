@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { OderTableData } from './Components/OderTableData';
 import { snakeToCapitalCase } from '@lib/utils';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { useAuth } from '@contexts/AuthContext';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
+import { useLocation } from 'react-router-dom';
 
 export enum OderType {
   ALL = 'ALL',
@@ -47,23 +48,26 @@ export type Order = {
 };
 
 const ManagementOder = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+  const { id } = location.state || {};
   const [oderType, setOderType] = useState<OderType>(OderType.ALL);
   const [oderStatus, setOderStatus] = useState<{ status: OderType; count: number }[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const {user} = useAuth()
 
   // Fetch order status
-  const fetchOrderStatus = async () => {
+  const fetchOrderStatus = async (user: UserInfo) => {
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/orders/total-grouped-by-status`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
+      const response = await axios.get(
+        `${API_BACKEND_ENDPOINT}/api/orders/total-grouped-by-status`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
         },
-      });
-  
-      console.log('Order Status API Response:', response.data); // Log dữ liệu API
-  
+      );
+
       if (response.status === 200) {
         // Mặc định tất cả status với count = 0
         const defaultStatus: Record<OderType, number> = Object.values(OderType).reduce(
@@ -71,40 +75,39 @@ const ManagementOder = () => {
             acc[type] = 0;
             return acc;
           },
-          {} as Record<OderType, number> // Cung cấp kiểu rõ ràng
+          {} as Record<OderType, number>, // Cung cấp kiểu rõ ràng
         );
-  
+
         // Ghi đè giá trị count từ API lên defaultStatus
         response.data.forEach((item: { status: string; total: number }) => {
           defaultStatus[item.status as OderType] = item.total;
         });
-  
+
         // Chuyển đổi defaultStatus thành mảng để sử dụng trong component
         const mappedStatus = Object.entries(defaultStatus).map(([status, count]) => ({
           status: status as OderType,
           count,
         }));
-  
+
         setOderStatus(mappedStatus);
       }
     } catch (error) {
       console.error('Failed to fetch order status:', error);
     }
   };
-  
+
   // Fetch orders by status
-  const fetchOrdersByStatus = async (status: OderType) => {
+  const fetchOrdersByStatus = async (user: UserInfo, status: OderType) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/oder/status/${status}`,  {
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/orders/status/${status}`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },
-      },);
-      console.log('Orders API Response:', response.data); // Log dữ liệu API
+      });
       if (response.status === 200) {
-        const mappedOrders : Order[] = response.data.responseData.map((item: any) => ({
-          id: item.id,
+        const mappedOrders: Order[] = response.data.responseData.map((item: any) => ({
+          id: '#' + item.id.slice(0, 8),
           customer: {
             name: item.user_info.name,
             address: item.user_info.address,
@@ -132,37 +135,38 @@ const ManagementOder = () => {
   };
 
   useEffect(() => {
-    if (user){
-      fetchOrderStatus();
-      fetchOrdersByStatus(OderType.ALL);
+    if (user) {
+      fetchOrderStatus(user);
+      fetchOrdersByStatus(user, OderType.ALL);
     }
   }, [user]);
 
   const handleTabChange = (value: string) => {
-    const status = value as OderType;
-    setOderType(status);
-    fetchOrdersByStatus(status);
+    if (user) {
+      setOderType(value as OderType);
+      fetchOrdersByStatus(user, value as OderType);
+    }
   };
 
   return (
-    <div className="w-full p-12">
-      <h1 className="text-[40px] font-[gilroy-semibold] capitalize mb-6">Management Oder</h1>
+    <div className='w-full p-12'>
+      <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Oder</h1>
       {loading ? (
-        <div className="text-center">Loading...</div>
+        <div className='text-center'>Loading...</div>
       ) : (
         <div>
-          <Tabs defaultValue={oderType} className="w-full" onValueChange={handleTabChange}>
-            <TabsList className="w-full grid grid-cols-5 h-auto">
+          <Tabs defaultValue={oderType} className='w-full' onValueChange={handleTabChange}>
+            <TabsList className='w-full grid grid-cols-5 h-auto'>
               {oderStatus.map((status) => (
                 <TabsTrigger
                   key={status.status}
                   value={status.status}
-                  className="data-[state=active]:bg-inherit border-[0.5px] data-[state=active]:border-[1.5px] border-[#837F83] rounded-[5px] min-h-[162px] data-[state=active]:text-black"
+                  className='data-[state=active]:bg-inherit border-[0.5px] data-[state=active]:border-[1.5px] border-[#837F83] rounded-[5px] min-h-[162px] data-[state=active]:text-black'
                 >
-                  <div className="flex flex-col p-4 w-full">
-                    <div className="flex mb-[26px]">
+                  <div className='flex flex-col p-4 w-full'>
+                    <div className='flex mb-[26px]'>
                       <span
-                        className="py-1 px-3 rounded-full bg-slate-200"
+                        className='py-1 px-3 rounded-full bg-slate-200'
                         style={{
                           backgroundColor: StatusColorMap[status.status],
                           color: status.status === OderType.SHIPPING ? '#F2CFF0' : '#000',
@@ -171,17 +175,17 @@ const ManagementOder = () => {
                         {snakeToCapitalCase(status.status)}
                       </span>
                     </div>
-                    <div className="flex justify-end items-end">
-                      <span className="text-[30px] leading-[36px] font-[gilroy-regular]">
+                    <div className='flex justify-end items-end'>
+                      <span className='text-[30px] leading-[36px] font-[gilroy-regular]'>
                         {status.count}
                       </span>
-                      <span className="text-sm leading-[2]"> Orders</span>
+                      <span className='text-sm leading-[2]'> Orders</span>
                     </div>
                   </div>
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div className="mt-12">
+            <div className='mt-12'>
               <TabsContent value={oderType}>
                 <OderTableData data={orders} oderType={oderType}></OderTableData>
               </TabsContent>
