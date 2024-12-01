@@ -242,7 +242,10 @@ const ManagementProduct = () => {
           </Tabs>
         </div>
       </div>
-      <CreateProductModel open={isOpenCreateProdModel} setIsOpen={setIsOpenCreateProdModel}></CreateProductModel>
+      <CreateProductModel
+        open={isOpenCreateProdModel}
+        setIsOpen={setIsOpenCreateProdModel}
+      ></CreateProductModel>
     </>
   );
 };

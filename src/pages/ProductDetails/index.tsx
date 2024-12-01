@@ -202,13 +202,13 @@ const ProductDetails = () => {
   };
 
   const handleRedirectToSignIn = () => {
-    navigate('/sign-in',{
+    navigate('/sign-in', {
       state: {
         from: {
           pathname: location.pathname,
           productId: id,
-        }
-      }
+        },
+      },
     });
     setIsModelSignInOpen(false);
   };

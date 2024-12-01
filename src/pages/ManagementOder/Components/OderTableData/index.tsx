@@ -2,7 +2,7 @@ import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { Modal } from 'antd';
-import { useAuth } from '@contexts/AuthContext';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -40,6 +40,7 @@ import {
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
 import OderItem from '@components/OderItem';
+import { useLocation } from 'react-router-dom';
 
 const OderColumns: ColumnDef<Order>[] = [
   {
@@ -191,6 +192,9 @@ export interface OderTableDataProps {
   oderType?: OderType | null;
 }
 export function OderTableData({ data, oderType }: OderTableDataProps) {
+  const { user } = useAuth();
+  const location = useLocation();
+  const oderId = location.state?.id;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -198,12 +202,25 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
   const [selectedOder, setSelectedOder] = React.useState<Order | null>(null);
   const [isModelOpen, setIsModelOpen] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const defaultValue = oderType
-    ? oderType === OderType.ALL
-      ? data
-      : data?.filter((item) => item.status === oderType)
-    : null;
-  const [oderValues, setOderValues] = React.useState<Order[] | null>(defaultValue as Order[]);
+  const [oderValues, setOderValues] = React.useState<Order[] | null>(data as Order[]);
+
+  React.useEffect(() => {
+    if (data?.length) {
+      let values = data;
+      if (oderType !== OderType.ALL) {
+        values = data?.filter((item) => item.status === oderType);
+      }
+      setOderValues(values);
+      setSelectedOder(values[0]);
+      setRowSelection({ 0: true });
+    }
+  }, [data, oderType]);
+
+  React.useEffect(() => {
+    if (user && oderId) {
+      fetchOrderById(user, oderId);
+    }
+  }, [oderId]);
 
   const handleSubmitOder = async () => {
     // Get selected row data
@@ -276,6 +293,44 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       rowSelection,
     },
   });
+
+  const fetchOrderById = async (user: UserInfo, id: string) => {
+    try {
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/orders/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 200) {
+        const data = response.data.responseData;
+        const order: Order = {
+          id: '#' + data.id.slice(0, 8),
+          customer: {
+            name: data.user_info.name,
+            address: data.user_info.address,
+            phone: data.user_info.phone,
+          },
+          date: data.created_at,
+          total: data.total,
+          status: data.status,
+          details: data.list_products.map((product: any) => ({
+            id: product.id,
+            name: product.name,
+            color: product.variants[0].Color,
+            quantity: product.variants[0].Quantity,
+            price: product.price,
+            image: product.variants[0].Images,
+          })),
+        };
+        setSelectedOder(order);
+        const oderIndex = oderValues?.findIndex((item) => item.id === order.id).toString();
+        const rowSelection = { [oderIndex as string]: true };
+        setRowSelection(rowSelection);
+      }
+    } catch (error) {
+      console.error('Failed to fetch order by id:', error);
+    }
+  };
 
   return (
     <div className='flex gap-10'>

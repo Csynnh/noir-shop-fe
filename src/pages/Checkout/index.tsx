@@ -219,8 +219,7 @@ const Checkout = () => {
         dispatchCheckout({ type: 'RESET' });
         setTimeout(() => {
           navigator('/');
-        }
-        , 2000);
+        }, 2000);
       }
     } catch (error: any) {
       toast.error('Error!', {
