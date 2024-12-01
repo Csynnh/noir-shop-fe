@@ -1,6 +1,7 @@
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { Modal } from 'antd';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
 import {
   ColumnDef,
@@ -199,6 +200,8 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedOder, setSelectedOder] = React.useState<Order | null>(null);
+  const [isModelOpen, setIsModelOpen] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [oderValues, setOderValues] = React.useState<Order[] | null>(data as Order[]);
 
   React.useEffect(() => {
@@ -225,43 +228,50 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       (index) => oderValues && oderValues[parseInt(index)].id,
     );
 
+    setIsModelOpen(true);
+  };
+
+  const handleCancel = () => {
+    console.log('Cancel');
+    setIsModelOpen(false);
+  };
+
+  const handleOK = async () => {
+    // Get selected row data
+    const selectedOrderIds = Object.keys(rowSelection).map(
+      (index) => oderValues && oderValues[parseInt(index)].id,
+    );
     if (!selectedOrderIds.length) {
-      alert('No orders selected.');
+      Modal.info({
+        title: 'No orders selected',
+        content: 'Please select at least one order to update.',
+      });
+      setIsModelOpen(false);
       return;
     }
 
-    const confirmUpdate = window.confirm(`Update status for ${selectedOrderIds.length} orders?`);
-    if (!confirmUpdate) return;
-
     try {
-      const promises = selectedOrderIds.map(async (id) => {
-        const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
+      selectedOrderIds.map(async (id) => {
+        await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
         });
       });
-
-      const results = await Promise.allSettled(promises);
-      const successCount = results.filter((result) => result.status === 'fulfilled').length;
-      const failureCount = results.filter((result) => result.status === 'rejected').length;
-
-      alert(
-        `${successCount} order(s) updated successfully.\n${failureCount} order(s) failed to update.`,
-      );
-
-      if (successCount > 0) {
-        setRowSelection({});
-        window.location.reload();
-      }
     } catch (error) {
       console.error('Error updating orders:', error);
-      alert('An error occurred while updating orders.');
+      Modal.error({
+        title: 'Error',
+        content: 'An error occurred while updating orders.',
+      });
+    } finally {
+      window.location.reload();
+      setIsModelOpen(false);
     }
   };
-
   const handleShowOderDetails = (data: Order) => {
+    console.log(data);
     setSelectedOder(data);
   };
 
@@ -342,7 +352,11 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               <ButtonCpn
                 onClick={handleSubmitOder}
                 className='py-3'
-                disabled={oderType === OderType.ALL || !Object.keys(rowSelection).length}
+                disabled={
+                  oderType === OderType.ALL ||
+                  !Object.keys(rowSelection).length ||
+                  oderType === OderType.SUCCESSFULLY
+                }
               >
                 Submit selected Oder
               </ButtonCpn>
@@ -489,6 +503,25 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               </div>
             </div>
           </div>
+
+          <Modal
+            open={isModelOpen}
+            onOk={handleOK}
+            onCancel={handleCancel}
+            footer={[
+              <Button key='back' onClick={handleCancel} disabled={loading}>
+                Cancle
+              </Button>,
+              <Button key='submit' isPrimary loading={loading} onClick={handleOK}>
+                OK
+              </Button>,
+            ]}
+          >
+            <div className=''>
+              <h4 className='text-xl text-left mb-4'>Update status for orders?</h4>
+              <p className='text-sm mb-5'>Are you sure you want to proceed?</p>
+            </div>
+          </Modal>
         </>
       )}
     </div>
