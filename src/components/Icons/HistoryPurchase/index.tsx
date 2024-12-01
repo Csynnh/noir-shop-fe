@@ -19,14 +19,14 @@ const HistoryPurchase = ({ isActive }: IconProps) => {
         height='40.5'
         rx='20.25'
         stroke='#1B352A'
-        stroke-width='0.5'
+        strokeWidth='0.5'
       />
       <path
         d='M15 14.5H27M15 18.5H27M15 22.5H27M15 26.5H27'
         className={`${isActive ? 'stroke-white' : 'group-hover:stroke-white '}`}
         stroke='#1B352A'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
     </svg>
   );

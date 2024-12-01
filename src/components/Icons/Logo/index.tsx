@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 interface LogoProps {
   path?: string;
 }
-const Logo = ({path}: LogoProps) => {
+const Logo = ({ path }: LogoProps) => {
   return (
     <Link to={path ?? '/'} className={styles.Logo}>
       <svg

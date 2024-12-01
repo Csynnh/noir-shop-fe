@@ -44,7 +44,8 @@ const SubmitOTPModel = ({
             <h2 className='text-3xl font-[channe] leading-[1.5]'>Confirm OTP</h2>
             <p className='leading-[2]'>
               Enter the code sent to{' '}
-              <span className='font-[gilroy-light-italic]'>{userInfo?.email}</span> to confirm change password
+              <span className='font-[gilroy-light-italic]'>{userInfo?.email}</span> to confirm
+              change password
             </p>
           </div>
           <Form.Item className='mb-10'>
