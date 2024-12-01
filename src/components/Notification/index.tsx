@@ -114,7 +114,7 @@ const Notification: React.FC = () => {
             )}
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className='w-[450px] pt-16'>
+        <DropdownMenuContent className='w-[450px] pt-16 max-h-[500px] overflow-y-scroll'>
           <DropdownMenuLabel>Notifications</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>

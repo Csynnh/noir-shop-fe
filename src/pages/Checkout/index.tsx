@@ -189,7 +189,7 @@ const Checkout = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${API_BACKEND_ENDPOINT}/api/oder`,
+        `${API_BACKEND_ENDPOINT}/api/orders`,
         {
           account_id: user?.account_id,
           shipping_info: {
