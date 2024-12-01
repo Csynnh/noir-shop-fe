@@ -299,7 +299,7 @@ const AnalyzeRevenue = () => {
   const fetchRevenueData = async (user: UserInfo, type?: ChartType) => {
     try {
       const response = await axios.post(
-        `${API_BACKEND_ENDPOINT}/api/oder/retrieve-chart-data`,
+        `${API_BACKEND_ENDPOINT}/api/orders/retrieve-chart-data`,
         {
           chartType: type || ChartType.DAILY,
         },
