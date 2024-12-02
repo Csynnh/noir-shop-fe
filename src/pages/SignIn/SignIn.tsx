@@ -94,7 +94,12 @@ const SignIn = () => {
             });
           }
         }, 1200);
+      } else {
+        toast.error('Error!', {
+          description: 'Error while signing in, please check your username and password again',
+        });
       }
+      setLoading(false);
     } catch (error: any) {
       console.log('error', error);
       toast.error('Error!', {

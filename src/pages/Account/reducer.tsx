@@ -1,4 +1,3 @@
-
 export interface FormShippingInfoState {
   address: string;
   name: string;
@@ -31,21 +30,24 @@ export const initialShippingInfoState: FormShippingInfoState = {
 
 export const initialEmailState: EmailState = {
   email: '',
-}
+};
 
 export const initialUserInfoState: UserInfoState = {
   name: '',
   email: '',
   phone: '',
   password: '',
-}
+};
 
 export const initialPasswordState: PasswordState = {
   newPassword: '',
   confirmNewPassword: '',
-}
+};
 
-export const formShippingInfoReducer = (state: FormShippingInfoState, action: Action): FormShippingInfoState => {
+export const formShippingInfoReducer = (
+  state: FormShippingInfoState,
+  action: Action,
+): FormShippingInfoState => {
   switch (action.type) {
     case 'SET_FIELD':
       return {

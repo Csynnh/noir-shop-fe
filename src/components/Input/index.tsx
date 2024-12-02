@@ -52,7 +52,7 @@ const Input = ({
   };
   return (
     <div className={styles.Input} style={{ maxWidth: maxWidth }}>
-      <label htmlFor={name} className={`${error ? 'text-red-400': ''}`}>
+      <label htmlFor={name} className={`${error ? 'text-red-400' : ''}`}>
         {required ? '*' : ''} {label}
       </label>
       <input

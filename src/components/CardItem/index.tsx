@@ -24,9 +24,13 @@ const CardItem = (prop: CardItemProps) => {
             <p className='card-price'>${price}</p>
             <ul className='card-color'>
               {color.map((item, index) => (
-                <li key={index} className={`card-color-item`} style={{
-                  backgroundColor: item,
-                }}></li>
+                <li
+                  key={index}
+                  className={`card-color-item`}
+                  style={{
+                    backgroundColor: item,
+                  }}
+                ></li>
               ))}
             </ul>
           </div>

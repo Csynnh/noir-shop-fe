@@ -32,7 +32,7 @@ const OderItem = ({ data, onChange, variant }: OderItemProps) => {
     <div className={styles.OderItem}>
       <div className='oder-item'>
         <div className='oder-item-image'>
-          <img src={variant?.image ||''} alt='oder item' />
+          <img src={variant?.image || ''} alt='oder item' />
         </div>
         <div className='oder-item-info'>
           <div className='oder-item-name'>{data?.name}</div>
