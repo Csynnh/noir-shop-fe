@@ -121,7 +121,9 @@ const Account = () => {
       }
     }
     removeToken();
-    navigate('/sign-in');
+    navigate('/sign-in', {
+      state: { from: '/account' },
+    });
   }, []);
 
   // Get user stored information
