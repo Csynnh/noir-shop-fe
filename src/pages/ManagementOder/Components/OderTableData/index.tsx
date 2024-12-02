@@ -3,6 +3,8 @@ import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { Modal } from 'antd';
 import { useAuth } from '@contexts/AuthContext';
+import ExcelJS from 'exceljs';
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -40,6 +42,7 @@ import {
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
 import OderItem from '@components/OderItem';
+import Address from '@components/Icons/Address';
 
 const OderColumns: ColumnDef<Order>[] = [
   {
@@ -214,6 +217,68 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
     setIsModelOpen(true);
   };
 
+  const handlePrintOrder = async () => {
+    // Get selected row data
+    const selectedOrders = Object.keys(rowSelection).map(
+      (index) => oderValues && oderValues[parseInt(index)]
+    ).filter(Boolean);
+  
+    if (!selectedOrders.length) {
+      Modal.info({
+        title: 'No orders selected',
+        content: 'Please select at least one order to print.',
+      });
+      return;
+    }
+  
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Orders');
+  
+      // Add header
+      worksheet.columns = [
+        { header: 'Order Code', key: 'id', width: 20 },
+        { header: 'Customer Name', key: 'customerName', width: 30 },
+        { header: 'Address', key: 'address', width: 30 },
+        { header: 'Phone', key: 'phone', width: 30 },
+        { header: 'Date', key: 'date', width: 20 },
+        { header: 'Total', key: 'total', width: 15 },
+        { header: 'Order Detail', key: 'orderDetail', width: 20 },
+      ];
+  
+      // Add rows
+      selectedOrders.forEach((order) => {
+        worksheet.addRow({
+          id: order?.id,
+          customerName: order?.customer?.name,
+          address: order?.customer?.address,
+          phone: order?.customer?.phone,
+          date: new Intl.DateTimeFormat('en-US').format(new Date(order?.date || '1970-01-01')),
+          total: order?.total,
+          orderDetail: order?.details
+        });
+      });
+  
+      // Export to Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Orders.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      Modal.error({
+        title: 'Error',
+        content: 'An error occurred while exporting the orders.',
+      });
+    }
+  };
+  
+
   const handleCancel = () => {
     console.log('Cancel');
     setIsModelOpen(false);
@@ -293,7 +358,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               onChange={(event) => table.getColumn('customer')?.setFilterValue(event.target.value)}
               className='max-w-sm'
             />
-            <div className='max-w-[220px] w-full ml-auto'>
+            <div className='max-w-[220px] w-full ml-auto flex gap-2'>
               <ButtonCpn
                 onClick={handleSubmitOder}
                 className='py-3'
@@ -447,6 +512,18 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
                 <p>${selectedOder.total.toFixed(2)}</p>
               </div>
             </div>
+            <div className='mt-2'>
+              {oderType === OderType.NEED_CONFIRM && (
+                <ButtonCpn
+                  onClick={handlePrintOrder}
+                  className='py-3'
+                  disabled={!Object.keys(rowSelection).length}
+                >
+                  Print List Order Now
+                </ButtonCpn>
+              )}
+            </div>
+            
           </div>
 
           <Modal
