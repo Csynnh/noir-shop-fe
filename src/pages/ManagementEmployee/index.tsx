@@ -14,13 +14,21 @@ import EmployeeList from './Components/EmployeeList';
 import { Modal } from 'antd';
 import Input from '@components/Input';
 import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
+import axios from 'axios';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { Console } from 'console';
+import { useAuth } from '@contexts/AuthContext';
+import { set } from 'lodash';
+import { toast } from 'sonner';
+import { Toaster } from '@ui/sonner';
+import dayjs from 'dayjs';
 enum EmployeeTab {
   INFORMATION = 'INFORMATION',
   SALARY = 'SALARY',
   WORK_SCHEDULE = 'WORK_SCHEDULE',
 }
 export interface Employee {
-  id: number;
+  id: string;
   name: string;
   position: string;
   sumManHours: number;
@@ -36,7 +44,7 @@ export interface EmployeeResponse {
   totalItems: number;
   totalPages: number;
 }
-const mockDataPosition: ComboBoxValueProps[] = [
+const PositionDummyData: ComboBoxValueProps[] = [
   {
     label: 'Manager',
     value: 'Manager',
@@ -50,83 +58,196 @@ const mockDataPosition: ComboBoxValueProps[] = [
     value: 'Customer_Service',
   },
 ];
-const mockDataEmployees: EmployeeResponse = {
-  data: [
-    {
-      id: 1,
-      name: 'Theore Cooper',
-      position: 'Software Engineer',
-      sumManHours: 15,
-      hiredDate: '11/09/2024',
-      email: 'theore.cooper@example.com',
-      phone: '+84 28 366 400 874',
-      location: 'Ho Chi Minh City, Vietnam',
-    },
-    {
-      id: 2,
-      name: 'Anna Smith',
-      position: 'UI/UX Designer',
-      sumManHours: 20,
-      hiredDate: '10/10/2024',
-      email: 'anna.smith@example.com',
-      phone: '+84 28 123 456 789',
-      location: 'Hanoi, Vietnam',
-    },
-    {
-      id: 3,
-      name: 'John Doe',
-      position: 'Project Manager',
-      sumManHours: 25,
-      hiredDate: '09/15/2024',
-      email: 'john.doe@example.com',
-      phone: '+84 28 987 654 321',
-      location: 'Da Nang, Vietnam',
-    },
-    {
-      id: 4,
-      name: 'Sarah Lee',
-      position: 'QA Tester',
-      sumManHours: 18,
-      hiredDate: '08/20/2024',
-      email: 'sarah.lee@example.com',
-      phone: '+84 28 654 321 987',
-      location: 'Ho Chi Minh City, Vietnam',
-    },
-  ],
-  pageNumber: 17,
-  pageSize: 6,
-  totalItems: 100,
-  totalPages: 20,
-};
-const ManagementEmployee = () => {
-  const [prodValues, setProdValues] = useState<EmployeeResponse | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
 
+const ManagementEmployee = () => {
+  const { user } = useAuth();
+  const [data, setData] = useState<any[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [sumManHourFrom, setSumManHourFrom] = useState<number>(0);
+  const [sumManHourTo, setSumManHourTo] = useState<number>(0);
+  const [hiredDate, setHiredDate] = useState<Date | undefined>(undefined);
+  const [name, setName] = useState<string>('');
+  const [position, setPosition] = useState<ComboBoxValueProps | null>(PositionDummyData[0]); //
+  const [manHours, setManHours] = useState<number>(0);
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [hired_date, setHired_date] = useState<Date | undefined>(dayjs().toDate());
+  const [avatar, setAvatar] = useState<string>('');
+
+  const getListEmployees = async () => {
+    try {
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/employees`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 200) {
+        const responseData = response.data.responseData;
+        console.log('responseData', responseData);
+        const employees: Employee[] = responseData.map((employee: any) => ({
+          id: employee.id,
+          name: employee.name,
+          position: employee.position,
+          sumManHours: employee.man_hours,
+          hiredDate: employee.hired_date,
+          email: employee.email,
+          phone: employee.phone,
+          location: employee.location,
+        }));
+        setData(employees);
+      }
+    } catch (error) {
+      console.error('Failed to fetch employees: ', error);
+    }
+  };
+
+  const handleFilter = async () => {
+    console.log('sumManHourFrom', sumManHourFrom);
+    console.log('sumManHourTo', sumManHourTo);
+    try {
+      if (!sumManHourFrom && !sumManHourTo) {
+        toast.error('Error!', {
+          description: "Min sum man-hour and Max sum man-hour can't be 0 at the same time",
+        });
+        return;
+      } else {
+        if (sumManHourFrom >= sumManHourTo) {
+          toast.error('Error!', {
+            description: "Min sum man-hour can't be greater than or equal to Max sum man-hour.",
+          });
+          return;
+        }
+      }
+      const response = await axios.get(
+        `${API_BACKEND_ENDPOINT}/api/employees?${hiredDate ? 'hiredDate=' + hiredDate?.toISOString() + '&' : ''}sumManHoursFrom=${sumManHourFrom}&sumManHoursTo=${sumManHourTo}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const responseData = response.data.responseData;
+        console.log('responseData', responseData);
+        const employees: Employee[] = responseData.map((employee: any) => ({
+          id: employee.id,
+          name: employee.name,
+          position: employee.position,
+          sumManHours: employee.man_hours,
+          hiredDate: employee.hired_date,
+          email: employee.email,
+          phone: employee.phone,
+          location: employee.location,
+        }));
+        setData(employees);
+      }
+    } catch (error) {
+      console.error('Failed to fetch employees: ', error);
+    }
+  };
+
+  const addNewEmployee = async () => {
+    // console.log('name',name);
+    // console.log('position',position);
+    // console.log('sum-hours',manHours);
+    // console.log('hireDate',hired_date);
+    // console.log('email',email);
+    // console.log('phone',phone);
+
+    // Validate email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const phoneRegex = /^\+?[1-9]\d{1,14}(\s?\(?\d+\)?[\s\-]?)?[\d\s\-]{6,}$/;
+
+    if (!emailRegex.test(email) && !phoneRegex.test(phone)) {
+      toast.error('Invalid Email and Phone Number!', {
+        description: 'Please provide a valid email address and phone number.',
+      });
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      toast.error('Invalid Email!', {
+        description: 'Please provide a valid email address.',
+      });
+      return;
+    }
+
+    // Validate phone
+    if (!phoneRegex.test(phone)) {
+      toast.error('Invalid Phone Number!', {
+        description: 'Please provide a valid phone number.',
+      });
+      return;
+    }
+    try {
+      console.log('run addNewEmployee');
+      const response = await axios.post(
+        `${API_BACKEND_ENDPOINT}/api/employee`,
+        {
+          name: name,
+          position: position?.value,
+          man_hours: manHours,
+          hired_date: hired_date?.toISOString(),
+          email: email,
+          phone: phone,
+          avatar: 'string',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.status === 201) {
+        toast.success('Successfully!', {
+          description: 'Successfully add new employee',
+        });
+        getListEmployees();
+      }
+    } catch (error) {
+      console.error('Failed to add new employee: ', error);
+    }
+  };
+
+  const handleDeleteEmployee = async (id: string) => {
+    try {
+      const response = await axios.delete(`${API_BACKEND_ENDPOINT}/api/employee/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 200) {
+        toast.success('Successfully!', {
+          description: 'Successfully delete employee',
+        });
+        getListEmployees();
+      }
+    } catch (error) {
+      console.error('Failed to fetch employees: ', error);
+      toast.error('Error!', {
+        description: 'Failed to delete employee',
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    console.log('object');
+    setIsOpen && setIsOpen(false);
+  };
   const handleChangTab = (value: string) => {
     console.log('value', value);
   };
   const handleChangePage = (pageNumber: number) => {
     console.log('pageNumber', pageNumber);
   };
-  const handleFilter = () => {
-    console.log('handleFilter');
-  };
-  const handleCancel = () => {
-    console.log('object');
-    setIsOpen && setIsOpen(false);
-  };
 
   useEffect(() => {
-    setProdValues(mockDataEmployees);
-  }, []);
+    if (user) {
+      // console.log('user', user);
+      getListEmployees();
+    }
+  }, [user]);
 
-  const [hours, setHours] = useState([0]);
-  // const [isOpened, setIsOpened]
-  const [position, setPosition] = useState<ComboBoxValueProps | null>(null);
-  const handleChangeHours = (value: number[]) => {
-    console.log('value', value);
-    setHours(value);
-  };
   return (
     <div className={styles.ManagementEmployee}>
       <div className='ManagementEmployee-container'>
@@ -155,19 +276,25 @@ const ManagementEmployee = () => {
                     <AccordionItem value='item-2'>
                       <AccordionTrigger>Sum man-hours</AccordionTrigger>
                       <AccordionContent className='p-4 mb-2'>
-                        <div className='flex items-center justify-between mb-2'>
-                          <span>0</span>
-                          <span>300</span>
+                        <div className='flex gap-[10px]'>
+                          <div className='w-[calc((100%-10px)/2)]'>
+                            <Input
+                              name='fromHours'
+                              label='Min'
+                              defaultValue='0'
+                              onChange={(e) => setSumManHourFrom(parseInt(e.target.value))}
+                            ></Input>
+                          </div>
+                          <div className='w-[calc((100%-10px)/2)]'>
+                            <Input
+                              name='toHours'
+                              label='Max'
+                              defaultValue='0'
+                              onChange={(e) => setSumManHourTo(parseInt(e.target.value))}
+                            ></Input>
+                          </div>
                         </div>
-                        <Slider
-                          defaultValue={hours}
-                          max={300}
-                          step={1}
-                          onValueChange={handleChangeHours}
-                        />
-                        <p className='text-right font-[gilroy-light] mt-2 text-xs'>
-                          {hours[0]} hours
-                        </p>
+                        {/* <input type='number' placeholder='hours'className='border-b border-b-[var(--line-color)] w-full' onChange={e=>setSumManHour(parseInt(e.target.value))}/> */}
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -176,7 +303,7 @@ const ManagementEmployee = () => {
                       <AccordionTrigger>Hired Date</AccordionTrigger>
                       <AccordionContent className='p-4'>
                         <div className='date'>
-                          <DatePicker></DatePicker>
+                          <DatePicker onChange={setHiredDate}></DatePicker>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -199,10 +326,10 @@ const ManagementEmployee = () => {
                     <span className='underline text-[15px]'>Add New Employee</span>
                   </div>
 
-                  <Pagination data={prodValues} onPageChange={handleChangePage}></Pagination>
+                  {/* <Pagination data={data} onPageChange={handleChangePage}></Pagination> */}
                 </div>
                 <TabsContent value={EmployeeTab.INFORMATION}>
-                  <EmployeeList data={prodValues?.data}></EmployeeList>
+                  <EmployeeList data={data} handleDeleteEmployee={handleDeleteEmployee}></EmployeeList>
                 </TabsContent>
               </div>
             </div>
@@ -229,7 +356,7 @@ const ManagementEmployee = () => {
           <h2 className='text-2xl font-[gilroy-bold] mb-7'>Add new product</h2>
           <div className='new-content'>
             <p className='text-[14px] font-[gilroy-semibold] '>Employee name:</p>
-            <Input name='name'></Input>
+            <Input name='name' onChange={(e) => setName(e.target.value)}></Input>
           </div>
 
           <div className='flex gap-[20px]  mt-[20px]'>
@@ -237,8 +364,8 @@ const ManagementEmployee = () => {
               <p className='text-[14px] font-[gilroy-semibold] '>Employee position:</p>
               <ComboBox
                 classname='p-0 max-w-full font-[gilroy-light] text-[13px]'
-                data={mockDataPosition}
-                value={position?.value || mockDataPosition[0].value}
+                data={PositionDummyData}
+                value={position?.value || PositionDummyData[0].value}
                 setValue={setPosition}
               ></ComboBox>
               <div className='border-b-[var(--line-color)] border-b '></div>
@@ -246,26 +373,35 @@ const ManagementEmployee = () => {
             <div className='new-content w-[calc((100%-20px)/2)]'>
               <p className='text-[14px] font-[gilroy-semibold] '>Hired Date:</p>
               <div className=''>
-                <DatePicker className='w-full pl-0 border-0 border-b-[var(--line-color)] border-b font-[gilroy-light] text-[12px]'></DatePicker>
+                <DatePicker
+                  className='w-full pl-0 border-0 border-b-[var(--line-color)] border-b font-[gilroy-light] text-[12px]'
+                  onChange={setHired_date}
+                ></DatePicker>
               </div>
             </div>
           </div>
 
           <div className='new-content mt-[20px]'>
             <p className='text-[14px] font-[gilroy-semibold] '>Employee Email:</p>
-            <Input name='name'></Input>
+            <Input name='name' onChange={(e) => setEmail(e.target.value)}></Input>
           </div>
           <div className='new-content mt-[20px]'>
             <p className='text-[14px] font-[gilroy-semibold] '>Employee Phone:</p>
-            <Input name='name'></Input>
+            <Input name='name' onChange={(e) => setPhone(e.target.value)}></Input>
           </div>
           <div className=' mt-[20px]'>
-            <Button onClick={() => {}} isPrimary>
+            <Button
+              onClick={() => {
+                addNewEmployee();
+              }}
+              isPrimary
+            >
               Add new Employee
             </Button>
           </div>
         </div>
-      </Modal>
+      </Modal>{' '}
+      <Toaster position='top-right' richColors />
     </div>
   );
 };

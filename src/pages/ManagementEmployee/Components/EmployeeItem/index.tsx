@@ -6,17 +6,24 @@ import Option from '@components/Icons/Option';
 import Avatar from '@components/Icons/Avatar';
 import Mail from '@components/Icons/Mail';
 import Phone from '@components/Icons/Phone';
+import dayjs from 'dayjs';
+import Input from '@components/Input';
+import { Modal } from 'antd';
+import Button from '@components/Button';
 
 interface EmployeeItemProps {
   employee: Employee;
+  handleDeleteEmployee  : (id:string) => void;
 }
-const EmployeeItem = ({ employee }: EmployeeItemProps) => {
+const EmployeeItem = ({ employee, handleDeleteEmployee }: EmployeeItemProps) => {
+  const [isModelOpen, setIsModelOpen] = React.useState(false);
   return (
     <div className={styles.ManagementItem}>
       <div className='ManagementItem-container'>
         <div className='flex justify-between mt-[10px]'>
           <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
-            <Delete></Delete>
+            
+            <p onClick={()=>setIsModelOpen(true)}><Delete></Delete></p>
           </span>
           <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
             <Option></Option>
@@ -34,7 +41,7 @@ const EmployeeItem = ({ employee }: EmployeeItemProps) => {
           </div>
           <div className='ManagementItem-date'>
             <p className='light'>Hired Date:</p>
-            <p className='bold'>{employee.hiredDate}</p>
+            <p className='bold'>{dayjs(employee.hiredDate).format('MM/DD/YYYY')}</p>
           </div>
         </div>
         <div className='ManagementItem-contact'>
@@ -50,7 +57,25 @@ const EmployeeItem = ({ employee }: EmployeeItemProps) => {
           </div>
         </div>
       </div>
+      <Modal
+        open={isModelOpen}
+        onCancel={() => setIsModelOpen(false)}
+        footer={[
+          <Button key='back' onClick={() => setIsModelOpen(false)}>
+            Cancle
+          </Button>,
+          <Button key='submit' isPrimary onClick={() => handleDeleteEmployee(employee.id)}>
+            Delete
+          </Button>,
+        ]}
+      >
+        <div className=''>
+          <h4 className='text-xl text-left mb-4'>Please confirm</h4>
+          <p className='text-sm mb-5'>Are you sure you want to delete {employee.position} {employee.name}?</p>
+        </div>
+      </Modal>
     </div>
+    
   );
 };
 
