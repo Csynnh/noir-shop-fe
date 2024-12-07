@@ -37,14 +37,14 @@ const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, imag
   };
 
   return (
-    <div className={styles.CartItem}>
+    <div className={`${styles.CartItem} ${count <= 0 ? 'close' : ''}`}>
       <div className='CartItem-content'>
         <img src={image} alt={name} />
         <div className='CartItem-info'>
           <p>{name}</p>
           <div className='CartItem-price'>
             <span>Price: </span>
-            <p>{price}</p>
+            <p>$ {price}</p>
           </div>
           <div className='CartItem-color'>
             <span>Color: </span>

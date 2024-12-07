@@ -13,7 +13,6 @@ import { useReducer, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './SignIn.module.scss';
 import { toast } from 'sonner';
-import { Toaster } from '@ui/sonner';
 import ChangePasswordModel from '@pages/Account/Models/ChangePasswordModel';
 import SenOTPModel from '@pages/Account/Models/SendOTPModel';
 import SubmitOTPModel from '@pages/Account/Models/SubmitOTPModel';
@@ -380,8 +379,6 @@ const SignIn = () => {
         isChangePasswordModalOpen={openChangePass}
         loading={loading}
       ></ChangePasswordModel>
-
-      <Toaster position='top-right' richColors />
     </>
   );
 };

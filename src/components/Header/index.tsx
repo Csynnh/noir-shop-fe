@@ -9,10 +9,13 @@ import styles from './styles.module.scss';
 import { useEffect, useRef, useState } from 'react';
 import MyCartTab from '@components/MyCartTab';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@contexts/AuthContext';
-import { SearchIcon } from 'lucide-react';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
+import * as signalR from '@microsoft/signalr';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { NotificationResponse } from '@constant/Notify';
+import { toast } from 'sonner';
+import { Toaster } from '@ui/sonner';
 
 const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -21,6 +24,8 @@ const Header = () => {
   const { user: userInfo, removeToken } = useAuth();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const inputref = useRef(null);
+  const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
+  const [newNotify, setNewNotifty] = useState<boolean>(false);
 
   //handle searching
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +48,50 @@ const Header = () => {
   const handleSearchClick = () => {
     handleSearch();
   };
+
+  useEffect(() => {
+    if (userInfo) {
+      handleRetrieveNotification(userInfo);
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl(`${API_BACKEND_ENDPOINT}/notificationHub`, {
+          accessTokenFactory: () => userInfo.token,
+        })
+        .withAutomaticReconnect()
+        .build();
+
+      const startConnection = async () => {
+        try {
+          await connection.start();
+          console.log('connected');
+        } catch (err) {
+          console.error('SignalR Connection Error:', err);
+        }
+      };
+
+      startConnection();
+
+      const handleNotification = (message: NotificationResponse) => {
+        const newNotification = (prev: NotificationResponse[]) =>
+          [...prev, message].sort((a, b) => {
+            if (a.is_read !== b.is_read) {
+              return a.is_read ? 1 : -1;
+            }
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          });
+
+        setNotifications(newNotification);
+        setNewNotifty(true);
+      };
+
+      connection.on('ReceiveCartNotification', handleNotification);
+
+      return () => {
+        connection.off('ReceiveCartNotification', handleNotification);
+        connection.stop();
+      };
+    }
+  }, [userInfo]);
+
   // pre-check if user is logged in
   useEffect(() => {
     if (userInfo) {
@@ -56,9 +105,62 @@ const Header = () => {
     removeToken();
   }, [userInfo]);
 
-  const toggleCart = () => {
+  const toggleCart = async () => {
     setIsCartOpen(!isCartOpen);
+    await handleClickOnNotify();
   };
+
+  const handleClickOnNotify = async () => {
+    if (userInfo) {
+      const needMarkRead = notifications?.filter((item) => item.id && !item.is_read);
+
+      if (needMarkRead.length > 0) {
+        needMarkRead.forEach(async (item) => {
+          await axios.put(
+            `${API_BACKEND_ENDPOINT}/api/notifications/${item.id}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${userInfo.token}`,
+              },
+            },
+          );
+        });
+      }
+      await handleRetrieveNotification(userInfo);
+      setNewNotifty(false);
+    }
+  };
+
+  const handleRetrieveNotification = async (user: UserInfo) => {
+    // Call API to retrieve notifications
+    try {
+      if (user) {
+        const response = await axios.get(
+          `${API_BACKEND_ENDPOINT}/api/notifications?type=CART_NOTIFICATION&accountId=${user.account_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          },
+        );
+        console.log('response', response);
+        const data: NotificationResponse[] = response.data.responseData;
+        const newNotification = data.sort((a, b) => {
+          if (a.is_read !== b.is_read) {
+            return a.is_read ? 1 : -1;
+          }
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        setNotifications(newNotification);
+        setNewNotifty(data.map((item) => item.is_read).filter((item) => !item).length > 0);
+        console.log(data.map((item) => item.is_read).filter((item) => !item).length > 0);
+      }
+    } catch (error) {
+      toast.error('There was an error while fetching notifications. Please try again later.');
+    }
+  };
+
   return (
     <div className={`${styles.Header}`}>
       <div className='header-wrapper'>
@@ -94,10 +196,13 @@ const Header = () => {
               <Logo></Logo>
             </span>
           </div>
-          <div className='header-container'>
+          <div className='header-container cursor-pointer'>
             <Tooltip title='Cart' arrow={false}>
-              <span className='icon' onClick={toggleCart}>
+              <span className='icon relative' onClick={toggleCart}>
                 <Cart></Cart>
+                {newNotify ? (
+                  <div className='absolute top-0 translate-y-2/4  -translate-x-1/4  right-0 rounded-full bg-red-400 w-3 h-3'></div>
+                ) : null}
               </span>
             </Tooltip>
             <Tooltip title='Account' arrow={false}>
@@ -120,6 +225,7 @@ const Header = () => {
           account_id={userInfo?.account_id}
         ></MyCartTab>
       </div>
+      <Toaster position='top-right' richColors></Toaster>
     </div>
   );
 };

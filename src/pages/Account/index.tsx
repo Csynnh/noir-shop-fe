@@ -22,7 +22,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@ui/alert-dialog';
-import { Toaster } from '@ui/sonner';
 import axios from 'axios';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -790,8 +789,6 @@ const Account = () => {
           loading={loading}
         ></ChangeShippingInfoModel>
       </>
-
-      <Toaster position='top-right' richColors />
     </div>
   );
 };

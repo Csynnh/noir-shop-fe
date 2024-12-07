@@ -33,7 +33,6 @@ const MyCartTab: React.FC<myCartProp> = ({
   account_id,
 }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
-  const [subtotal] = useState(0);
   const [isEmpty, setIsEmpty] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -112,6 +111,7 @@ const MyCartTab: React.FC<myCartProp> = ({
               <div className='MyCart-items'>
                 {cartItemList.map((item) => (
                   <CartItem
+                    key={item.id}
                     id={item.id}
                     color={item.color}
                     name={item.name}
