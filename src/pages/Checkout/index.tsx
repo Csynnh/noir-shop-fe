@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ui/select';
-import { Toaster } from '@ui/sonner';
 import { Form, Modal, Radio, RadioChangeEvent, Space } from 'antd';
 import axios from 'axios';
 import { useEffect, useReducer, useState } from 'react';
@@ -583,7 +582,6 @@ const Checkout = () => {
             </div>
           </Modal>
         </>
-        <Toaster position='top-right' richColors />
       </div>
     </div>
   );

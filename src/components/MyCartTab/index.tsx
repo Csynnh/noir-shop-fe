@@ -118,6 +118,7 @@ const MyCartTab: React.FC<myCartProp> = ({
               <div className='MyCart-items'>
                 {cartItemList.map((item) => (
                   <CartItem
+                    key={item.id}
                     id={item.id}
                     color={item.color}
                     name={item.name}

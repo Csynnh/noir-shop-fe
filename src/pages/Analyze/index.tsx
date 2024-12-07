@@ -40,7 +40,6 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import styles from './styles.module.scss';
 import ExcelJS from 'exceljs';
 import { toast } from 'sonner';
-import { Toaster } from '@ui/sonner';
 import dayjs from 'dayjs';
 
 const OderColumns: ColumnDef<TableRevenueRow>[] = [
@@ -620,7 +619,6 @@ const AnalyzeRevenue = () => {
         <div className='Analyze-report-middle'></div>
         <div className='Analyze-report-table'></div>
       </div>
-      <Toaster position='top-right' richColors />
     </div>
   );
 };

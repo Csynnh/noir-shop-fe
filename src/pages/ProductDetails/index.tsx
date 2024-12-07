@@ -6,7 +6,6 @@ import Star from '@components/Icons/Star';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth } from '@contexts/AuthContext';
 import { CollectionType, ProductType, ProductVariantType } from '@pages/Home';
-import { Toaster } from '@ui/sonner';
 import { Modal } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -171,8 +170,33 @@ const ProductDetails = () => {
     getProductDetails();
   }, [name]);
 
-  const handleAddToCart = () => {
-    console.log('Add to cart');
+  const handleAddToCart = async () => {
+    try {
+      const response = await axios.post(
+        `${API_BACKEND_ENDPOINT}/api/carts`,
+        {
+          account_id: user?.account_id,
+          variant_product_id: ProductVariantSelected.id,
+          quantity: ProductVariantSelected.count,
+
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+
+      if (response.status === 201) {
+        toast.success('Success!', {
+          description: 'Add to cart successfully',
+        });
+      }
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: error.response?.data?.messageToClient,
+      });
+    }
   };
 
   const handleBuyNow = () => {
@@ -572,7 +596,6 @@ const ProductDetails = () => {
               ></Collection>
             ) : null}
           </div>
-          <Toaster position='top-right' richColors />
         </div>
       )}
       <>

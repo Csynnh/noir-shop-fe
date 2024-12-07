@@ -11,7 +11,6 @@ import { useAuth } from '@contexts/AuthContext';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT, GOOGLE_CLIENT_ID } from '@constant/Api';
 import { toast } from 'sonner';
-import { Toaster } from '@ui/sonner';
 import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 interface FormState {
@@ -217,7 +216,6 @@ const SignUp = () => {
           </div>
         </div>
       </div>
-      <Toaster position='top-right' richColors />
     </div>
   );
 };
