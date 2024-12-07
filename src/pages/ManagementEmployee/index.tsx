@@ -115,7 +115,7 @@ const ManagementEmployee = () => {
     console.log('object');
     setIsOpen && setIsOpen(false);
   };
-  
+
   useEffect(() => {
     setProdValues(mockDataEmployees);
   }, []);

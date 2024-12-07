@@ -38,6 +38,10 @@ import { groupBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import styles from './styles.module.scss';
+import ExcelJS from 'exceljs';
+import { toast } from 'sonner';
+import { Toaster } from '@ui/sonner';
+import dayjs from 'dayjs';
 
 const OderColumns: ColumnDef<TableRevenueRow>[] = [
   {
@@ -270,11 +274,9 @@ const AnalyzeRevenue = () => {
         salesTotal,
       };
       setRevenueReport(report);
-
-      const chartDatas = generateChartData(oderValues, chartType);
-      console.log('chartDatas', chartDatas);
-      setChartData(chartDatas);
     }
+    const chartDatas = generateChartData(oderValues || [], chartType);
+    setChartData(chartDatas);
   }, [oderValues, chartType]);
 
   const table = useReactTable({
@@ -328,7 +330,6 @@ const AnalyzeRevenue = () => {
             type: item.type,
           };
         });
-        console.log('oderValues', oderValues);
         setOderValues(oderValues);
       }
     } catch (error) {
@@ -362,10 +363,58 @@ const AnalyzeRevenue = () => {
     return bestName;
   };
 
+  const handleExportListOder = () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet(`${chartType}_ODERS_${dayjs().format('YYYY_MM_DD')}`);
+
+      // Add header
+      worksheet.columns = [
+        { header: 'Id', key: 'id', width: 20 },
+        { header: 'Product Name', key: 'itemName', width: 30 },
+        { header: 'Price', key: 'price', width: 20 },
+        { header: 'Units Sold', key: 'unitsSold', width: 20 },
+        { header: 'Amount', key: 'amount', width: 20 },
+        { header: 'Tax Rate', key: 'taxRate', width: 20 },
+        { header: 'Tax', key: 'tax', width: 20 },
+        { header: 'Total', key: 'total', width: 20 },
+      ];
+
+      // Add data
+      oderValues?.forEach((row) => {
+        worksheet.addRow({
+          id: `#${row.id}`,
+          itemName: row.itemName,
+          price: `$${row.price.toFixed(2)}`,
+          unitsSold: row.unitsSold,
+          amount: `$${row.amount.toFixed(2)}`,
+          taxRate: `${row.taxRate}%`,
+          tax: `$${row.tax.toFixed(2)}`,
+          total: `$${row.total.toFixed(2)}`,
+        });
+      });
+
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${chartType}_ODERS_${dayjs().format('YYYY_MM_DD')}.xlsx`;
+        a.click();
+      });
+    } catch (error) {
+      toast.error('Error!', {
+        description: 'Error exporting orders ' + error,
+      });
+    }
+  };
+
   return (
     <div className={styles.Analyze}>
       <div className='Analyze-heading'>
-        <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Product</h1>
+        <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Analyze Revenue</h1>
       </div>
       <Tabs defaultValue={ChartType.DAILY} className='w-full' onValueChange={handleChangTab}>
         <TabsList>
@@ -549,6 +598,15 @@ const AnalyzeRevenue = () => {
                           </ButtonCpn>
                         </div>
                       </div>
+                      <div className='mt-2'>
+                        <ButtonCpn
+                          className='py-3'
+                          disabled={table.getRowModel().rows?.length === 0}
+                          onClick={handleExportListOder}
+                        >
+                          Export List Order Now
+                        </ButtonCpn>
+                      </div>
                     </div>
                   </CardFooter>
                 </>
@@ -562,6 +620,7 @@ const AnalyzeRevenue = () => {
         <div className='Analyze-report-middle'></div>
         <div className='Analyze-report-table'></div>
       </div>
+      <Toaster position='top-right' richColors />
     </div>
   );
 };

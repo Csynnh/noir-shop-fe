@@ -97,7 +97,6 @@ const SignUp = () => {
         });
       }
     } catch (error: any) {
-      console.log('error', error);
       toast.error('Error!', {
         description: error.response.data.messageToClient,
       });
@@ -132,7 +131,6 @@ const SignUp = () => {
         }, 1200);
       }
     } catch (error: any) {
-      console.log('error', error);
       toast.error('Error!', {
         description:
           'Error while signing in, please try again. ' +

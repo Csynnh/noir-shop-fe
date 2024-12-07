@@ -38,16 +38,16 @@ const EmployeeItem = ({ employee }: EmployeeItemProps) => {
           </div>
         </div>
         <div className='ManagementItem-contact'>
-            <div className="ManagementItem-detail">
-                <Mail></Mail>
-                <p className="bold">Email:</p>
-                <p className="light">{employee.email}</p>
-            </div>
-            <div className="ManagementItem-detail">
-                <Phone></Phone>
-                <p className="bold">Phone:</p>
-                <p className="light">{employee.phone}</p>
-            </div>
+          <div className='ManagementItem-detail'>
+            <Mail></Mail>
+            <p className='bold'>Email:</p>
+            <p className='light'>{employee.email}</p>
+          </div>
+          <div className='ManagementItem-detail'>
+            <Phone></Phone>
+            <p className='bold'>Phone:</p>
+            <p className='light'>{employee.phone}</p>
+          </div>
         </div>
       </div>
     </div>

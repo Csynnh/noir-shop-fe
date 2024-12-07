@@ -44,16 +44,16 @@
       &-detail {
         display: flex;
         gap: 4px;
-        .bold{
-            font-family: 'gilroy-semibold';
-            font-size: 12px;
+        .bold {
+          font-family: 'gilroy-semibold';
+          font-size: 12px;
         }
-        .light{
-            font-family: 'gilroy-light';
+        .light {
+          font-family: 'gilroy-light';
           font-size: 12px;
         }
       }
-      &-contact{
+      &-contact {
         display: flex;
         flex-direction: column;
         gap: 10px;

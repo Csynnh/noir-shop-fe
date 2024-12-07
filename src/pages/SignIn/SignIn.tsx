@@ -91,7 +91,6 @@ const SignIn = () => {
         }, 1200);
       }
     } catch (error: any) {
-      console.log('error', error);
       toast.error('Error!', {
         description:
           'Error while signing in, please try again. ' +
@@ -144,7 +143,6 @@ const SignIn = () => {
       }
       setLoading(false);
     } catch (error: any) {
-      console.log('error', error);
       toast.error('Error!', {
         description: error.response.data.messageToClient,
       });
@@ -160,7 +158,6 @@ const SignIn = () => {
     setLoading(true);
     try {
       const email = userEmail;
-      console.log('email :>> ', email);
       const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/request-otp/`, {
         email: email,
       });
@@ -322,12 +319,7 @@ const SignIn = () => {
                 >
                   Sign in
                 </Button>
-                <Button
-                  onClick={() => {}}
-                  icon={<Google />}
-                  className='--text-sm relative'
-                  disabled={loading}
-                >
+                <Button icon={<Google />} className='--text-sm relative' disabled={loading}>
                   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                     <div className='opacity-0 absolute w-full h-full top-0 left-0'>
                       <GoogleLogin onSuccess={onSuccess} onError={onFailure} />
@@ -335,12 +327,7 @@ const SignIn = () => {
                     Continue with Google
                   </GoogleOAuthProvider>
                 </Button>
-                <Button
-                  onClick={() => {}}
-                  icon={<PhoneBold />}
-                  className='--text-sm'
-                  disabled={loading}
-                >
+                <Button icon={<PhoneBold />} className='--text-sm' disabled={loading}>
                   Continue with Phone number
                 </Button>
               </div>

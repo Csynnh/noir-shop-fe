@@ -49,8 +49,7 @@ function App() {
                     <Route path='/manage-oder' element={<ManagementOder />} />
                     <Route path='/analyze-revenue' element={<ManagementProduct />} />
                     <Route path='/analyze' element={<AnalyzeRevenue />} />
-                    <Route path='/manage-employee' element={<ManagementEmployee/>} />
-
+                    <Route path='/manage-employee' element={<ManagementEmployee />} />
                   </Route>
                   <Route path='/sign-in' element={<SignIn />} />
                 </Routes>
