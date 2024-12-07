@@ -22,6 +22,7 @@ import SearchingResult from '@pages/SearchingResult';
 import { Navigate } from 'react-router-dom';
 import AnalyzeRevenue from '@pages/Analyze';
 import { JwtPayload, ROLE } from '@constant/Api';
+import ManagementEmployee from '@pages/ManagementEmployee';
 
 function App() {
   return (
@@ -48,6 +49,8 @@ function App() {
                     <Route path='/manage-oder' element={<ManagementOder />} />
                     <Route path='/analyze-revenue' element={<ManagementProduct />} />
                     <Route path='/analyze' element={<AnalyzeRevenue />} />
+                    <Route path='/manage-employee' element={<ManagementEmployee/>} />
+
                   </Route>
                   <Route path='/sign-in' element={<SignIn />} />
                 </Routes>
