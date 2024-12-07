@@ -11,8 +11,24 @@ interface InputProps {
   maxWidth?: number;
   maxLen?: number;
   isExpire?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  defaultValue?: string;
+  disabled?: boolean;
+  error?: string;
 }
-const Input = ({ label, name, required, type, maxWidth, maxLen, isExpire }: InputProps) => {
+const Input = ({
+  label,
+  name,
+  required,
+  type,
+  maxWidth,
+  maxLen,
+  isExpire,
+  onChange,
+  defaultValue,
+  disabled,
+  error,
+}: InputProps) => {
   const typeValue = type || 'text';
   const inputRef = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +38,7 @@ const Input = ({ label, name, required, type, maxWidth, maxLen, isExpire }: Inpu
       inputRef.current.type = showPassword ? 'password' : 'text';
     }
   };
-  const handleInputChange = () => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (inputRef?.current?.value && maxLen && isExpire) {
       let value = inputRef.current.value.replace(/\//g, '');
       if (value.length > 2) {
@@ -30,13 +46,27 @@ const Input = ({ label, name, required, type, maxWidth, maxLen, isExpire }: Inpu
       }
       inputRef.current.value = value;
     }
-  }
+    if (onChange) {
+      onChange(e);
+    }
+  };
   return (
-    <div className={styles.Input} style={{maxWidth: maxWidth}}>
-      <label htmlFor={name}>
+    <div className={styles.Input} style={{ maxWidth: maxWidth }}>
+      <label htmlFor={name} className={`${error ? 'text-red-400' : ''}`}>
         {required ? '*' : ''} {label}
       </label>
-      <input onChange={handleInputChange} ref={inputRef} type={typeValue} id={name} name={name} maxLength={maxLen && maxLen + (isExpire ? 1 : 0) }/>
+      <input
+        disabled={disabled}
+        onChange={handleInputChange}
+        ref={inputRef}
+        type={typeValue}
+        id={name}
+        name={name}
+        maxLength={maxLen && maxLen + (isExpire ? 1 : 0)}
+        defaultValue={defaultValue}
+        placeholder={error}
+        className={`${disabled ? 'opacity-30' : ''} ${error ? 'text-red-600 !font-[gilroy-light-italic] !italic !border-red-500' : ''} placeholder:text-red-600`}
+      />
       {typeValue === 'password' && (
         <span onClick={handleShowPassword} className='input-icon'>
           {showPassword ? <CloseEye /> : <OpenEye />}

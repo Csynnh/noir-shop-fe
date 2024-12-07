@@ -11,6 +11,7 @@
     line-height: 1.2;
     color: black;
   }
+
   :global {
     .button {
       padding: 15.5px 0;
@@ -37,6 +38,19 @@
           font-size: 15px;
           font-family: 'gilroy-light';
         }
+      }
+      &.disable {
+        user-select: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .loading {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
+        border-top: 2px solid #000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
     }
   }

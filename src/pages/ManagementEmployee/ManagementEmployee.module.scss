@@ -1,0 +1,44 @@
+.ManagementEmployee {
+  :global {
+    .ManagementEmployee {
+      position: relative;
+      &-container {
+        padding: 3rem;
+        width: 100%;
+        margin-bottom: 40px;
+        h1 {
+          font-size: 40px;
+          font-family: 'gilroy-semibold';
+          text-transform: none;
+          margin-bottom: 1.5rem;
+        }
+      }
+      &-content {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 20% 1fr;
+        gap: 5rem;
+        margin-top: 3rem;
+      }
+      &-left {
+        width: 100%;
+      }
+      &-filter {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-bottom: 1.25rem;
+        &-block {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          .date {
+            button {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}

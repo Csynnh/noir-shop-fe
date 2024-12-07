@@ -14,6 +14,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@mocks': path.resolve(__dirname, 'src/mocks'),
+      '@constant': path.resolve(__dirname, 'src/constant'),
+      '@contexts': path.resolve(__dirname, 'src/contexts'),
       '@components': path.resolve(__dirname, 'src/components'),
       '@ui': path.resolve(__dirname, 'src/components/ui'),
       '@assets': path.resolve(__dirname, 'src/assets'),

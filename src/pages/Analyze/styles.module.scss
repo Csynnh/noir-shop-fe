@@ -1,0 +1,9 @@
+.Analyze {
+  :global {
+    padding: 0 64px;
+    width: 100%;
+    .bg-card {
+      background-color: var(--background-color);
+    }
+  }
+}

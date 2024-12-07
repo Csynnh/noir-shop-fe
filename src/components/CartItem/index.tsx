@@ -1,32 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styles from './styles.module.scss';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
+import { CartItemData } from '@components/MyCartTab';
+import axios from 'axios';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
 interface CartItemProps {
-  index: number;
-  // image: string;
+  id: string;
+  image: string;
   count: number;
   name: string;
   price: number;
   color: string;
-  handleCountChange: (index: number, operator: string) => void;
+  onChange: Dispatch<SetStateAction<CartItemData[]>>;
 }
 
-const CartItem: React.FC<CartItemProps> = ({
-  index,
-  count,
-  name,
-  price,
-  color,
-  handleCountChange,
-}) => {
+const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, image, onChange }) => {
+  const handleIncreseCount = () => {
+    onChange((prevItems) =>
+      prevItems.map((item) => (item.id === id ? { ...item, count: item.count + 1 } : item)),
+    );
+  };
+  const handleDecreseCount = async () => {
+    onChange((prevItems) => {
+      const updatedItems = prevItems.map((item) => {
+        if (item.id === id) {
+          return { ...item, count: count - 1 };
+        }
+        return item;
+      });
+
+      // Update data
+      return updatedItems.filter((item) => item.count);
+    });
+    await axios.put(`${API_BACKEND_ENDPOINT}/api/carts/${id}/${count - 1}`);
+  };
+
   return (
     <div className={`${styles.CartItem} ${count <= 0 ? 'close' : ''}`}>
       <div className='CartItem-content'>
-        <img
-          src='https://images.unsplash.com/photo-1727619949691-f12d6ea1a8ed?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-          alt={name}
-        />
+        <img src={image} alt={name} />
         <div className='CartItem-info'>
           <p>{name}</p>
           <div className='CartItem-price'>
@@ -40,14 +53,11 @@ const CartItem: React.FC<CartItemProps> = ({
         </div>
       </div>
       <div className='CartItem-quanlity'>
-        <span onClick={() => handleCountChange(index, '-')}>
+        <span onClick={handleDecreseCount}>
           <Minus></Minus>
         </span>
-        <div className='CartItem-count'>
-          {' '}
-          <p>{count}</p>
-        </div>
-        <span onClick={() => handleCountChange(index, '+')}>
+        <p>{count}</p>
+        <span onClick={handleIncreseCount}>
           <Plus></Plus>
         </span>
       </div>

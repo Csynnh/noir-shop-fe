@@ -1,22 +1,42 @@
 import styles from './styles.module.scss';
 interface ButtonProps {
-  children: string;
-  onClick: () => void;
+  children: any;
+  onClick?: () => void;
   isPrimary?: boolean;
   icon?: React.ReactNode;
   className?: string;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 const Button = (props: ButtonProps) => {
-  const { children, onClick, isPrimary, icon, className } = props;
+  const { children, onClick, isPrimary, icon, className, loading, disabled } = props;
 
   return (
-    <div onClick={onClick} className={styles.Button}>
-      <div className={'button ' + (isPrimary ? ' --primary ' : '') + className}>
-        {icon}
-        <span>{children}</span>
+    <button
+      className={styles.Button + ' p-0'}
+      type='submit'
+      onClick={loading || disabled ? () => {} : onClick}
+    >
+      <div
+        className={
+          'button ' +
+          (isPrimary ? ' --primary ' : '') +
+          className +
+          (loading ? ' disable ' : '') +
+          (disabled ? ' disable ' : '')
+        }
+      >
+        {loading ? (
+          <div className='loading'></div>
+        ) : (
+          <>
+            {icon}
+            <span>{children}</span>
+          </>
+        )}
       </div>
-    </div>
+    </button>
   );
 };
 
