@@ -8,8 +8,14 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { CardItemProps } from '@components/CardItem';
 
+export enum Type {
+  BAGS = 'BAGS',
+  JACKETS = 'JACKETS',
+  'NEW COLLECTION' = 'NEW COLLECTION',
+}
+
 export interface CollectionType {
-  type: string;
+  type: Type;
   products: ProductType[];
 }
 
@@ -120,20 +126,22 @@ const Home = () => {
           <div className='w-10 h-10 rounded-full border-4 border-r-white animate-spin'></div>
         </div>
       ) : (
-        products.map((collection: CollectionType, index: number) => {
-          const listProducts: CardItemProps[] = collection.products.map((product) => {
-            return {
-              id: product.id || '',
-              name: product.name,
-              price: product.price,
-              color: product.variants.map((variant) => variant.color),
-              img_url: product.variants[0].images.imageThumbnail,
-            };
-          });
-          return (
-            <Collection key={index} type={collection.type} products={listProducts}></Collection>
-          );
-        })
+        products
+          .filter((collection: CollectionType) => collection.type in Type)
+          .map((collection: CollectionType, index: number) => {
+            const listProducts: CardItemProps[] = collection.products.map((product) => {
+              return {
+                id: product.id || '',
+                name: product.name,
+                price: product.price,
+                color: product.variants.map((variant) => variant.color),
+                img_url: product.variants[0].images.imageThumbnail,
+              };
+            });
+            return (
+              <Collection key={index} type={collection.type} products={listProducts}></Collection>
+            );
+          })
       )}
     </div>
   );

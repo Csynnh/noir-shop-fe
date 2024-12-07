@@ -192,19 +192,15 @@ const Checkout = () => {
         `${API_BACKEND_ENDPOINT}/api/orders`,
         {
           account_id: user?.account_id,
-          shipping_info: {
-            name: checkoutState.values.name,
-            phone: checkoutState.values.phone,
-            address: checkoutState.values.address,
-          },
-          shipping_method: checkoutState.values.shippingMethod,
-          payment_method: checkoutState.values.paymentMethod,
+          shippingMethod: checkoutState.values.shippingMethod,
+          paymentMethod: checkoutState.values.paymentMethod,
           products: checkoutState.values.products,
           userInfo: {
             address: checkoutState.values.address,
             name: checkoutState.values.name,
             phone: checkoutState.values.phone,
           },
+          price: subtotalOder,
         },
         {
           headers: {
@@ -313,7 +309,6 @@ const Checkout = () => {
     }
 
     dispatchCheckout({ type: 'SET_IS_VALID', isValid });
-    console.log(isValid);
     return isValid;
   };
 

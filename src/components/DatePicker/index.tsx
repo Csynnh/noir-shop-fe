@@ -10,10 +10,10 @@ import { Button } from '@ui/button';
 import { Calendar } from '@ui/calendar';
 import dayjs from 'dayjs';
 import { SelectSingleEventHandler } from 'react-day-picker';
-interface DatePickerProp{
-  className?:string;
+interface DatePickerProp {
+  className?: string;
 }
-const DatePicker = ({className}:DatePickerProp) => {
+const DatePicker = ({ className }: DatePickerProp) => {
   const [date, setDate] = React.useState<Date>(dayjs().toDate());
   const handleDateChange: SelectSingleEventHandler = (day: Date | undefined) => {
     if (day) {
@@ -27,7 +27,8 @@ const DatePicker = ({className}:DatePickerProp) => {
           variant={'outline'}
           className={cn(
             'w-[240px] justify-start text-left font-normal',
-            !date && 'text-muted-foreground',className
+            !date && 'text-muted-foreground',
+            className,
           )}
         >
           <CalendarIcon className='mr-2 h-4 w-4' />

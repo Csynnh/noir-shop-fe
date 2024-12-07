@@ -2,14 +2,15 @@ import Button from '@components/Button';
 import Checkbox from '@components/Checkbox';
 import Girl from '@components/Icons/Girl/girl';
 import Google from '@components/Icons/Google';
+import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import PhoneBold from '@components/Icons/PhoneBold';
 import Input from '@components/Input';
-import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { API_BACKEND_ENDPOINT, GOOGLE_CLIENT_ID } from '@constant/Api';
 import { useAuth } from '@contexts/AuthContext';
 import { Form } from 'antd';
 import axios from 'axios';
 import { useReducer, useState } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './SignIn.module.scss';
 import { toast } from 'sonner';
 import { Toaster } from '@ui/sonner';
@@ -63,6 +64,47 @@ const SignIn = () => {
   const [passwordState, dispatchPassword] = useReducer(formPasswordReducer, initialPasswordState);
   const [modelState, setModelState] = useState<ModelState | null>(null);
 
+  const onSuccess = async (user: CredentialResponse) => {
+    try {
+      const idToken = user.credential;
+      const result = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/google`, {
+        token: idToken,
+      });
+      if (result.status === 200) {
+        const userInfo = {
+          username: result.data.responseData?.username,
+          token: result.data.responseData?.token,
+          expiredTime: result.data.responseData?.expiredTime,
+          account_id: result.data.responseData?.accountId,
+          email: result.data.responseData?.email,
+          phone: result.data.responseData?.phoneNumber,
+          name: result.data.responseData?.name,
+        };
+        toast.success('Succesfully!', {
+          description: result.data.messageToClient,
+        });
+        saveUserInfo(userInfo);
+        setTimeout(() => {
+          navigater(from && from?.pathname ? from?.pathname : '/', {
+            state: { id: from?.productId ?? 'null' },
+          });
+        }, 1200);
+      }
+    } catch (error: any) {
+      toast.error('Error!', {
+        description:
+          'Error while signing in, please try again. ' +
+          (error.response.data.messageToClient ?? ''),
+      });
+    }
+  };
+
+  const onFailure = () => {
+    toast.error('Error!', {
+      description: 'Error while signing in, please try again',
+    });
+  };
+
   const handleSignIn = async () => {
     setLoading(true);
     try {
@@ -101,7 +143,6 @@ const SignIn = () => {
       }
       setLoading(false);
     } catch (error: any) {
-      console.log('error', error);
       toast.error('Error!', {
         description: error.response.data.messageToClient,
       });
@@ -117,7 +158,6 @@ const SignIn = () => {
     setLoading(true);
     try {
       const email = userEmail;
-      console.log('email :>> ', email);
       const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/request-otp/`, {
         email: email,
       });
@@ -256,7 +296,19 @@ const SignIn = () => {
                 </div>
               </Form>
               <div className='SignIn-nav-to-sign-up'>
-                If you don't have an account <Link to={'/sign-up'}>Sign up</Link> now
+                If you don't have an account{' '}
+                <Link
+                  to={'/sign-up'}
+                  state={{
+                    from: {
+                      pathname: from?.pathname,
+                      id: from?.productId ?? 'null',
+                    },
+                  }}
+                >
+                  Sign up
+                </Link>{' '}
+                now
               </div>
               <div className='SignIn-button'>
                 <Button
@@ -267,20 +319,15 @@ const SignIn = () => {
                 >
                   Sign in
                 </Button>
-                <Button
-                  onClick={() => {}}
-                  icon={<Google />}
-                  className='--text-sm'
-                  disabled={loading}
-                >
-                  Continue with Google
+                <Button icon={<Google />} className='--text-sm relative' disabled={loading}>
+                  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                    <div className='opacity-0 absolute w-full h-full top-0 left-0'>
+                      <GoogleLogin onSuccess={onSuccess} onError={onFailure} />
+                    </div>
+                    Continue with Google
+                  </GoogleOAuthProvider>
                 </Button>
-                <Button
-                  onClick={() => {}}
-                  icon={<PhoneBold />}
-                  className='--text-sm'
-                  disabled={loading}
-                >
+                <Button icon={<PhoneBold />} className='--text-sm' disabled={loading}>
                   Continue with Phone number
                 </Button>
               </div>

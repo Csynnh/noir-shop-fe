@@ -32,7 +32,6 @@ const Header = () => {
         const response = await axios.get(
           `${API_BACKEND_ENDPOINT}/api/products?name=${searchQuery}`,
         );
-        console.log('searchQuery :>> ', searchQuery);
         navigate(`/products/${searchQuery}`, {
           state: { id: response.data.responseData },
         });
@@ -44,16 +43,10 @@ const Header = () => {
   const handleSearchClick = () => {
     handleSearch();
   };
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
   // pre-check if user is logged in
   useEffect(() => {
     if (userInfo) {
       const isExpired = new Date(userInfo.expiredTime) < new Date();
-      console.log('userInfo :>> ', userInfo);
       if (!isExpired) {
         setIsSignedIn(true);
         return;

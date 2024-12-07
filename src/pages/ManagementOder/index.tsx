@@ -6,6 +6,7 @@ import { snakeToCapitalCase } from '@lib/utils';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
+import { Skeleton } from '@ui/skeleton';
 
 export enum OderType {
   ALL = 'ALL',
@@ -49,8 +50,6 @@ export type Order = {
 
 const ManagementOder = () => {
   const { user } = useAuth();
-  const location = useLocation();
-  const { id } = location.state || {};
   const [oderType, setOderType] = useState<OderType>(OderType.ALL);
   const [oderStatus, setOderStatus] = useState<{ status: OderType; count: number }[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -151,8 +150,14 @@ const ManagementOder = () => {
   return (
     <div className='w-full p-12'>
       <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Oder</h1>
-      {loading ? (
-        <div className='text-center'>Loading...</div>
+      {loading && !oderStatus.length ? (
+        <div className='grid grid-cols-5 '>
+          <Skeleton className='h-[162px] w-[360px] rounded-xl' />
+          <Skeleton className='h-[162px] w-[360px] rounded-xl' />
+          <Skeleton className='h-[162px] w-[360px] rounded-xl' />
+          <Skeleton className='h-[162px] w-[360px] rounded-xl' />
+          <Skeleton className='h-[162px] w-[360px] rounded-xl' />
+        </div>
       ) : (
         <div>
           <Tabs defaultValue={oderType} className='w-full' onValueChange={handleTabChange}>
@@ -185,11 +190,10 @@ const ManagementOder = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div className='mt-12'>
-              <TabsContent value={oderType}>
-                <OderTableData data={orders} oderType={oderType}></OderTableData>
-              </TabsContent>
-            </div>
+            <div className='mt-12'></div>
+            <TabsContent value={oderType} className='min-h-[600px] h-full'>
+              <OderTableData data={orders} oderType={oderType}></OderTableData>
+            </TabsContent>
           </Tabs>
         </div>
       )}

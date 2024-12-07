@@ -85,16 +85,13 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
     const { name, value } = e.target ?? e;
     const expectValue = name === 'image' ? (e.target as HTMLInputElement).files![0] : value;
     dispatch({ type: 'SET_FIELD', field: name, value: expectValue });
-    console.log(e);
   };
 
   const handleOk = () => {
-    console.log(formState);
     // Handle form submission (e.g., API call)
     dispatch({ type: 'RESET' });
   };
   const handleCancel = () => {
-    console.log('object');
     setIsOpen && setIsOpen(false);
   };
   return (

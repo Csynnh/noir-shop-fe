@@ -12,7 +12,7 @@ enum Routes {
   ManageProduct = '/admin',
   ManageOder = '/admin/manage-oder',
   AnalyzeRevenue = '/admin/analyze',
-  ManagementEmployee='/admin/manage-employee'
+  ManagementEmployee = '/admin/manage-employee',
 }
 
 const HeaderAdmin = () => {

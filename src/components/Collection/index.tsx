@@ -57,12 +57,6 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type, products
 
   return (
     <div ref={ref} className={styles.Collection}>
-      {/* <div className='new-collection-fillter-btn'>
-        <span className='new-collection-fillter-icon'>
-          <Filter></Filter>
-        </span>
-        <span className='new-collection-fillter-label'>Filter</span>
-      </div> */}
       <div className='collection-content'>
         <h2 className='collection-header'>{type}</h2>
         <div className='collection-wrapper'>

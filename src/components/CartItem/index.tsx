@@ -33,8 +33,7 @@ const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, imag
       // Update data
       return updatedItems.filter((item) => item.count);
     });
-    const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/carts/${id}/${count - 1}`);
-    console.log('response :>> ', response);
+    await axios.put(`${API_BACKEND_ENDPOINT}/api/carts/${id}/${count - 1}`);
   };
 
   return (
