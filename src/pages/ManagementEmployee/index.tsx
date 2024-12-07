@@ -1,27 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import styles from './ManagementEmployee.module.scss';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
-import { snakeToCapitalCase } from '@lib/utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
-import Filter from '@components/Icons/Filter';
-import Pagination from '@components/Pagination';
-import { Slider } from '@ui/slider';
 import Button from '@components/Button';
+import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
 import DatePicker from '@components/DatePicker';
 import AddNew from '@components/Icons/AddNew';
-import Search from '@components/Icons/Search';
-import EmployeeList from './Components/EmployeeList';
-import { Modal } from 'antd';
+import Filter from '@components/Icons/Filter';
 import Input from '@components/Input';
-import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
-import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { Console } from 'console';
 import { useAuth } from '@contexts/AuthContext';
-import { set } from 'lodash';
-import { toast } from 'sonner';
+import { snakeToCapitalCase } from '@lib/utils';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
 import { Toaster } from '@ui/sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
+import { Modal } from 'antd';
+import axios from 'axios';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import EmployeeList from './Components/EmployeeList';
+import styles from './ManagementEmployee.module.scss';
 enum EmployeeTab {
   INFORMATION = 'INFORMATION',
   SALARY = 'SALARY',
@@ -147,12 +142,6 @@ const ManagementEmployee = () => {
   };
 
   const addNewEmployee = async () => {
-    // console.log('name',name);
-    // console.log('position',position);
-    // console.log('sum-hours',manHours);
-    // console.log('hireDate',hired_date);
-    // console.log('email',email);
-    // console.log('phone',phone);
 
     // Validate email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -204,6 +193,7 @@ const ManagementEmployee = () => {
         });
         getListEmployees();
       }
+      setIsOpen && setIsOpen(false);
     } catch (error) {
       console.error('Failed to add new employee: ', error);
     }
@@ -329,7 +319,10 @@ const ManagementEmployee = () => {
                   {/* <Pagination data={data} onPageChange={handleChangePage}></Pagination> */}
                 </div>
                 <TabsContent value={EmployeeTab.INFORMATION}>
-                  <EmployeeList data={data} handleDeleteEmployee={handleDeleteEmployee}></EmployeeList>
+                  <EmployeeList
+                    data={data}
+                    handleDeleteEmployee={handleDeleteEmployee}
+                  ></EmployeeList>
                 </TabsContent>
               </div>
             </div>
@@ -338,7 +331,6 @@ const ManagementEmployee = () => {
       </div>
       <Modal
         open={isOpen}
-        // onOk={handleOk}
         onCancel={handleCancel}
         width={'30%'}
         footer={
