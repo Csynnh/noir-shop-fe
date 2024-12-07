@@ -36,12 +36,12 @@ const SignUp = () => {
               <Button isPrimary onClick={() => {}}>
                 Sign up
               </Button>
-              <Button onClick={() => {}} icon={<Google />} className='--text-sm'>
+              {/* <Button onClick={() => {}} icon={<Google />} className='--text-sm'>
                 Continue with Google
               </Button>
               <Button onClick={() => {}} icon={<PhoneBold />} className='--text-sm'>
                 Continue with Phone number
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
