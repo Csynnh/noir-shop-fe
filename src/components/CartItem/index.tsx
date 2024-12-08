@@ -48,7 +48,7 @@ const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, imag
           </div>
           <div className='CartItem-color'>
             <span>Color: </span>
-            <span>{color}</span>
+            <span className='w-4 h-4 rounded-full' style={{ backgroundColor: color }}></span>
           </div>
         </div>
       </div>

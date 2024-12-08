@@ -144,7 +144,6 @@ const Header = () => {
             },
           },
         );
-        console.log('response', response);
         const data: NotificationResponse[] = response.data.responseData;
         const newNotification = data.sort((a, b) => {
           if (a.is_read !== b.is_read) {
@@ -157,7 +156,6 @@ const Header = () => {
         console.log(data.map((item) => item.is_read).filter((item) => !item).length > 0);
       }
     } catch (error) {
-      toast.error('There was an error while fetching notifications. Please try again later.');
     }
   };
 
@@ -223,6 +221,7 @@ const Header = () => {
           isSignedIn={isSignedIn}
           onToggle={setIsCartOpen}
           account_id={userInfo?.account_id}
+          refetch={newNotify}
         ></MyCartTab>
       </div>
       <Toaster position='top-right' richColors></Toaster>

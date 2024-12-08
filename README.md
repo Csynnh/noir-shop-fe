@@ -1,52 +1,69 @@
 # React + TypeScript + Vite
+# Documentation for Installing Node.js, npm, and Running a React TypeScript Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Prerequisites
+- Ensure you have a terminal or command prompt available.
+- Administrative privileges may be required for some installation steps.
 
-Currently, two official plugins are available:
+## Step 1: Install Node.js and npm
+Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. npm is the package manager for Node.js.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **Download Node.js**:
+  - Visit the [Node.js official website](https://nodejs.org/).
+  - Download the LTS (Long Term Support) version for your operating system.
 
-## Expanding the ESLint configuration
+2. **Install Node.js**:
+  - Run the downloaded installer.
+  - Follow the installation prompts.
+  - Ensure that the option to install npm is selected.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+3. **Verify Installation**:
+  - Open a terminal or command prompt.
+  - Run the following commands to check the installed versions:
+    ```sh
+    node -v
+    npm -v
+    ```
+  - You should see the version numbers of Node.js and npm.
 
-- Configure the top-level `parserOptions` property like this:
+## Step 2: Set Environment Variables
+Setting environment variables allows your application to access configuration values securely and flexibly. These variables can be used to store sensitive information such as API keys, database URLs, and other configuration settings that should not be hard-coded in your source code.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
+1. **Add Environment Variables**:
+  - Create a `.env` file in the root of your project directory.
+  - Add the following environment variables to the `.env` file:
+    ```sh
+    REACT_APP_API_URL=https://api.example.com
+    REACT_APP_API_KEY=your_api_key_here
+    ```
+  - Replace the values with your actual API URL and API key in report file.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Step 3: Run the React TypeScript Project
+1. **Install Dependencies**:
+  - Navigate to your project directory in the terminal or command prompt.
+  - Run the following command to install the necessary dependencies:
+    ```sh
+    npm install
+    ```
 
-````js
-// eslint.config.js
-import react from 'eslint-plugin-react';
+2. **Start the Development Server**:
+  - After the dependencies are installed, start the development server by running:
+    ```sh
+    npm run dev
+    ```
+  - This will start the Vite development server and you should see output indicating that the server is running and the project is available at a local URL (e.g., `http://localhost:80`).
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-});
-```shell
-  mkdir -p ScrollToTop && cd ScrollToTop && touch index.tsx styles.module.scss
-````
+3. **Open the Project in a Browser**:
+  - Open your web browser and navigate to the local URL provided by the development server (e.g., `http://localhost:80`).
+  - You should see your React TypeScript project running in the browser.
+
+## Additional Resources
+- [Node.js Documentation](https://nodejs.org/en/docs/)
+- [npm Documentation](https://docs.npmjs.com/)
+- [React Documentation](https://reactjs.org/docs/getting-started.html)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+
+By following these steps, you will have a React TypeScript project up and running on your local machine.
+
+## Hosted Web URL
+- [Noir](https://noir-shop.online)

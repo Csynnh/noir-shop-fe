@@ -24,6 +24,7 @@ interface myCartProp {
   onToggle: any;
   toggleCart: () => void;
   account_id: any;
+  refetch?: boolean;
 }
 const MyCartTab: React.FC<myCartProp> = ({
   isOpen,
@@ -31,6 +32,7 @@ const MyCartTab: React.FC<myCartProp> = ({
   onToggle,
   toggleCart,
   account_id,
+  refetch
 }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -55,7 +57,7 @@ const MyCartTab: React.FC<myCartProp> = ({
     if (account_id) {
       fetchData();
     }
-  }, [account_id]); // condition loop of useEffect'
+  }, [account_id, refetch]); // condition loop of useEffect'
 
   useEffect(() => {
     if (cartItemList.length > 0) {
