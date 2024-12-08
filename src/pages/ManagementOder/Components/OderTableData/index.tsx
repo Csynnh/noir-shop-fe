@@ -316,7 +316,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
 
     try {
       selectedOrderIds.map(async (id) => {
-        await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
+        await axios.put(`${API_BACKEND_ENDPOINT}/api/orders/next-status/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -367,7 +367,8 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       if (response.status === 200) {
         const data = response.data.responseData;
         const order: Order = {
-          id: '#' + data.id.slice(0, 8),
+          // id: '#' + data.id.slice(0, 8),
+          id: data.id,
           customer: {
             name: data.user_info.name,
             address: data.user_info.address,

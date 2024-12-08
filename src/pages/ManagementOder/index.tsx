@@ -106,7 +106,7 @@ const ManagementOder = () => {
       });
       if (response.status === 200) {
         const mappedOrders: Order[] = response.data.responseData.map((item: any) => ({
-          id: '#' + item.id.slice(0, 8),
+          id: item.id,
           customer: {
             name: item.user_info.name,
             address: item.user_info.address,
