@@ -10,16 +10,16 @@ import { Button } from '@ui/button';
 import { Calendar } from '@ui/calendar';
 import dayjs from 'dayjs';
 import { SelectSingleEventHandler } from 'react-day-picker';
-interface DatePickerProp{
-  className?:string;
-  onChange?:(day: Date | undefined)=>void;
+interface DatePickerProp {
+  className?: string;
+  onChange?: (day: Date | undefined) => void;
 }
-const DatePicker = ({className, onChange}:DatePickerProp) => {
+const DatePicker = ({ className, onChange }: DatePickerProp) => {
   const [date, setDate] = React.useState<Date>(dayjs().toDate());
   const handleDateChange: SelectSingleEventHandler = (day: Date | undefined) => {
     if (day) {
       setDate(day);
-      onChange && onChange(day)
+      onChange && onChange(day);
     }
   };
   return (

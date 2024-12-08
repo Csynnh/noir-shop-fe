@@ -155,8 +155,7 @@ const Header = () => {
         setNewNotifty(data.map((item) => item.is_read).filter((item) => !item).length > 0);
         console.log(data.map((item) => item.is_read).filter((item) => !item).length > 0);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (

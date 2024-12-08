@@ -32,7 +32,7 @@ const MyCartTab: React.FC<myCartProp> = ({
   onToggle,
   toggleCart,
   account_id,
-  refetch
+  refetch,
 }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
   const [isEmpty, setIsEmpty] = useState(true);

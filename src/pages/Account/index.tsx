@@ -475,10 +475,6 @@ const Account = () => {
     }
   };
 
-  const handleDeleteAccount = () => {
-    console.log('Delete Account');
-  };
-
   const handleSignOut = () => {
     toast.success('Succesfully!', {
       description: 'You have been signed out',
@@ -521,9 +517,6 @@ const Account = () => {
             <AccountGirl></AccountGirl>
           </div>
           <div className='flex items-center gap-4 max-w-[360px] w-full'>
-            <Button onClick={handleDeleteAccount} className=''>
-              Delete Account
-            </Button>
             <Button onClick={handleSignOut} isPrimary className=''>
               Sign Out
             </Button>
@@ -767,6 +760,7 @@ const Account = () => {
           otpValue={otpValue}
           setOtpValue={setOtpValue}
           userInfo={userInfo}
+          type={modelState === ModelState.ACCOUNT_INFO ? 'account information' : 'password'}
         ></SubmitOTPModel>
       </>
 

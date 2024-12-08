@@ -83,6 +83,7 @@ const SignIn = () => {
           description: result.data.messageToClient,
         });
         saveUserInfo(userInfo);
+        console.log('from?.pathname', from?.pathname);
         setTimeout(() => {
           navigater(from && from?.pathname ? from?.pathname : '/', {
             state: { id: from?.productId ?? 'null' },
@@ -130,7 +131,7 @@ const SignIn = () => {
           if (location?.pathname === '/admin/sign-in') {
             navigater(from?.pathname);
           } else {
-            navigater(from ? from?.pathname : '/', {
+            navigater(from && from?.pathname ? from?.pathname : '/', {
               state: { id: from?.productId ?? 'null' },
             });
           }

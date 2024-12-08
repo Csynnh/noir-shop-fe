@@ -178,7 +178,6 @@ const ProductDetails = () => {
           account_id: user?.account_id,
           variant_product_id: ProductVariantSelected.id,
           quantity: ProductVariantSelected.count,
-
         },
         {
           headers: {

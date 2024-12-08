@@ -15,6 +15,7 @@ interface InputProps {
   defaultValue?: string;
   disabled?: boolean;
   error?: string;
+  className?: string;
 }
 const Input = ({
   label,
@@ -28,6 +29,7 @@ const Input = ({
   defaultValue,
   disabled,
   error,
+  className,
 }: InputProps) => {
   const typeValue = type || 'text';
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +53,7 @@ const Input = ({
     }
   };
   return (
-    <div className={styles.Input} style={{ maxWidth: maxWidth }}>
+    <div className={styles.Input + ' ' + className} style={{ maxWidth: maxWidth }}>
       <label htmlFor={name} className={`${error ? 'text-red-400' : ''}`}>
         {required ? '*' : ''} {label}
       </label>

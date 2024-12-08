@@ -13,7 +13,7 @@ import Button from '@components/Button';
 
 interface EmployeeItemProps {
   employee: Employee;
-  handleDeleteEmployee  : (id:string) => void;
+  handleDeleteEmployee: (id: string) => void;
 }
 const EmployeeItem = ({ employee, handleDeleteEmployee }: EmployeeItemProps) => {
   const [isModelOpen, setIsModelOpen] = React.useState(false);
@@ -22,8 +22,9 @@ const EmployeeItem = ({ employee, handleDeleteEmployee }: EmployeeItemProps) => 
       <div className='ManagementItem-container'>
         <div className='flex justify-between mt-[10px]'>
           <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
-            
-            <p onClick={()=>setIsModelOpen(true)}><Delete></Delete></p>
+            <p onClick={() => setIsModelOpen(true)}>
+              <Delete></Delete>
+            </p>
           </span>
           <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
             <Option></Option>
@@ -71,11 +72,12 @@ const EmployeeItem = ({ employee, handleDeleteEmployee }: EmployeeItemProps) => 
       >
         <div className=''>
           <h4 className='text-xl text-left mb-4'>Please confirm</h4>
-          <p className='text-sm mb-5'>Are you sure you want to delete {employee.position} {employee.name}?</p>
+          <p className='text-sm mb-5'>
+            Are you sure you want to delete {employee.position} {employee.name}?
+          </p>
         </div>
       </Modal>
     </div>
-    
   );
 };
 
