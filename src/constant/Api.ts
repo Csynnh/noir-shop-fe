@@ -13,3 +13,5 @@ export interface JwtPayload {
 
 export const PASSWORD = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/hash';
 export const ROLE = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+export const GOOGLE_CLIENT_ID =
+  '815968135131-6vrgbltmgkcvhmsimo4buelpe9keu1qo.apps.googleusercontent.com';

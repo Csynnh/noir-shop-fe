@@ -19,6 +19,13 @@ export const snakeToCapitalCase = (str: string) => {
     .join(' ');
 };
 
+const getDaySuffix = (day: number): string => {
+  if (day === 1 || day === 21 || day === 31) return 'st';
+  if (day === 2 || day === 22) return 'nd';
+  if (day === 3 || day === 23) return 'rd';
+  return 'th';
+};
+
 /**
  * Function to generate chart data from table data
  * Adds fixed points at intervals based on the chart type.
@@ -30,6 +37,42 @@ export const generateChartData = (
   data: TableRevenueRow[],
   chartUnit: ChartType,
 ): ChartDataPoint[] => {
+  if (data.length === 0) {
+    if (chartUnit === ChartType.DAILY) {
+      const intervalPoints: { [key: string]: number } = {};
+      for (let hour = 0; hour < 24; hour += 2) {
+        intervalPoints[`${hour.toString().padStart(2, '0')}:00`] = 0;
+      }
+      return Object.entries(intervalPoints).map(([unit, total]) => ({
+        unit,
+        total,
+      }));
+    } else if (chartUnit === ChartType.MONTHLY) {
+      const intervalPoints: { [key: string]: number } = {};
+      const daysInMonth = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() + 1,
+        0,
+      ).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        intervalPoints[`${day}${getDaySuffix(day)}`] = 0;
+      }
+      return Object.entries(intervalPoints).map(([unit, total]) => ({
+        unit,
+        total,
+      }));
+    } else if (chartUnit === ChartType.WEEKLY) {
+      const intervalPoints: { [key: string]: number } = {};
+      for (const day of DAYSOFWEEK) {
+        intervalPoints[day] = 0;
+      }
+      return Object.entries(intervalPoints).map(([unit, total]) => ({
+        unit,
+        total,
+      }));
+    }
+  }
+
   const INTERVAL_HOURS = 2;
 
   const initializeIntervalPoints = (): { [key: string]: number } => {
@@ -55,13 +98,6 @@ export const generateChartData = (
     }
 
     return intervalPoints;
-  };
-
-  const getDaySuffix = (day: number): string => {
-    if (day === 1 || day === 21 || day === 31) return 'st';
-    if (day === 2 || day === 22) return 'nd';
-    if (day === 3 || day === 23) return 'rd';
-    return 'th';
   };
 
   const populateIntervalPoints = (points: { [key: string]: number }): void => {

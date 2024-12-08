@@ -20,8 +20,9 @@ export interface ComboBoxProps {
   data: ComboBoxValueProps[];
   value: string;
   setValue: React.Dispatch<React.SetStateAction<ComboBoxValueProps | null>>;
+  classname?: string;
 }
-export const ComboBox = ({ data, value, setValue }: ComboBoxProps) => {
+export const ComboBox = ({ data, value, setValue, classname }: ComboBoxProps) => {
   const [open, setOpen] = React.useState(true);
 
   return (
@@ -31,13 +32,13 @@ export const ComboBox = ({ data, value, setValue }: ComboBoxProps) => {
           variant='link'
           role='combobox'
           aria-expanded={open}
-          className='w-[200px] justify-between '
+          className={'max-w-[200px] w-full justify-between ' + classname}
         >
           {value ? data.find((item) => item.value === value)?.label : 'Select item...'}
           <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-[200px] p-0'>
+      <PopoverContent className='max-w-[200px] p-0 w-full z-[99999999999999]'>
         <Command>
           <CommandInput placeholder='Search item...' />
           <CommandList>

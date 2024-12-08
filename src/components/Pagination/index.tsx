@@ -10,7 +10,7 @@ import {
 } from '@ui/pagination';
 
 interface PaginationProps {
-  data: ProductResponse | null;
+  data: any | null;
   onPageChange: (pageNumber: number) => void;
 }
 const Pagination = ({ data, onPageChange }: PaginationProps) => {

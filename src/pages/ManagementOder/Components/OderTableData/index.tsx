@@ -42,7 +42,6 @@ import {
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
 import OderItem from '@components/OderItem';
-import Address from '@components/Icons/Address';
 import { useLocation } from 'react-router-dom';
 
 const OderColumns: ColumnDef<Order>[] = [
@@ -236,10 +235,10 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
 
   const handlePrintOrder = async () => {
     // Get selected row data
-    const selectedOrders = Object.keys(rowSelection).map(
-      (index) => oderValues && oderValues[parseInt(index)]
-    ).filter(Boolean);
-  
+    const selectedOrders = Object.keys(rowSelection)
+      .map((index) => oderValues && oderValues[parseInt(index)])
+      .filter(Boolean);
+
     if (!selectedOrders.length) {
       Modal.info({
         title: 'No orders selected',
@@ -247,11 +246,11 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       });
       return;
     }
-  
+
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Orders');
-  
+
       // Add header
       worksheet.columns = [
         { header: 'Order Code', key: 'id', width: 20 },
@@ -262,7 +261,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
         { header: 'Total', key: 'total', width: 15 },
         { header: 'Order Detail', key: 'orderDetail', width: 20 },
       ];
-  
+
       // Add rows
       selectedOrders.forEach((order) => {
         worksheet.addRow({
@@ -272,13 +271,15 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
           phone: order?.customer?.phone,
           date: new Intl.DateTimeFormat('en-US').format(new Date(order?.date || '1970-01-01')),
           total: order?.total,
-          orderDetail: order?.details
+          orderDetail: order?.details,
         });
       });
-  
+
       // Export to Excel file
       const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -294,10 +295,8 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       });
     }
   };
-  
 
   const handleCancel = () => {
-    console.log('Cancel');
     setIsModelOpen(false);
   };
 
@@ -336,7 +335,6 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
     }
   };
   const handleShowOderDetails = (data: Order) => {
-    console.log(data);
     setSelectedOder(data);
   };
 
@@ -384,7 +382,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
             color: product.variants[0].Color,
             quantity: product.variants[0].Quantity,
             price: product.price,
-            image: product.variants[0].Images,
+            image: product.variants[0].Images.ImageThumbnail,
           })),
         };
         setSelectedOder(order);
@@ -578,7 +576,6 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
                 </ButtonCpn>
               )}
             </div>
-            
           </div>
 
           <Modal

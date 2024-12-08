@@ -140,7 +140,6 @@ const ManagementProduct = () => {
     setSize(mockDataSize[0]);
   }, []);
   const handleChangePrice = (value: number[]) => {
-    console.log('value', value);
     setPrice(value);
   };
   const handleFilter = () => {

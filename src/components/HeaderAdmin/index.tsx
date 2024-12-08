@@ -12,6 +12,7 @@ enum Routes {
   ManageProduct = '/admin',
   ManageOder = '/admin/manage-oder',
   AnalyzeRevenue = '/admin/analyze',
+  ManagementEmployee = '/admin/manage-employee',
 }
 
 const HeaderAdmin = () => {
@@ -64,8 +65,8 @@ const HeaderAdmin = () => {
           <span className=''>
             <Logo path='/admin'></Logo>
           </span>
-          <div className='flex-[0_0_50%] flex justify-end'>
-            <div className='flex items-center gap-4 flex-1'>
+          <div className='flex-[0_0_75%] flex justify-end '>
+            <div className='flex items-center gap-4 flex-1 mr-[20px]'>
               <div className='max-w-[180px] w-full'>
                 <Button
                   isPrimary={currentRoute == Routes.ManageProduct}
@@ -88,6 +89,14 @@ const HeaderAdmin = () => {
                   onClick={() => handleRoute(Routes.AnalyzeRevenue)}
                 >
                   Analyze Revenue
+                </Button>
+              </div>
+              <div className='max-w-[180px] w-full'>
+                <Button
+                  isPrimary={currentRoute == Routes.ManagementEmployee}
+                  onClick={() => handleRoute(Routes.ManagementEmployee)}
+                >
+                  Manage Employees
                 </Button>
               </div>
             </div>

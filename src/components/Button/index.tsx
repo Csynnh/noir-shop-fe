@@ -1,7 +1,7 @@
 import styles from './styles.module.scss';
 interface ButtonProps {
   children: any;
-  onClick: () => void;
+  onClick?: () => void;
   isPrimary?: boolean;
   icon?: React.ReactNode;
   className?: string;
@@ -13,9 +13,12 @@ const Button = (props: ButtonProps) => {
   const { children, onClick, isPrimary, icon, className, loading, disabled } = props;
 
   return (
-    <div className={styles.Button}>
+    <button
+      className={styles.Button + ' p-0'}
+      type='submit'
+      onClick={loading || disabled ? () => {} : onClick}
+    >
       <div
-        onClick={loading || disabled ? () => {} : onClick}
         className={
           'button ' +
           (isPrimary ? ' --primary ' : '') +
@@ -33,7 +36,7 @@ const Button = (props: ButtonProps) => {
           </>
         )}
       </div>
-    </div>
+    </button>
   );
 };
 
