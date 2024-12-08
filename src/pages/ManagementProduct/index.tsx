@@ -63,7 +63,9 @@ const ManagementProduct = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 6;
-  const totalPages = Math.ceil(filteredProducts.reduce((sum, group) => sum + group.products.length, 0) / itemsPerPage);
+  const totalPages = Math.ceil(
+    filteredProducts.reduce((sum, group) => sum + group.products.length, 0) / itemsPerPage,
+  );
 
   // Lấy danh sách sản phẩm từ API
   const getListProducts = async () => {
@@ -145,14 +147,17 @@ const ManagementProduct = () => {
 
   return (
     <>
-      <div className="w-full p-12">
-        <div className="flex flex-col gap-4 mb-6">
-          <h1 className="text-[40px] font-[gilroy-semibold] capitalize">Management Product</h1>
-
+      <div className='w-full p-12'>
+        <div className='flex flex-col gap-4 mb-6'>
+          <h1 className='text-[40px] font-[gilroy-semibold] capitalize'>Management Product</h1>
         </div>
 
         <div>
-          <Tabs defaultValue={productType.NEW_COLLECTION} className="w-full" onValueChange={handleChangTab}>
+          <Tabs
+            defaultValue={productType.NEW_COLLECTION}
+            className='w-full'
+            onValueChange={handleChangTab}
+          >
             <TabsList>
               {Object.values(productType).map((type) => (
                 <TabsTrigger key={type} value={type}>
@@ -161,31 +166,42 @@ const ManagementProduct = () => {
               ))}
             </TabsList>
 
-            <div className="mt-12 grid grid-cols-[20%_1fr] gap-20">
-              <div className="w-full">
-                <div className="flex items-center gap-3 mb-5">
+            <div className='mt-12 grid grid-cols-[20%_1fr] gap-20'>
+              <div className='w-full'>
+                <div className='flex items-center gap-3 mb-5'>
                   <Filter />
                   Filter
                 </div>
-                <div className="flex flex-col gap-3">
-                  <Accordion type="single" collapsible>
-                    <AccordionItem value="item-1">
+                <div className='flex flex-col gap-3'>
+                  <Accordion type='single' collapsible>
+                    <AccordionItem value='item-1'>
                       <AccordionTrigger>Size</AccordionTrigger>
-                      <AccordionContent className="p-4">
-                        <ComboBox data={mockDataSize} value={size?.value || ''} setValue={setSize} />
+                      <AccordionContent className='p-4'>
+                        <ComboBox
+                          data={mockDataSize}
+                          value={size?.value || ''}
+                          setValue={setSize}
+                        />
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
-                  <Accordion type="single" collapsible>
-                    <AccordionItem value="item-2">
+                  <Accordion type='single' collapsible>
+                    <AccordionItem value='item-2'>
                       <AccordionTrigger>Price</AccordionTrigger>
-                      <AccordionContent className="p-4 mb-2">
-                        <div className="flex items-center justify-between mb-2">
+                      <AccordionContent className='p-4 mb-2'>
+                        <div className='flex items-center justify-between mb-2'>
                           <span>$0.00</span>
                           <span>$1000.00</span>
                         </div>
-                        <Slider defaultValue={price} max={1000} step={1} onValueChange={handleChangePrice} />
-                        <p className="text-right font-[gilroy-light] mt-2 text-xs">${price[0].toFixed(2)}</p>
+                        <Slider
+                          defaultValue={price}
+                          max={1000}
+                          step={1}
+                          onValueChange={handleChangePrice}
+                        />
+                        <p className='text-right font-[gilroy-light] mt-2 text-xs'>
+                          ${price[0].toFixed(2)}
+                        </p>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -196,18 +212,21 @@ const ManagementProduct = () => {
               </div>
 
               <div className=''>
-                <div className="flex w-full justify-between items-center mb-4">
-                  <div className="flex items-center gap-3 cursor-pointer">
+                <div className='flex w-full justify-between items-center mb-4'>
+                  <div className='flex items-center gap-3 cursor-pointer'>
                     <span>
                       <AddNew />
                     </span>
-                    <span className="underline text-[15px]" onClick={() => setIsOpenCreateProdModel(true)}>
+                    <span
+                      className='underline text-[15px]'
+                      onClick={() => setIsOpenCreateProdModel(true)}
+                    >
                       Add New Product
                     </span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className='flex items-center gap-3'>
                     <button
-                      className="btn btn-secondary mr-2"
+                      className='btn btn-secondary mr-2'
                       onClick={() => handlePageChange('prev')}
                       disabled={currentPage === 1}
                     >
@@ -215,7 +234,7 @@ const ManagementProduct = () => {
                     </button>
                     <span>{`${currentPage} / ${totalPages}`}</span>
                     <button
-                      className="btn btn-secondary ml-2"
+                      className='btn btn-secondary ml-2'
                       onClick={() => handlePageChange('next')}
                       disabled={currentPage === totalPages}
                     >
@@ -226,29 +245,34 @@ const ManagementProduct = () => {
 
                 {/* danh sách sản phẩm */}
                 <div>
-                {filteredProducts.length > 0 ? (
-                  Object.values(productType).map((type) => (
-                    <TabsContent key={type} value={type}>
-                      <ProductList
-                        data={filteredProducts
-                          .find((item) => item.type === type)?.products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) || []}
-                      />
-                    </TabsContent>
-                  ))
-                ) : (
-                  <div>No products available</div>
-                )}
+                  {filteredProducts.length > 0 ? (
+                    Object.values(productType).map((type) => (
+                      <TabsContent key={type} value={type}>
+                        <ProductList
+                          data={
+                            filteredProducts
+                              .find((item) => item.type === type)
+                              ?.products.slice(
+                                (currentPage - 1) * itemsPerPage,
+                                currentPage * itemsPerPage,
+                              ) || []
+                          }
+                        />
+                      </TabsContent>
+                    ))
+                  ) : (
+                    <div>No products available</div>
+                  )}
+                </div>
               </div>
-              </div>
-
-
-              
             </div>
           </Tabs>
         </div>
       </div>
-
-      <CreateProductModel open={isOpenCreateProdModel} setIsOpen={setIsOpenCreateProdModel}></CreateProductModel>
+      <CreateProductModel
+        open={isOpenCreateProdModel}
+        setIsOpen={setIsOpenCreateProdModel}
+      ></CreateProductModel>
     </>
   );
 };

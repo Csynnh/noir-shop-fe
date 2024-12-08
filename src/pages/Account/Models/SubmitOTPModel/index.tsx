@@ -12,6 +12,7 @@ interface SubmitOTPModelProps {
   userInfo: any;
   otpValue: string;
   setOtpValue: (value: string) => void;
+  type?: string;
 }
 
 const SubmitOTPModel = ({
@@ -23,6 +24,7 @@ const SubmitOTPModel = ({
   userInfo,
   otpValue,
   setOtpValue,
+  type,
 }: SubmitOTPModelProps) => {
   return (
     <>
@@ -44,7 +46,8 @@ const SubmitOTPModel = ({
             <h2 className='text-3xl font-[channe] leading-[1.5]'>Confirm OTP</h2>
             <p className='leading-[2]'>
               Enter the code sent to{' '}
-              <span className='font-[gilroy-light-italic]'>{userInfo?.email}</span> to confirm change password
+              <span className='font-[gilroy-light-italic]'>{userInfo?.email}</span> to confirm
+              change {type || 'password'}
             </p>
           </div>
           <Form.Item className='mb-10'>

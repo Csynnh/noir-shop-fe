@@ -1,6 +1,5 @@
 import Button from '@components/Button';
 import AccountGirl from '@components/Icons/AccountGirl';
-import Canceled from '@components/Icons/Cancled';
 import Close from '@components/Icons/Close';
 import Edit from '@components/Icons/Edit';
 import Finished from '@components/Icons/Finished';
@@ -9,7 +8,7 @@ import Preparing from '@components/Icons/Preparing';
 import Returning from '@components/Icons/Returning';
 import Shipping from '@components/Icons/Shipping';
 import { ShippingInfo, ShippingResponse } from '@constant/Account';
-import { API_BACKEND_ENDPOINT, JwtPayload, PASSWORD } from '@constant/Api';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
 import { snakeToCapitalCase } from '@lib/utils';
 import {
@@ -23,7 +22,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@ui/alert-dialog';
-import { Toaster } from '@ui/sonner';
 import axios from 'axios';
 import { useEffect, useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -33,7 +31,6 @@ import ChangePasswordModel from './Models/ChangePasswordModel';
 import ChangeShippingInfoModel from './Models/ChangeShippingInfoModel';
 import SenOTPModel from './Models/SendOTPModel';
 import SubmitOTPModel from './Models/SubmitOTPModel';
-import { jwtDecode } from 'jwt-decode';
 import {
   formPasswordReducer,
   formShippingInfoReducer,
@@ -43,18 +40,36 @@ import {
   initialUserInfoState,
 } from './reducer';
 export enum OrderStatus {
-  HISTORY_PURCHASE = 'HISTORY_PURCHASE',
+  ALL = 'ALL',
+  CONFIRMING = 'CONFIRMING',
   PREPARING = 'PREPARING',
   SHIPPING = 'SHIPPING',
-  FINISHED = 'FINISHED',
-  CANCELED = 'CANCELED',
-  RETURNING = 'RETURNING',
+  COMPLETED = 'COMPLETED',
 }
 
 export enum ModelState {
   ACCOUNT_INFO = 'ACCOUNT_INFO',
   SHIPPING_INFO = 'SHIPPING_INFO',
   CHANGE_PASSWORD = 'CHANGE_PASSWORD',
+}
+
+interface ProductVariant {
+  Size: string;
+  Color: string;
+  Images: string;
+  Quantity: number;
+}
+
+interface Product {
+  name: string;
+  price: number;
+  inventory: number;
+  type: string;
+  variants: ProductVariant[];
+}
+interface OrderType {
+  id: string;
+  prods: Product[];
 }
 
 const mockData = {
@@ -96,9 +111,7 @@ const Account = () => {
     formShippingInfoReducer,
     initialShippingInfoState,
   );
-  const [selectedOderTracking, setSelectedOderTracking] = useState<OrderStatus>(
-    OrderStatus.HISTORY_PURCHASE,
-  );
+  const [selectedOderTracking, setSelectedOderTracking] = useState<string>(OrderStatus.ALL);
   const [otpValue, setOtpValue] = useState('');
   const [isAccountInfoModalOpen, setIsAccountInfoModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
@@ -108,6 +121,7 @@ const Account = () => {
   const [loading, setLoading] = useState(false);
   const [shippingInfoData, setShippingInfoData] = useState<ShippingInfo[] | []>([]);
   const [modelState, setModelState] = useState<ModelState | null>(null);
+  const [oderData, setOderData] = useState<OrderType[]>([]);
   // pre-check if user is logged in
   useEffect(() => {
     if (userInfo) {
@@ -121,8 +135,16 @@ const Account = () => {
       }
     }
     removeToken();
-    navigate('/sign-in');
-  }, []);
+    navigate('/sign-in', {
+      state: { from: '/account' },
+    });
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (userInfo && selectedOderTracking) {
+      getListOderStatus();
+    }
+  }, [userInfo, selectedOderTracking]);
 
   // Get user stored information
   const getListShippingInfo = async () => {
@@ -133,7 +155,6 @@ const Account = () => {
         {
           headers: {
             Authorization: `Bearer ${userInfo?.token}`,
-            
           },
         },
       );
@@ -152,6 +173,34 @@ const Account = () => {
     } catch (error: any) {
       toast.error('Error!', {
         description: error.response.data.messageToClient,
+      });
+    }
+    setLoading(false);
+  };
+
+  const getListOderStatus = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${API_BACKEND_ENDPOINT}/api/orders/account/${userInfo?.account_id}/status/${OrderStatus[selectedOderTracking as keyof typeof OrderStatus]}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo?.token}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const responseData = response.data.responseData;
+        setOderData(
+          responseData.map((item: any) => ({
+            id: '#' + item.id.slice(0, 8),
+            prods: item.list_products,
+          })),
+        );
+      }
+    } catch (error: any) {
+      toast.error('Error!', {
+        description: "Can't get order status",
       });
     }
     setLoading(false);
@@ -306,39 +355,6 @@ const Account = () => {
     setLoading(false);
   };
 
-  const handleRefetchAccountInfo = async () => {
-    setLoading(true);
-    try {
-      const decoded = jwtDecode<JwtPayload>(userInfo?.token!);
-      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/login`, {
-        username: userInfo?.username,
-        password: decoded[PASSWORD],
-      });
-      if (response.status === 200) {
-        toast.success('Succesfully!', {
-          description: response.data.messageToClient,
-        });
-
-        const newUserInfo: UserInfo = {
-          username: userInfo?.username!,
-          token: response.data.responseData?.token,
-          expiredTime: response.data.responseData?.expiredTime,
-          account_id: response.data.responseData?.accountId,
-          email: response.data.responseData?.email,
-          phone: response.data.responseData?.phoneNumber,
-          name: response.data.responseData?.name,
-        };
-        saveUserInfo(newUserInfo);
-      }
-    } catch (error: any) {
-      console.log('error', error);
-      toast.error('Error!', {
-        description: error.response.data.messageToClient,
-      });
-    }
-    setLoading(false);
-  };
-
   const handleSubmitOTP = async () => {
     setLoading(true);
     try {
@@ -459,10 +475,6 @@ const Account = () => {
     }
   };
 
-  const handleDeleteAccount = () => {
-    console.log('Delete Account');
-  };
-
   const handleSignOut = () => {
     toast.success('Succesfully!', {
       description: 'You have been signed out',
@@ -505,9 +517,6 @@ const Account = () => {
             <AccountGirl></AccountGirl>
           </div>
           <div className='flex items-center gap-4 max-w-[360px] w-full'>
-            <Button onClick={handleDeleteAccount} className=''>
-              Delete Account
-            </Button>
             <Button onClick={handleSignOut} isPrimary className=''>
               Sign Out
             </Button>
@@ -611,15 +620,18 @@ const Account = () => {
           <div className=''>
             <div className='mb-[50px] flex items-center justify-between'>
               <div className='flex flex-col justify-center items-center gap-2'>
-                <div
-                  className=''
-                  onClick={() => handleSelectOrderTracking(OrderStatus.HISTORY_PURCHASE)}
-                >
+                <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.ALL)}>
                   <HistoryPurchase
-                    isActive={selectedOderTracking === OrderStatus.HISTORY_PURCHASE}
+                    isActive={selectedOderTracking === OrderStatus.ALL}
                   ></HistoryPurchase>
                 </div>
                 <span className='text-sm'>History Purchase</span>
+              </div>
+              <div className='flex flex-col justify-center items-center gap-2'>
+                <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.CONFIRMING)}>
+                  <Returning isActive={selectedOderTracking === OrderStatus.CONFIRMING}></Returning>
+                </div>
+                <span className='text-sm'>Confirming</span>
               </div>
               <div className='flex flex-col justify-center items-center gap-2'>
                 <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.PREPARING)}>
@@ -634,71 +646,86 @@ const Account = () => {
                 <span className='text-sm'>Shipping</span>
               </div>
               <div className='flex flex-col justify-center items-center gap-2'>
-                <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.FINISHED)}>
-                  <Finished isActive={selectedOderTracking === OrderStatus.FINISHED}></Finished>
+                <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.COMPLETED)}>
+                  <Finished isActive={selectedOderTracking === OrderStatus.COMPLETED}></Finished>
                 </div>
                 <span className='text-sm'>Finished</span>
               </div>
-              <div className='flex flex-col justify-center items-center gap-2'>
-                <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.CANCELED)}>
-                  <Canceled isActive={selectedOderTracking === OrderStatus.CANCELED}></Canceled>
-                </div>
-                <span className='text-sm'>Canceled</span>
-              </div>
-              <div className='flex flex-col justify-center items-center gap-2'>
-                <div className='' onClick={() => handleSelectOrderTracking(OrderStatus.RETURNING)}>
-                  <Returning isActive={selectedOderTracking === OrderStatus.RETURNING}></Returning>
-                </div>
-                <span className='text-sm'>Returning</span>
-              </div>
             </div>
-            <div className='border-[0.5px] border-[#c9c5c9] px-8 py-[30px]'>
+            <div className='border-[0.5px] border-[#c9c5c9] px-8 py-[30px] max-h-[1000px] overflow-y-scroll'>
               <div className='flex items-center justify-between mb-6'>
-                <h5>{snakeToCapitalCase(selectedOderTracking)}</h5>
+                <h5>
+                  {snakeToCapitalCase(
+                    OrderStatus[selectedOderTracking as keyof typeof OrderStatus],
+                  )}
+                </h5>
                 <p className='text-sm font-[gilroy-light]'>
-                  Summary: <span className='font-[gilroy]'>{mockData.prods.length}</span> items
+                  Summary:{' '}
+                  <span className='font-[gilroy]'>
+                    {oderData.reduce((total, order) => {
+                      return (
+                        total +
+                        order.prods.reduce(
+                          (a, b) => a + b.variants.reduce((a, b) => a + b.Quantity, 0),
+                          0,
+                        )
+                      );
+                    }, 0)}
+                  </span>{' '}
+                  items
                 </p>
               </div>
-              <div className='bg-[#EBF4EB] py-5 px-8'>
-                <h5 className='mb-4 text-sm'>ID: {mockData.id}</h5>
-                <div className='flex flex-col gap-4'>
-                  {mockData.prods.map((prod) => (
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-2'>
-                        <div className='flex-[0_0_86px]'>
-                          <img src={prod.img} alt='' />
-                        </div>
-                        <div className=''>
-                          <h5 className='text-sm leading-[1.5]'>Product Name</h5>
-                          <div className='text-xs font-[gilroy-light]'>
-                            Color:{' '}
-                            <span
-                              className={`w-3 h-3 rounded-full bg-[${prod.color}] inline-block`}
-                            ></span>
+              {oderData.length ? (
+                oderData.map((order: OrderType) => (
+                  <div className='bg-[#EBF4EB] py-5 px-8 mb-4'>
+                    <h5 className='mb-4 text-xl'>ID: {order.id}</h5>
+                    <div className='flex flex-col gap-4'>
+                      {order.prods.map((prod) =>
+                        prod.variants.map((variant) => (
+                          <div className='flex items-center justify-between'>
+                            <div className='flex items-center gap-2 max-w-[400px] w-full'>
+                              <div className='flex-[0_0_86px] min-w-[86px] w-full'>
+                                <img src={variant.Images} alt='' />
+                              </div>
+                              <div className=''>
+                                <h5 className='text-sm leading-[1.5]'>{prod.name}</h5>
+                                <div className='text-xs font-[gilroy-light]'>
+                                  Color:{' '}
+                                  <span
+                                    className={`w-3 h-3 rounded-full bg-[${variant.Color}] inline-block`}
+                                  ></span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className='text-sm leading-[1.5] font-[gilroy-light]'>
+                              <span>{variant.Quantity}x</span>
+                            </div>
+                            <div className='text-sm leading-[1.5] font-[gilroy-light]'>
+                              <span>${prod.price.toFixed(2)}</span>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className='text-sm leading-[1.5] font-[gilroy-light]'>
-                        <span>{prod.quantity}x</span>
-                      </div>
-                      <div className='text-sm leading-[1.5] font-[gilroy-light]'>
-                        <span>${prod.price.toFixed(2)}</span>
+                        )),
+                      )}
+                      <div className='text-lg flex items-center justify-between pt-4 border-t border-[#c9c5c9]'>
+                        <span>Total:</span>
+                        <span>
+                          $
+                          {order.prods
+                            .reduce((total, product) => {
+                              return (
+                                total +
+                                product.price * product.variants.reduce((a, b) => a + b.Quantity, 0)
+                              );
+                            }, 0)
+                            .toFixed(2)}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                  <div className='flex items-center justify-between font-[gilroy-light] pt-4 border-t border-[#c9c5c9]'>
-                    <span>Total:</span>
-                    <span>
-                      $
-                      {mockData.prods
-                        .reduce((total, product) => {
-                          return total + product.price * product.quantity;
-                        }, 0)
-                        .toFixed(2)}
-                    </span>
                   </div>
-                </div>
-              </div>
+                ))
+              ) : (
+                <div className='text-center'>No data</div>
+              )}
             </div>
           </div>
         </div>
@@ -733,6 +760,7 @@ const Account = () => {
           otpValue={otpValue}
           setOtpValue={setOtpValue}
           userInfo={userInfo}
+          type={modelState === ModelState.ACCOUNT_INFO ? 'account information' : 'password'}
         ></SubmitOTPModel>
       </>
 
@@ -755,8 +783,6 @@ const Account = () => {
           loading={loading}
         ></ChangeShippingInfoModel>
       </>
-
-      <Toaster position='top-right' richColors />
     </div>
   );
 };

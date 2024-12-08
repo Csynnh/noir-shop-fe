@@ -5,15 +5,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@components/ui/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@components/ui/chart';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import {
+  CHARTCONFIG,
+  ChartDataPoint,
+  ChartType,
+  COLLECTION,
+  RevenueReportType,
+  TableRevenueRow,
+} from '@constant/Date';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
-import { ChartDataPoint, generateChartData, snakeToCapitalCase } from '@lib/utils';
+import { generateChartData, snakeToCapitalCase } from '@lib/utils';
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import {
   ColumnDef,
@@ -31,38 +34,13 @@ import { Button as ButtonCpn } from '@ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import axios from 'axios';
-import { groupBy } from 'lodash'; // Install lodash if you haven't: npm install lodash
+import { groupBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import styles from './styles.module.scss';
-export enum ChartType {
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-}
-
-const chartConfig = {
-  total: {
-    label: 'Total',
-    color: 'hsl(var(--chart-1))',
-  },
-} satisfies ChartConfig;
-
-export type TableRevenueRow = {
-  id: string;
-  itemCode: string;
-  itemName: string;
-  price: number;
-  unitsSold: number;
-  amount: number;
-  taxRate: number;
-  tax: number;
-  total: number;
-  createdAt: string;
-  type?: string;
-};
-
-const types = ['BAGS', 'JACKETS', 'NEW_COLLECTION'] as const;
+import ExcelJS from 'exceljs';
+import { toast } from 'sonner';
+import dayjs from 'dayjs';
 
 const OderColumns: ColumnDef<TableRevenueRow>[] = [
   {
@@ -232,17 +210,6 @@ const OderColumns: ColumnDef<TableRevenueRow>[] = [
   },
 ];
 
-type RevenueReportType = {
-  bestseller: {
-    name: string;
-    type: string;
-    unitsSold: number;
-  }[];
-  salesAmount: string;
-  salesTax: string;
-  salesTotal?: string;
-};
-
 const AnalyzeRevenue = () => {
   const { user } = useAuth();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -253,7 +220,6 @@ const AnalyzeRevenue = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [revenueReport, setRevenueReport] = useState<RevenueReportType | null>(null);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-  const [chartUnit, setChartUnit] = useState('time');
   const [chartType, setChartType] = useState(ChartType.DAILY);
   useEffect(() => {
     if (user) {
@@ -263,9 +229,9 @@ const AnalyzeRevenue = () => {
 
   useEffect(() => {
     if (oderValues?.length) {
-      const bestBags = findBestSeller(oderValues, types[0]);
-      const bestJackets = findBestSeller(oderValues, types[1]);
-      const bestNewCollection = findBestSeller(oderValues, types[2]);
+      const bestBags = findBestSeller(oderValues, COLLECTION[0]);
+      const bestJackets = findBestSeller(oderValues, COLLECTION[1]);
+      const bestNewCollection = findBestSeller(oderValues, COLLECTION[2]);
 
       const salesAmountValue = oderValues.reduce((sum, item) => sum + item.amount!, 0);
       const salesAmount = new Intl.NumberFormat('en-US', {
@@ -307,10 +273,9 @@ const AnalyzeRevenue = () => {
         salesTotal,
       };
       setRevenueReport(report);
-
-      const chartDatas = generateChartData(oderValues, chartType);
-      setChartData(chartDatas);
     }
+    const chartDatas = generateChartData(oderValues || [], chartType);
+    setChartData(chartDatas);
   }, [oderValues, chartType]);
 
   const table = useReactTable({
@@ -335,7 +300,7 @@ const AnalyzeRevenue = () => {
   const fetchRevenueData = async (user: UserInfo, type?: ChartType) => {
     try {
       const response = await axios.post(
-        `${API_BACKEND_ENDPOINT}/api/oder/retrieve-chart-data`,
+        `${API_BACKEND_ENDPOINT}/api/orders/retrieve-chart-data`,
         {
           chartType: type || ChartType.DAILY,
         },
@@ -347,19 +312,23 @@ const AnalyzeRevenue = () => {
       );
       if (response.status === 200) {
         const data = response.data.responseData;
-        const oderValues: TableRevenueRow[] = data.map((item: any) => ({
-          id: item.id?.slice(0, 8),
-          itemName: item.item_name,
-          price: item.price,
-          unitsSold: item.units_sold,
-          amount: item.price * item.units_sold,
-          taxRate: item.tax_rate / 100,
-          tax: (item.tax_rate * item.price * item.units_sold) / 100,
-          total:
-            item.price * item.units_sold - (item.tax_rate * item.price * item.units_sold) / 100,
-          createdAt: item.created_at,
-          type: item.type,
-        }));
+        const oderValues: TableRevenueRow[] = data.map((item: any) => {
+          const createdAt = new Date(item.created_at);
+          createdAt.setHours(createdAt.getHours() + 7);
+          return {
+            id: item.id?.slice(0, 8),
+            itemName: item.item_name,
+            price: item.price,
+            unitsSold: item.units_sold,
+            amount: item.price * item.units_sold,
+            taxRate: item.tax_rate / 100,
+            tax: (item.tax_rate * item.price * item.units_sold) / 100,
+            total:
+              item.price * item.units_sold - (item.tax_rate * item.price * item.units_sold) / 100,
+            createdAt: createdAt.toISOString(),
+            type: item.type,
+          };
+        });
         setOderValues(oderValues);
       }
     } catch (error) {
@@ -369,10 +338,7 @@ const AnalyzeRevenue = () => {
 
   const handleChangTab = async (value: string) => {
     if (!user) return;
-    const chartUnit =
-      value === ChartType.DAILY ? 'time' : value === ChartType.WEEKLY ? 'day' : 'date';
     await fetchRevenueData(user, value as ChartType);
-    setChartUnit(chartUnit);
     setChartType(value as ChartType);
   };
 
@@ -396,10 +362,58 @@ const AnalyzeRevenue = () => {
     return bestName;
   };
 
+  const handleExportListOder = () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet(`${chartType}_ODERS_${dayjs().format('YYYY_MM_DD')}`);
+
+      // Add header
+      worksheet.columns = [
+        { header: 'Id', key: 'id', width: 20 },
+        { header: 'Product Name', key: 'itemName', width: 30 },
+        { header: 'Price', key: 'price', width: 20 },
+        { header: 'Units Sold', key: 'unitsSold', width: 20 },
+        { header: 'Amount', key: 'amount', width: 20 },
+        { header: 'Tax Rate', key: 'taxRate', width: 20 },
+        { header: 'Tax', key: 'tax', width: 20 },
+        { header: 'Total', key: 'total', width: 20 },
+      ];
+
+      // Add data
+      oderValues?.forEach((row) => {
+        worksheet.addRow({
+          id: `#${row.id}`,
+          itemName: row.itemName,
+          price: `$${row.price.toFixed(2)}`,
+          unitsSold: row.unitsSold,
+          amount: `$${row.amount.toFixed(2)}`,
+          taxRate: `${row.taxRate}%`,
+          tax: `$${row.tax.toFixed(2)}`,
+          total: `$${row.total.toFixed(2)}`,
+        });
+      });
+
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${chartType}_ODERS_${dayjs().format('YYYY_MM_DD')}.xlsx`;
+        a.click();
+      });
+    } catch (error) {
+      toast.error('Error!', {
+        description: 'Error exporting orders ' + error,
+      });
+    }
+  };
+
   return (
     <div className={styles.Analyze}>
       <div className='Analyze-heading'>
-        <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Product</h1>
+        <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Analyze Revenue</h1>
       </div>
       <Tabs defaultValue={ChartType.DAILY} className='w-full' onValueChange={handleChangTab}>
         <TabsList>
@@ -420,7 +434,7 @@ const AnalyzeRevenue = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className='mb-10'>
-                    <ChartContainer config={chartConfig} className='max-h-[500px] w-full'>
+                    <ChartContainer config={CHARTCONFIG} className='max-h-[500px] w-full'>
                       <AreaChart
                         accessibilityLayer
                         data={chartData}
@@ -432,21 +446,7 @@ const AnalyzeRevenue = () => {
                         }}
                       >
                         <CartesianGrid vertical={false} />
-                        <XAxis
-                          dataKey={chartUnit}
-                          tickLine={false}
-                          axisLine={false}
-                          tickMargin={8}
-                          tickFormatter={(value) => {
-                            const time = value.toString().split(':');
-                            if (
-                              (parseInt(time[0]) % 4 === 0 && parseInt(time[1]) === 0) ||
-                              parseInt(time[0]) == 23
-                            )
-                              return `${time[0]}:${time[1]}`;
-                            return '';
-                          }}
-                        />
+                        <XAxis dataKey={'unit'} tickLine={false} axisLine={false} tickMargin={8} />
                         <YAxis />
                         <ChartTooltip
                           cursor={false}
@@ -512,7 +512,7 @@ const AnalyzeRevenue = () => {
                                 <span className='font-[gilroy-bold] text-[var(--main-color)]'>
                                   Sales total:
                                 </span>
-                                <span>{revenueReport?.salesAmount}</span>
+                                <span>{revenueReport?.salesTotal}</span>
                               </div>
                             </div>
                           </div>
@@ -596,6 +596,15 @@ const AnalyzeRevenue = () => {
                             Next
                           </ButtonCpn>
                         </div>
+                      </div>
+                      <div className='mt-2'>
+                        <ButtonCpn
+                          className='py-3'
+                          disabled={table.getRowModel().rows?.length === 0}
+                          onClick={handleExportListOder}
+                        >
+                          Export List Order Now
+                        </ButtonCpn>
                       </div>
                     </div>
                   </CardFooter>

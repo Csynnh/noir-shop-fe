@@ -9,8 +9,125 @@ import Mail from '@components/Icons/Mail';
 import Input from '@components/Input';
 import Button from '@components/Button';
 import { Form, Select } from 'antd';
+import { useEffect, useReducer, useState, useTransition } from 'react';
+import { toast } from 'sonner';
+import axios from 'axios';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+
+interface ContactFormState {
+  name: string;
+  phone: string;
+  message: string;
+  gender: string;
+  subject: string;
+}
+
+const initialContactFormState: ContactFormState = {
+  name: '',
+  phone: '',
+  message: '',
+  gender: '',
+  subject: '',
+};
+
+const contactFormReducer = (state: ContactFormState, action: any): ContactFormState => {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    case 'RESET':
+      return initialContactFormState;
+    default:
+      return state;
+  }
+};
 
 const Contact = () => {
+  const [isPending, startTransition] = useTransition();
+  const [contactFormState, dispatch] = useReducer(contactFormReducer, initialContactFormState);
+  const [error, setError] = useState<Partial<ContactFormState>>(initialContactFormState);
+  const handleSendContact = async () => {
+    const sendContact = async () => {
+      const errors = validateForm();
+      if (Object.keys(errors).length > 0) {
+        console.log('error', errors);
+        toast.error('Error!', {
+          description: Object.values(errors).join(', '),
+        });
+        return;
+      }
+      try {
+        const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/contact`, {
+          userName: contactFormState.name,
+          userGender: contactFormState.gender,
+          userPhone: contactFormState.phone,
+          typeOfProduct: contactFormState.subject,
+          message: contactFormState.message,
+        });
+
+        if (response.data) {
+          toast.success('Success!', {
+            description: 'Send contact successfully',
+          });
+          dispatch({ type: 'RESET' });
+          return;
+        }
+        throw new Error('Error when send contact');
+      } catch (error) {
+        toast.error('Error!', {
+          description: 'Error when send contact',
+        });
+      }
+    };
+
+    startTransition(() => {
+      sendContact();
+    });
+  };
+
+  useEffect(() => {
+    console.log('isPending', isPending);
+  }, [isPending]);
+
+  const handleFieldChange = (field: string, value: any) => {
+    dispatch({ type: 'SET_FIELD', field, value });
+    if (error && error[field as keyof ContactFormState]) {
+      setError({
+        ...error,
+        [field]: undefined,
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Partial<ContactFormState> = {};
+
+    if (!contactFormState.name) {
+      errors.name = 'Name is required';
+    }
+
+    if (!contactFormState.phone) {
+      errors.phone = 'Phone is required';
+    }
+
+    if (!contactFormState.message) {
+      errors.message = 'Message is required';
+    }
+
+    if (!contactFormState.gender) {
+      errors.gender = 'Gender is required';
+    }
+
+    if (!contactFormState.subject) {
+      errors.subject = 'Subject is required';
+    }
+
+    setError(errors);
+    return errors;
+  };
+
   return (
     <div className={styles.Contact}>
       <div className='Contact-container'>
@@ -91,11 +208,22 @@ const Contact = () => {
             </div>
             <div className='Contact-infor'>
               <div className='Contact-select'>
-                <Input name='name' label='Your Name' required></Input>
-                <div className='Contact-gender'>
+                <Input
+                  name='name'
+                  label='Your Name'
+                  className={`${error?.name ? 'text-red-400 [&>input]:border-red-400 ' : ''}`}
+                  required
+                  defaultValue={contactFormState.name}
+                  onChange={(event) => handleFieldChange('name', event.target.value)}
+                ></Input>
+                <div
+                  className={`Contact-gender  ${error?.gender ? 'text-red-400 !border-red-400 border-b-[0.5px]' : ''}`}
+                >
                   <p>* Your Gender</p>
                   <Select
+                    value={contactFormState.gender}
                     showSearch
+                    onChange={(value) => handleFieldChange('gender', value)}
                     filterOption={(input, option) =>
                       (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                     }
@@ -108,14 +236,25 @@ const Contact = () => {
                 </div>
               </div>
               <div className='Contact-select'>
-                <Input name='phone' label='Your Phone' required></Input>
+                <Input
+                  name='phone'
+                  label='Your Phone'
+                  className={`${error?.phone ? 'text-red-400 [&>input]:border-red-400 ' : ''}`}
+                  required
+                  defaultValue={contactFormState.phone}
+                  onChange={(event) => handleFieldChange('phone', event.target.value)}
+                ></Input>
               </div>
             </div>
             <div className='Contact-infor'>
-              <div className='Contact-type'>
+              <div
+                className={`Contact-type  ${error?.subject ? 'text-red-400 !border-red-400 border-b-[0.5px]' : ''}`}
+              >
                 <p>* What subject do you want to know ?</p>
                 <Select
+                  value={contactFormState.subject}
                   showSearch
+                  onChange={(value) => handleFieldChange('subject', value)}
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
@@ -126,9 +265,21 @@ const Contact = () => {
                   ]}
                 />
               </div>
-              <Input name='message' label='Your massage' required></Input>
+              <Input
+                name='message'
+                className={`${error?.message ? 'text-red-400 [&>input]:border-red-400 ' : ''}`}
+                label='Your massage'
+                required
+                defaultValue={contactFormState.message}
+                onChange={(event) => handleFieldChange('message', event.target.value)}
+              ></Input>
             </div>
-            <Button className='btn_submitContact' onClick={() => {}} isPrimary>
+            <Button
+              className='btn_submitContact'
+              onClick={handleSendContact}
+              loading={isPending}
+              isPrimary
+            >
               Send now
             </Button>
           </Form>

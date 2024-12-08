@@ -1,7 +1,10 @@
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { useAuth } from '@contexts/AuthContext';
+import { Modal } from 'antd';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
+import ExcelJS from 'exceljs';
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -39,6 +42,7 @@ import {
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
 import OderItem from '@components/OderItem';
+import { useLocation } from 'react-router-dom';
 
 const OderColumns: ColumnDef<Order>[] = [
   {
@@ -190,62 +194,146 @@ export interface OderTableDataProps {
   oderType?: OderType | null;
 }
 export function OderTableData({ data, oderType }: OderTableDataProps) {
+  const { user } = useAuth();
+  const location = useLocation();
+  const oderId = location.state?.id;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedOder, setSelectedOder] = React.useState<Order | null>(null);
-  const defaultValue = oderType
-    ? oderType === OderType.ALL
-      ? data
-      : data?.filter((item) => item.status === oderType)
-    : null;
-  const [oderValues, setOderValues] = React.useState<Order[] | null>(defaultValue as Order[]);
+  const [isModelOpen, setIsModelOpen] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [oderValues, setOderValues] = React.useState<Order[] | null>(data as Order[]);
+
+  React.useEffect(() => {
+    if (data?.length) {
+      let values = data;
+      if (oderType !== OderType.ALL) {
+        values = data?.filter((item) => item.status === oderType);
+      }
+      setOderValues(values);
+      setSelectedOder(values[0]);
+      setRowSelection({ 0: true });
+    }
+  }, [data, oderType]);
+
+  React.useEffect(() => {
+    if (user && oderId) {
+      fetchOrderById(user, oderId);
+    }
+  }, [oderId]);
 
   const handleSubmitOder = async () => {
     // Get selected row data
     const selectedOrderIds = Object.keys(rowSelection).map(
-      (index) => oderValues && oderValues[parseInt(index)].id
+      (index) => oderValues && oderValues[parseInt(index)].id,
     );
 
-    if (!selectedOrderIds.length) {
-      alert('No orders selected.');
+    setIsModelOpen(true);
+  };
+
+  const handlePrintOrder = async () => {
+    // Get selected row data
+    const selectedOrders = Object.keys(rowSelection)
+      .map((index) => oderValues && oderValues[parseInt(index)])
+      .filter(Boolean);
+
+    if (!selectedOrders.length) {
+      Modal.info({
+        title: 'No orders selected',
+        content: 'Please select at least one order to print.',
+      });
       return;
     }
-  
-    const confirmUpdate = window.confirm(`Update status for ${selectedOrderIds.length} orders?`);
-    if (!confirmUpdate) return;
-  
+
     try {
-      const promises = selectedOrderIds.map(async (id) => {
-        const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Orders');
+
+      // Add header
+      worksheet.columns = [
+        { header: 'Order Code', key: 'id', width: 20 },
+        { header: 'Customer Name', key: 'customerName', width: 30 },
+        { header: 'Address', key: 'address', width: 30 },
+        { header: 'Phone', key: 'phone', width: 30 },
+        { header: 'Date', key: 'date', width: 20 },
+        { header: 'Total', key: 'total', width: 15 },
+        { header: 'Order Detail', key: 'orderDetail', width: 20 },
+      ];
+
+      // Add rows
+      selectedOrders.forEach((order) => {
+        worksheet.addRow({
+          id: order?.id,
+          customerName: order?.customer?.name,
+          address: order?.customer?.address,
+          phone: order?.customer?.phone,
+          date: new Intl.DateTimeFormat('en-US').format(new Date(order?.date || '1970-01-01')),
+          total: order?.total,
+          orderDetail: order?.details,
+        });
+      });
+
+      // Export to Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Orders.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      Modal.error({
+        title: 'Error',
+        content: 'An error occurred while exporting the orders.',
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModelOpen(false);
+  };
+
+  const handleOK = async () => {
+    // Get selected row data
+    const selectedOrderIds = Object.keys(rowSelection).map(
+      (index) => oderValues && oderValues[parseInt(index)].id,
+    );
+    if (!selectedOrderIds.length) {
+      Modal.info({
+        title: 'No orders selected',
+        content: 'Please select at least one order to update.',
+      });
+      setIsModelOpen(false);
+      return;
+    }
+
+    try {
+      selectedOrderIds.map(async (id) => {
+        await axios.put(`${API_BACKEND_ENDPOINT}/api/oder/next-status/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
         });
       });
-  
-      const results = await Promise.allSettled(promises);
-      const successCount = results.filter((result) => result.status === 'fulfilled').length;
-      const failureCount = results.filter((result) => result.status === 'rejected').length;
-  
-      alert(
-        `${successCount} order(s) updated successfully.\n${failureCount} order(s) failed to update.`
-      );
-  
-      if (successCount > 0) {
-        setRowSelection({});
-        window.location.reload();
-      }
     } catch (error) {
       console.error('Error updating orders:', error);
-      alert('An error occurred while updating orders.');
+      Modal.error({
+        title: 'Error',
+        content: 'An error occurred while updating orders.',
+      });
+    } finally {
+      window.location.reload();
+      setIsModelOpen(false);
     }
   };
-  
-  
-
   const handleShowOderDetails = (data: Order) => {
     setSelectedOder(data);
   };
@@ -269,6 +357,44 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
     },
   });
 
+  const fetchOrderById = async (user: UserInfo, id: string) => {
+    try {
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/orders/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 200) {
+        const data = response.data.responseData;
+        const order: Order = {
+          id: '#' + data.id.slice(0, 8),
+          customer: {
+            name: data.user_info.name,
+            address: data.user_info.address,
+            phone: data.user_info.phone,
+          },
+          date: data.created_at,
+          total: data.total,
+          status: data.status,
+          details: data.list_products.map((product: any) => ({
+            id: product.id,
+            name: product.name,
+            color: product.variants[0].Color,
+            quantity: product.variants[0].Quantity,
+            price: product.price,
+            image: product.variants[0].Images.ImageThumbnail,
+          })),
+        };
+        setSelectedOder(order);
+        const oderIndex = oderValues?.findIndex((item) => item.id === order.id).toString();
+        const rowSelection = { [oderIndex as string]: true };
+        setRowSelection(rowSelection);
+      }
+    } catch (error) {
+      console.error('Failed to fetch order by id:', error);
+    }
+  };
+
   return (
     <div className='flex gap-10'>
       <div className='max-w-[70%] w-full'>
@@ -285,11 +411,15 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               onChange={(event) => table.getColumn('customer')?.setFilterValue(event.target.value)}
               className='max-w-sm'
             />
-            <div className='max-w-[220px] w-full ml-auto'>
+            <div className='max-w-[220px] w-full ml-auto flex gap-2'>
               <ButtonCpn
                 onClick={handleSubmitOder}
                 className='py-3'
-                disabled={oderType === OderType.ALL || !Object.keys(rowSelection).length}
+                disabled={
+                  oderType === OderType.ALL ||
+                  !Object.keys(rowSelection).length ||
+                  oderType === OderType.SUCCESSFULLY
+                }
               >
                 Submit selected Oder
               </ButtonCpn>
@@ -425,7 +555,9 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
               </div>
               <div className='h-[242px] mb-8'>
                 <div className='checkout-oder-list-wrap w-full flex gap-6 flex-col pr-4 overflow-y-auto h-full'>
-                  {selectedOder.details?.map((order, index) => <OderItem key={index} variant={order} />)}
+                  {selectedOder.details?.map((order, index) => (
+                    <OderItem key={index} variant={order} />
+                  ))}
                 </div>
               </div>
               <div className='pt-3 border-t-[0.5px] border-t-[#837F83] flex items-center justify-between'>
@@ -433,7 +565,37 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
                 <p>${selectedOder.total.toFixed(2)}</p>
               </div>
             </div>
+            <div className='mt-2'>
+              {oderType === OderType.NEED_CONFIRM && (
+                <ButtonCpn
+                  onClick={handlePrintOrder}
+                  className='py-3'
+                  disabled={!Object.keys(rowSelection).length}
+                >
+                  Print List Order Now
+                </ButtonCpn>
+              )}
+            </div>
           </div>
+
+          <Modal
+            open={isModelOpen}
+            onOk={handleOK}
+            onCancel={handleCancel}
+            footer={[
+              <Button key='back' onClick={handleCancel} disabled={loading}>
+                Cancle
+              </Button>,
+              <Button key='submit' isPrimary loading={loading} onClick={handleOK}>
+                OK
+              </Button>,
+            ]}
+          >
+            <div className=''>
+              <h4 className='text-xl text-left mb-4'>Update status for orders?</h4>
+              <p className='text-sm mb-5'>Are you sure you want to proceed?</p>
+            </div>
+          </Modal>
         </>
       )}
     </div>

@@ -33,23 +33,22 @@ const CartItem: React.FC<CartItemProps> = ({ id, count, name, price, color, imag
       // Update data
       return updatedItems.filter((item) => item.count);
     });
-    const response = await axios.put(`${API_BACKEND_ENDPOINT}/api/carts/${id}/${count - 1}`);
-    console.log('response :>> ', response);
+    await axios.put(`${API_BACKEND_ENDPOINT}/api/carts/${id}/${count - 1}`);
   };
 
   return (
-    <div className={styles.CartItem}>
+    <div className={`${styles.CartItem} ${count <= 0 ? 'close' : ''}`}>
       <div className='CartItem-content'>
         <img src={image} alt={name} />
         <div className='CartItem-info'>
           <p>{name}</p>
           <div className='CartItem-price'>
             <span>Price: </span>
-            <p>{price}</p>
+            <p>$ {price}</p>
           </div>
           <div className='CartItem-color'>
             <span>Color: </span>
-            <span>{color}</span>
+            <span className='w-4 h-4 rounded-full' style={{ backgroundColor: color }}></span>
           </div>
         </div>
       </div>

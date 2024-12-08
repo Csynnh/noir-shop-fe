@@ -14,7 +14,6 @@ interface OderItemProps {
   };
 }
 const OderItem = ({ data, onChange, variant }: OderItemProps) => {
-  console.log(data);
   const [count, setCount] = useState(
     data?.variants?.reduce((acc, item) => acc + item?.count!, 0) || 1,
   );
@@ -32,7 +31,7 @@ const OderItem = ({ data, onChange, variant }: OderItemProps) => {
     <div className={styles.OderItem}>
       <div className='oder-item'>
         <div className='oder-item-image'>
-          <img src={data?.variants?.[0].image} alt='oder item' />
+          <img src={variant?.image || ''} alt='oder item' />
         </div>
         <div className='oder-item-info'>
           <div className='oder-item-name'>{data?.name}</div>

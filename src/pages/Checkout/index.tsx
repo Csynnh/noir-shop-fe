@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ui/select';
-import { Toaster } from '@ui/sonner';
 import { Form, Modal, Radio, RadioChangeEvent, Space } from 'antd';
 import axios from 'axios';
 import { useEffect, useReducer, useState } from 'react';
@@ -189,22 +188,18 @@ const Checkout = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${API_BACKEND_ENDPOINT}/api/oder`,
+        `${API_BACKEND_ENDPOINT}/api/orders`,
         {
           account_id: user?.account_id,
-          shipping_info: {
-            name: checkoutState.values.name,
-            phone: checkoutState.values.phone,
-            address: checkoutState.values.address,
-          },
-          shipping_method: checkoutState.values.shippingMethod,
-          payment_method: checkoutState.values.paymentMethod,
+          shippingMethod: checkoutState.values.shippingMethod,
+          paymentMethod: checkoutState.values.paymentMethod,
           products: checkoutState.values.products,
           userInfo: {
             address: checkoutState.values.address,
             name: checkoutState.values.name,
             phone: checkoutState.values.phone,
           },
+          price: subtotalOder,
         },
         {
           headers: {
@@ -219,8 +214,7 @@ const Checkout = () => {
         dispatchCheckout({ type: 'RESET' });
         setTimeout(() => {
           navigator('/');
-        }
-        , 2000);
+        }, 2000);
       }
     } catch (error: any) {
       toast.error('Error!', {
@@ -314,7 +308,6 @@ const Checkout = () => {
     }
 
     dispatchCheckout({ type: 'SET_IS_VALID', isValid });
-    console.log(isValid);
     return isValid;
   };
 
@@ -589,7 +582,6 @@ const Checkout = () => {
             </div>
           </Modal>
         </>
-        <Toaster position='top-right' richColors />
       </div>
     </div>
   );
