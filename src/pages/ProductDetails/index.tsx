@@ -454,7 +454,7 @@ const ProductDetails = () => {
                 </span>
               </div>
             </div>
-            <div className='item-feedback'>
+            {/* <div className='item-feedback'>
               <h3 className='item-feedback-header'>Feedback</h3>
               <div className='item-feedback-list'>
                 <div className='item-feedback-content'>
@@ -526,15 +526,6 @@ const ProductDetails = () => {
                     book.
                   </p>
                   <div className='item-feedback-images'>
-                    {/* <div className="item-feedback-image">
-                      <img src="https://via.placeholder.com/168" alt="feedback image" />
-                    </div>
-                    <div className="item-feedback-image">
-                      <img src="https://via.placeholder.com/168" alt="feedback image" />
-                    </div>
-                    <div className="item-feedback-image">
-                      <img src="https://via.placeholder.com/168" alt="feedback image" />
-                    </div> */}
                   </div>
                 </div>
                 <div className='item-feedback-content'>
@@ -578,7 +569,7 @@ const ProductDetails = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             {collection?.type ? (
               <Collection
                 type={collection?.type || ''}
