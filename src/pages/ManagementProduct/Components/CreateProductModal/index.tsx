@@ -1,65 +1,64 @@
 import Button from '@components/Button';
-import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
-import Upload from '@components/Icons/Upload';
+import { ColorPicker } from '@components/ColorPicker';
 import Input from '@components/Input';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
-import styles from './index.module.scss';
-import { Modal, Select } from 'antd';
-import React, { useReducer } from 'react';
+import { Selection } from '@components/Selection';
+import { UploadImage } from '@components/UploadImage';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { useAuth } from '@contexts/AuthContext';
+import { ProductType } from '@pages/Home';
+import { Checkbox } from '@ui/checkbox';
+import { Form, Modal } from 'antd';
+import axios from 'axios';
+import React, { useEffect, useReducer, useState } from 'react';
+import { toast } from 'sonner';
 
 interface CreateProductModelProps {
   open?: boolean;
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  refetch?: (value: boolean) => void;
+  data?: ProductType | null;
 }
 interface FormState {
   name: string;
-  image: File;
+  imageThubnail: File | null;
+  additionalImageFirst: File | null;
+  additionalImageSecond: File | null;
+  additionalImageThird: File | null;
+  additionalImageFourd: File | null;
   collection: string;
-  // type: string;
-  // size: string;
-  // color: string;
-  // inventory: number;
-  // price: number;
-  // material: string;
+  size: string;
+  color: string;
+  inventory: number | string;
+  price: number | string;
+  material: string;
+  dimensions: string;
+  waterproof: boolean;
+  productDesc: string;
+  sortDescription: string;
+  origin: string;
+  careInstructions: string;
 }
 
 type Action = { type: 'SET_FIELD'; field: string; value: any } | { type: 'RESET' };
-const mockData = [
-  {
-    label: 'Jacket',
-    value: 'Jacket',
-  },
-  {
-    label: 'Bag',
-    value: 'Bag',
-  },
-  {
-    label: 'Shirt',
-    value: 'Shirt',
-  },
-  {
-    label: 'Pants',
-    value: 'Pants',
-  },
-  {
-    label: 'Shoes',
-    value: 'Shoes',
-  },
-  {
-    label: 'Hat',
-    value: 'Hat',
-  },
-];
 const initialState: FormState = {
   name: '',
-  // type: 'Jacket',
-  // size: 'XS',
-  // color: '',
-  // inventory: 0,
-  // price: 0,
-  // material: '',
-  image: new File([''], 'filename'),
-  collection: 'Jacket',
+  size: 'XS',
+  color: '#000000',
+  inventory: 0,
+  price: 0,
+  material: '',
+  imageThubnail: null,
+  additionalImageFirst: null,
+  additionalImageSecond: null,
+  additionalImageThird: null,
+  additionalImageFourd: null,
+  collection: 'JACKETS',
+  dimensions: '',
+  waterproof: false,
+  productDesc: '',
+  sortDescription: '',
+  origin: '',
+  careInstructions: '',
 };
 
 const formReducer = (state: FormState, action: Action): FormState => {
@@ -76,171 +75,235 @@ const formReducer = (state: FormState, action: Action): FormState => {
   }
 };
 
-const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
+const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductModelProps) => {
+  const { user } = useAuth();
   const [formState, dispatch] = useReducer(formReducer, initialState);
-  const [collection, setCollection] = React.useState<ComboBoxValueProps | null>({
-    label: 'Jacket',
-    value: 'Jacket',
-  });
+  const [errors, setErrors] = useState<Partial<FormState>>({});
+  const [isPending, setIsPending] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      const price = data.price.toString();
+      const inventory = data.variants.reduce((acc, cur) => acc + cur.inventory, 0).toString();
+      console.log(price, inventory);
+      dispatch({ type: 'SET_FIELD', field: 'name', value: data.name });
+      dispatch({ type: 'SET_FIELD', field: 'size', value: data.variants[0].size });
+      dispatch({ type: 'SET_FIELD', field: 'color', value: data.variants[0].color });
+      dispatch({ type: 'SET_FIELD', field: 'inventory', value: inventory });
+      dispatch({ type: 'SET_FIELD', field: 'price', value: price });
+      dispatch({ type: 'SET_FIELD', field: 'material', value: data.details.material });
+      dispatch({ type: 'SET_FIELD', field: 'dimensions', value: data.details.dimensions });
+      dispatch({ type: 'SET_FIELD', field: 'waterproof', value: data.details.waterproof });
+      dispatch({ type: 'SET_FIELD', field: 'productDesc', value: data.description });
+      dispatch({ type: 'SET_FIELD', field: 'sortDescription', value: data.details.shortDesc });
+      dispatch({ type: 'SET_FIELD', field: 'origin', value: data.details.origin });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'careInstructions',
+        value: data.details.careInstructions,
+      });
+    }
+  }, [data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target ?? e;
-    const expectValue = name === 'image' ? (e.target as HTMLInputElement).files![0] : value;
+    const expectValue = [
+      'imageThubnail',
+      'additionalImageFirst',
+      'additionalImageSecond',
+      'additionalImageThird',
+      'additionalImageFourd',
+    ].includes(name)
+      ? (e.target as HTMLInputElement).files![0]
+      : value;
     dispatch({ type: 'SET_FIELD', field: name, value: expectValue });
+    if (errors[name as keyof FormState]) {
+      setErrors((prev) => {
+        delete prev[name as keyof FormState];
+        return prev;
+      });
+    }
   };
 
-  const handleOk = () => {
-    // Handle form submission (e.g., API call)
-    dispatch({ type: 'RESET' });
+  const handleOk = async () => {
+    if (!user?.token) return;
+    setIsPending(true);
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      toast.error('Error!', {
+        description: Object.values(errors).join(', '),
+      });
+      return;
+    }
+    try {
+      // Call API to add product to store
+      const formData = new FormData();
+      formData.append('ProductName', formState.name);
+      formData.append('ProductDescription', formState.productDesc);
+      formData.append('Price', formState.price.toString());
+      formData.append('Inventory', formState.inventory.toString());
+      formData.append('Size', formState.size);
+      formData.append('Type', formState.collection);
+      formData.append('Color', formState.color);
+      formData.append('Details.Material', formState.material);
+      formData.append('Details.Dimensions', formState.dimensions);
+      formData.append('Details.Waterproof', formState.waterproof.toString());
+      formData.append('Details.Origin', formState.origin);
+      formData.append('Details.CareInstructions', formState.careInstructions);
+      formData.append('Details.ShortDesc', formState.sortDescription);
+      formData.append('Images.ImageThumbnail', formState.imageThubnail as File);
+      formData.append('Images.AdditionalImages', formState.additionalImageFirst as File);
+      formData.append('Images.AdditionalImages', formState.additionalImageSecond as File);
+      formData.append('Images.AdditionalImages', formState.additionalImageThird as File);
+      formData.append('Images.AdditionalImages', formState.additionalImageFourd as File);
+      console.log('formState', formState);
+      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/products`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 201) {
+        toast.success('Success!', {
+          description: 'Add product to store successfully',
+        });
+        dispatch({ type: 'RESET' });
+        refetch && refetch(true);
+      } else {
+        throw new Error('Error when add product to store');
+      }
+    } catch (error) {
+      toast.error('Error!', {
+        description: 'Error when add product to store',
+      });
+    }
+    setIsOpen && setIsOpen(false);
+    setIsPending(false);
   };
+
   const handleCancel = () => {
     setIsOpen && setIsOpen(false);
   };
+
+  const validateForm = () => {
+    const errors: Partial<FormState> = {};
+
+    if (!formState.name) {
+      errors.name = 'Name is required';
+    }
+    if (!formState.material) {
+      errors.material = 'Material is required';
+    }
+    if (!formState.productDesc) {
+      errors.productDesc = 'Product description is required';
+    }
+    if (!formState.sortDescription) {
+      errors.sortDescription = 'Sort description is required';
+    }
+    if (!formState.origin) {
+      errors.origin = 'Origin is required';
+    }
+    if (!formState.careInstructions) {
+      errors.careInstructions = 'Care instructions is required';
+    }
+    if ((formState.inventory as number) <= 0) {
+      errors.inventory = 'Inventory must be greater than 0';
+    }
+    if ((formState.price as number) <= 0) {
+      errors.price = 'Price must be greater than 0';
+    }
+
+    if (!formState.dimensions) {
+      errors.dimensions = 'Dimensions is required';
+    }
+
+    setErrors(errors);
+    return errors;
+  };
+
   return (
-    <Modal
-      open={open}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      width={'90%'}
-      footer={
-        [
-          // <Button key='back' onClick={handleCancel} loading={false}>
-          //   Cancle
-          // </Button>,
-          // <Button key='submit' isPrimary loading={false} onClick={handleOk}>
-          //   Save
-          // </Button>,
-        ]
-      }
-    >
-      <form className='grid grid-cols-1 md:grid-cols-3 gap-14'>
+    <Modal open={open} onCancel={handleCancel} width={'90%'} footer={[]}>
+      <Form className='grid grid-cols-1 md:grid-cols-3 gap-14 px-5 py-5'>
         {/* Cột 1: Hình ảnh, tên sản phẩm, loại sản phẩm */}
-        <div>
-          {/* Hình ảnh 1 */}
-          <div className="mb-12">
-            <label className="w-full h-[50px] border-[0.5px] border-dashed border-[#837F83] flex items-center pl-10 gap-6 px-3 cursor-pointer">
-              <input
-                type='file'
-                accept='image/png, image/jpg'
-                name='image1'
-                onChange={handleChange}
-                className='mt-1 w-full px-3 py-2 border border-gray-300 rounded-md hidden'
-              />
-              <Upload />
-              <div>
-                <p className="text-[13px]">
-                  Drop your image here, or <span className="font-[gilroy-bold]">browse</span>
-                </p>
-                {formState.image ? (
-                  <p className="font-[gilroy-light] text-[12px]">{formState.image.name}</p>
-                ) : (
-                  <p className="font-[gilroy-light] text-[12px]">Supports JPG, PNG</p>
-                )}
-              </div>
-            </label>
+        <div className='flex flex-col justify-between'>
+          <div className='mb-10'>
+            <UploadImage
+              name='imageThubnail'
+              label='Image Thumbnail'
+              onChange={handleChange}
+              className={`h-[140px] [&>img]:h-full ${errors.imageThubnail ? 'border-red-400 text-red-400' : ''}`}
+              image={
+                data
+                  ? {
+                      url: data.variants[0].images.imageThumbnail,
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageFirst'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data.variants[0].images.additionalImages[0],
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageFirst ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageSecond'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data.variants[0].images.additionalImages[1],
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageSecond ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageThird'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data.variants[0].images.additionalImages[2],
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageThird ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageFourd'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data.variants[0].images.additionalImages[3],
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageFourd ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
           </div>
+          <div className=''></div>
+        </div>
 
-
-          {/* Hình ảnh 2 */}
-          <div className="mb-12 mt-[-40px]">
-            <label className="w-full h-[50px] border-[0.5px] border-dashed border-[#837F83] flex items-center pl-10 gap-6 px-3 cursor-pointer">
-              <input
-                type='file'
-                accept='image/png, image/jpg'
-                name='image2'
-                onChange={handleChange}
-                className='mt-1 w-full px-3 py-2 border border-gray-300 rounded-md hidden'
-              />
-              <Upload />
-              <div>
-                <p className="text-[13px]">
-                  Drop your image here, or <span className="font-[gilroy-bold]">browse</span>
-                </p>
-                {formState.image ? (
-                  <p className="font-[gilroy-light] text-[12px]">{formState.image.name}</p>
-                ) : (
-                  <p className="font-[gilroy-light] text-[12px]">Supports JPG, PNG</p>
-                )}
-              </div>
-            </label>
-          </div>
-
-
-          {/* Hình ảnh 3 */}
-          <div className="mb-12 mt-[-40px]">
-            <label className="w-full h-[50px] border-[0.5px] border-dashed border-[#837F83] flex items-center pl-10 gap-6 px-3 cursor-pointer">
-              <input
-                type='file'
-                accept='image/png, image/jpg'
-                name='image3'
-                onChange={handleChange}
-                className='mt-1 w-full px-3 py-2 border border-gray-300 rounded-md hidden'
-              />
-              <Upload />
-              <div>
-                <p className="text-[13px]">
-                  Drop your image here, or <span className="font-[gilroy-bold]">browse</span>
-                </p>
-                {formState.image ? (
-                  <p className="font-[gilroy-light] text-[12px]">{formState.image.name}</p>
-                ) : (
-                  <p className="font-[gilroy-light] text-[12px]">Supports JPG, PNG</p>
-                )}
-              </div>
-            </label>
-          </div>
-
-
-          {/* Hình ảnh 4 */}
-          <div className="mb-12 mt-[-40px]">
-            <label className="w-full h-[50px] border-[0.5px] border-dashed border-[#837F83] flex items-center pl-10 gap-6 px-3 cursor-pointer">
-              <input
-                type='file'
-                accept='image/png, image/jpg'
-                name='image4'
-                onChange={handleChange}
-                className='mt-1 w-full px-3 py-2 border border-gray-300 rounded-md hidden'
-              />
-              <Upload />
-              <div>
-                <p className="text-[13px]">
-                  Drop your image here, or <span className="font-[gilroy-bold]">browse</span>
-                </p>
-                {formState.image ? (
-                  <p className="font-[gilroy-light] text-[12px]">{formState.image.name}</p>
-                ) : (
-                  <p className="font-[gilroy-light] text-[12px]">Supports JPG, PNG</p>
-                )}
-              </div>
-            </label>
-          </div>
-
-
-          {/* Hình ảnh 5 */}
-          <div className="mb-12 mt-[-40px]">
-            <label className="w-full h-[50px] border-[0.5px] border-dashed border-[#837F83] flex items-center pl-10 gap-6 px-3 cursor-pointer">
-              <input
-                type='file'
-                accept='image/png, image/jpg'
-                name='image5'
-                onChange={handleChange}
-                className='mt-1 w-full px-3 py-2 border border-gray-300 rounded-md hidden'
-              />
-              <Upload />
-              <div>
-                <p className="text-[13px]">
-                  Drop your image here, or <span className="font-[gilroy-bold]">browse</span>
-                </p>
-                {formState.image ? (
-                  <p className="font-[gilroy-light] text-[12px]">{formState.image.name}</p>
-                ) : (
-                  <p className="font-[gilroy-light] text-[12px]">Supports JPG, PNG</p>
-                )}
-              </div>
-            </label>
-          </div>
-
-
+        {/* Cột 2: Size, Màu sắc, Tồn kho, Giá và Chất liệu */}
+        <div className='flex flex-col gap-4'>
+          {/* Kích cỡ */}
 
           {/* Tên sản phẩm */}
           <div className='mb-4'>
@@ -248,48 +311,32 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='name'
               label='Name of Product'
               onChange={handleChange}
+              defaultValue={formState.name}
+              className={`${errors.name ? '[&>input]:border-red-400 text-red-400' : ''}`}
             ></Input>
           </div>
-
 
           {/* Loại sản phẩm */}
           <div className='mb-4'>
-            <Input
-              name='name'
-              label='Type of Product'
-              // onChange={handleChange}
-              onChange={(value) => handleChange({ target: { name: 'collection', value } } as any)}
-            // filterOption={(input, option) =>
-            //   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            // }
-            // options={mockData}
-            ></Input>
-          </div>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Collection</label>
 
-
-          {/* Màu sắc */}
-          <div className='mb-4'>
-            <Input
-              type='text'
-              name='color'
-              label='Color'
+            <Selection
+              name='collection'
+              data={[
+                { value: 'JACKETS', label: 'Jackets' },
+                { value: 'BAGS', label: 'Bags' },
+                { value: 'NEW_COLLECTION', label: 'New Collection' },
+              ]}
               onChange={handleChange}
-            ></Input>
+              value={formState.collection}
+              classname='max-w-full'
+            ></Selection>
           </div>
-
-        </div>
-
-        {/* Cột 2: Size, Màu sắc, Tồn kho, Giá và Chất liệu */}
-        <div className='flex flex-col gap-4'>
-          {/* Kích cỡ */}
           <div className='mb-4'>
             <label className='block text-sm font-medium text-gray-700'>Size</label>
-            <Select
-              id='size'
-              className='w-full mt-3'
-              // defaultValue={formState.size}
-              onChange={(value) => handleChange({ target: { name: 'size', value } } as any)}
-              options={[
+            <Selection
+              name='size'
+              data={[
                 { value: 'XS', label: 'XS' },
                 { value: 'S', label: 'S' },
                 { value: 'M', label: 'M' },
@@ -298,39 +345,22 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
                 { value: 'XXL', label: 'XXL' },
                 { value: '3XL', label: '3XL' },
               ]}
-            />
-          </div>
-
-
-          <div className="mb-4 row flex justify-content-between">
-            {/* Tỉ lệ */}
-            <Input
-              type="text"
-              name="dimensions"
-              label="Dimensions"
-              maxWidth={150}
               onChange={handleChange}
-            />
-
-
-            <div className='row ml-[120px]'>
-              {/* Chống nước */}
-              <Input
-                type="checkbox"
-                name="waterproof"
-                label="Waterproof"
-                onChange={handleChange}
-              />
-            </div>
-
-
-
-
+              classname='max-w-full'
+              value={formState.size}
+            ></Selection>
           </div>
+          {/* Màu sắc */}
+          <div className='mb-4 '>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
 
-
-
-
+            <ColorPicker
+              setBackground={handleChange}
+              name='color'
+              background={formState.color}
+              className='max-w-full'
+            ></ColorPicker>
+          </div>
 
           {/* Tồn kho */}
           <div className='mb-4 mt-4 flex items-end'>
@@ -339,25 +369,61 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='inventory'
               label='Inventory'
               onChange={handleChange}
+              defaultValue={formState.inventory.toString()}
+              className={`${errors.inventory ? '[&>input]:border-red-400 text-red-400' : ''}`}
             ></Input>
-            <span className="ml-3">items</span>
+            <span className='ml-3'>items</span>
           </div>
 
-
-
           {/* Giá */}
-          <div className='mb-4 flex items-end' >
+          <div className='mb-4 flex items-end'>
             <Input
               type='number'
               name='price'
               label='Price'
               onChange={handleChange}
+              defaultValue={formState.price.toString()}
+              className={`${errors.price ? '[&>input]:border-red-400 text-red-400' : ''}`}
             ></Input>
-            <span className="ml-3">$/item</span>
+            <span className='ml-3'>$/item</span>
           </div>
+        </div>
 
+        {/* Cột 3: Specification, Feature, Sort Description, Additional Information */}
+        <div className='flex flex-col gap-4'>
+          <div className='mb-4 row flex justify-content-between'>
+            {/* Tỉ lệ */}
+            <Input
+              type='text'
+              name='dimensions'
+              label='Dimensions'
+              onChange={handleChange}
+              defaultValue={formState.dimensions}
+              className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
+            />
 
-
+            <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
+              <label
+                htmlFor='waterproof'
+                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+              >
+                Waterproof
+              </label>
+              <Checkbox
+                className='p-0'
+                id='waterproof'
+                name='waterproof'
+                onChange={() => {
+                  dispatch({
+                    type: 'SET_FIELD',
+                    field: 'waterproof',
+                    value: !formState.waterproof,
+                  });
+                }}
+                checked={formState.waterproof}
+              />
+            </div>
+          </div>
           {/* Chất liệu */}
           <div className='mb-4 rounded'>
             <Input
@@ -365,13 +431,10 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='material'
               label='Material'
               onChange={handleChange}
+              defaultValue={formState.material}
+              className={`${errors.material ? '[&>input]:border-red-400 text-red-400' : ''}`}
             ></Input>
           </div>
-        </div>
-
-
-        {/* Cột 3: Specification, Feature, Sort Description, Additional Information */}
-        <div className='flex flex-col gap-4'>
           {/* Specification */}
           <div className='mb-4'>
             <Input
@@ -379,9 +442,10 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='productDesc'
               label='Product Description'
               onChange={handleChange}
+              defaultValue={formState.productDesc}
+              className={`${errors.productDesc ? '[&>input]:border-red-400 text-red-400' : ''}`}
             ></Input>
           </div>
-
 
           {/* Sort Description */}
           <div className='mb-4 mt-4'>
@@ -390,6 +454,8 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='sortDescription'
               label='Sort description of product'
               onChange={handleChange}
+              defaultValue={formState.sortDescription}
+              className={`${errors.sortDescription ? '[&>input]:border-b-red-400 text-red-400' : ''}`}
             ></Input>
           </div>
 
@@ -400,22 +466,10 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='origin'
               label='Origin'
               onChange={handleChange}
+              defaultValue={formState.origin}
+              className={`${errors.origin ? '[&>input]:border-b-red-400 text-red-400' : ''}`}
             ></Input>
           </div>
-
-          {/* Feature */}
-          {/* <div className='mb-4 mt-6'>
-            <Input
-              type='text'
-              name='feature'
-              label='Feature'
-              onChange={handleChange}
-            ></Input>
-          </div> */}
-
-
-
-
 
           {/* Additional Information */}
           <div className='mb-4 mt-3'>
@@ -424,26 +478,19 @@ const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
               name='careInstructions'
               label='Care Instructions'
               onChange={handleChange}
+              defaultValue={formState.careInstructions}
+              className={`${errors.careInstructions ? '[&>input]:border-b-red-400 text-red-400' : ''}`}
             ></Input>
           </div>
 
-
           {/* Add to store Button */}
           <div className='mb-4'>
-            <Button
-              key='add-to-store'
-              isPrimary
-              onClick={() => {
-                console.log("Product added to store", formState);
-                // Handle adding to store logic here
-              }}
-            >
+            <Button isPrimary onClick={handleOk} loading={isPending}>
               Add to store
             </Button>
           </div>
         </div>
-      </form>
-
+      </Form>
     </Modal>
   );
 };

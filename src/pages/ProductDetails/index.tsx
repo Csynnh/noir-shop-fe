@@ -172,6 +172,11 @@ const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     try {
+      // pre-check user loged in
+      if (!user) {
+        setIsModelSignInOpen(true);
+        return;
+      }
       const response = await axios.post(
         `${API_BACKEND_ENDPOINT}/api/carts`,
         {
@@ -604,7 +609,7 @@ const ProductDetails = () => {
         >
           <div className=''>
             <h4 className='text-xl text-left mb-4'>Please sign in to continue</h4>
-            <p className='text-sm mb-5'>You need to sign in to continue the purchase process</p>
+            <p className='text-sm mb-5'>You need to sign in to continue the process</p>
           </div>
         </Modal>
       </>

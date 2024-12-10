@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
 import Button from '@components/Button';
 import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
 import AddNew from '@components/Icons/AddNew';
 import Filter from '@components/Icons/Filter';
-import Pagination from '@components/Pagination';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { snakeToCapitalCase } from '@lib/utils';
+import { ProductType, ProductVariantType } from '@pages/Home';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
 import { Slider } from '@ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
-import ProductList from './Components/ProductList';
-import { snakeToCapitalCase } from '@lib/utils';
-import { Modal } from 'antd';
-import CreateProductModel from './Components/CreateProductModal';
 import axios from 'axios';
-import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { ProductType, ProductVariantType } from '@pages/Home';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import CreateProductModel from './Components/CreateProductModal';
+import ProductList from './Components/ProductList';
+import { Toaster } from '@ui/sonner';
 
 enum productType {
   NEW_COLLECTION = 'NEW_COLLECTION',
@@ -25,14 +24,19 @@ enum productType {
 export interface Product {
   id: number;
   name: string;
-  desc: string;
-  detail: string;
+  description: string;
+  details: {
+    
+  };
   price: number;
-  inventory?: number;
   variants: {
     size: string;
     color: string;
-    image: string;
+    images: {
+      imageThumbnail: string;
+      additionalImages: string[];
+    };
+    inventory?: number;
   }[];
 }
 
@@ -60,7 +64,7 @@ const ManagementProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [products, setProducts] = useState<any[]>([]); // All products
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Filtered products
-
+  const [refetch, setRefetch] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 6;
   const totalPages = Math.ceil(
@@ -82,12 +86,7 @@ const ManagementProduct = () => {
             name: product.name,
             description: product.description,
             price: product.price,
-            variants: product.variants.map((variant: ProductVariantType) => ({
-              color: variant.color,
-              size: variant.size,
-              inventory: variant.inventory,
-              image: variant.images.imageThumbnail,
-            })),
+            variants: product.variants,
             details: product.details,
           })),
         }));
@@ -106,7 +105,7 @@ const ManagementProduct = () => {
   // Gọi API khi component mount
   useEffect(() => {
     getListProducts();
-  }, []);
+  }, [refetch]);
 
   const handleChangePrice = (value: number[]) => {
     setPrice(value);
@@ -205,7 +204,7 @@ const ManagementProduct = () => {
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
-                  <Button onClick={handleFilter} isPrimary>
+                  <Button onClick={handleFilter} isPrimary disabled={loading}>
                     Filter Now
                   </Button>
                 </div>
@@ -245,7 +244,9 @@ const ManagementProduct = () => {
 
                 {/* danh sách sản phẩm */}
                 <div>
-                  {filteredProducts.length > 0 ? (
+                  {loading ? (
+                    <div>Loading...</div>
+                  ) : filteredProducts.length > 0 ? (
                     Object.values(productType).map((type) => (
                       <TabsContent key={type} value={type}>
                         <ProductList
@@ -270,9 +271,11 @@ const ManagementProduct = () => {
         </div>
       </div>
       <CreateProductModel
+        refetch={setRefetch}
         open={isOpenCreateProdModel}
         setIsOpen={setIsOpenCreateProdModel}
       ></CreateProductModel>
+      <Toaster position='top-right' richColors />
     </>
   );
 };

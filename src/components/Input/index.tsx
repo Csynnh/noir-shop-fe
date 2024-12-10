@@ -65,7 +65,7 @@ const Input = ({
         id={name}
         name={name}
         maxLength={maxLen && maxLen + (isExpire ? 1 : 0)}
-        defaultValue={defaultValue}
+        value={defaultValue}
         placeholder={error}
         className={`${disabled ? 'opacity-30' : ''} ${error ? 'text-red-600 !font-[gilroy-light-italic] !italic !border-red-500' : ''} placeholder:text-red-600`}
       />
