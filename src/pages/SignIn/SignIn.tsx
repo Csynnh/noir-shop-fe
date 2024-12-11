@@ -18,6 +18,7 @@ import SenOTPModel from '@pages/Account/Models/SendOTPModel';
 import SubmitOTPModel from '@pages/Account/Models/SubmitOTPModel';
 import { formPasswordReducer, initialPasswordState } from '@pages/Account/reducer';
 import { ModelState } from '@pages/Account';
+import { Toaster } from '@ui/sonner';
 
 interface FormState {
   username: string;
@@ -105,6 +106,12 @@ const SignIn = () => {
     });
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSignIn();
+    }
+  };
+
   const handleSignIn = async () => {
     setLoading(true);
     try {
@@ -112,6 +119,7 @@ const SignIn = () => {
         username: formState.username,
         password: formState.password,
       });
+      console.log(response);
       if (response.status === 200) {
         toast.success('Succesfully!', {
           description: response.data.messageToClient,
@@ -143,6 +151,7 @@ const SignIn = () => {
       }
       setLoading(false);
     } catch (error: any) {
+      console.log(error);
       toast.error('Error!', {
         description: error.response.data.messageToClient,
       });
@@ -274,13 +283,20 @@ const SignIn = () => {
             <div className='SignIn-right-container'>
               <h3 className='SignIn-right-header'>Sign in</h3>
               <Form className='SignIn-right-form'>
-                <Input name='username' label='Username' required onChange={handleChange}></Input>
+                <Input
+                  name='username'
+                  label='Username'
+                  required
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                ></Input>
                 <Input
                   name='password'
                   label='Password'
                   required
                   type='password'
                   onChange={handleChange}
+                  onKeyDown={handleKeyDown}
                 ></Input>
                 <div className='SignIn-remember-forgot-pass'>
                   <Checkbox name='remember-me' label='Remember Me' />
@@ -326,9 +342,6 @@ const SignIn = () => {
                     </div>
                     Continue with Google
                   </GoogleOAuthProvider>
-                </Button>
-                <Button icon={<PhoneBold />} className='--text-sm' disabled={loading}>
-                  Continue with Phone number
                 </Button>
               </div>
             </div>
@@ -380,6 +393,7 @@ const SignIn = () => {
         isChangePasswordModalOpen={openChangePass}
         loading={loading}
       ></ChangePasswordModel>
+      <Toaster position='top-right' richColors></Toaster>
     </>
   );
 };

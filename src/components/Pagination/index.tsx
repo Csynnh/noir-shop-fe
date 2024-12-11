@@ -14,13 +14,14 @@ interface PaginationProps {
   onPageChange: (pageNumber: number) => void;
 }
 const Pagination = ({ data, onPageChange }: PaginationProps) => {
+  console.log(data);
   return (
     <PaginationCpn>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
             onClick={() => onPageChange(data ? data.pageNumber - 1 : 1)}
-            disabled={data?.pageNumber === 1}
+            disabled={data?.pageNumber === 1 || data?.pageNumber === 0}
           />
         </PaginationItem>
         {Array.from({ length: data?.totalPages || 0 }, (_, index) => {

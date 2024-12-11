@@ -12,6 +12,7 @@ import axios from 'axios';
 import { API_BACKEND_ENDPOINT, GOOGLE_CLIENT_ID } from '@constant/Api';
 import { toast } from 'sonner';
 import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { set } from 'lodash';
 
 interface FormState {
   username: string;
@@ -59,8 +60,80 @@ const SignUp = () => {
     dispatch({ type: 'SET_FIELD', field: e.target.name, value: e.target.value });
   };
 
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/; // For international format (optional '+' and up to 15 digits)
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSignUp();
+    }
+  };
+
   const handleSignUp = async () => {
     setLoading(true);
+    if (
+      !formState.username ||
+      !formState.password ||
+      !formState.email ||
+      !formState.phone ||
+      !formState.name ||
+      !formState.confirmPassword
+    ) {
+      console.log(formState);
+      toast.error('Error!', {
+        description: 'All fields are required. Please fill in all fields.',
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (formState.password !== formState.confirmPassword) {
+      toast.error('Error!', {
+        description: 'Password and Confirm Password do not match.',
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!formState.username) {
+      toast.error('Error!', {
+        description: 'Username fields are required. Please fill username.',
+      });
+      setLoading(false);
+      return;
+    }
+    if (!formState.name) {
+      toast.error('Error!', {
+        description: 'Name fields are required. Please fill Name.',
+      });
+      setLoading(false);
+      return;
+    }
+    if (!formState.email) {
+      toast.error('Error!', {
+        description: 'Email fields are required. Please fill your email.',
+      });
+      setLoading(false);
+      return;
+    }
+    if (!formState.phone) {
+      toast.error('Error!', {
+        description: 'Phone fields are required. Please fill your phone.',
+      }),
+        setLoading(false);
+      return;
+    }
+
+    if (!phoneRegex.test(formState.phone)) {
+      toast.error('Invalid phone number format');
+      setLoading(false);
+      return;
+    }
+    if (!emailRegex.test(formState.email)) {
+      toast.error('Error!', { description: 'Invalid email format' });
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/auth/accounts`, {
         username: formState.username,
@@ -153,13 +226,26 @@ const SignUp = () => {
           <div className='SignUp-right-container'>
             <h3 className='SignUp-right-header'>Sign Up</h3>
             <Form className='SignUp-right-form'>
-              <Input name='name' label='Name' required onChange={handleChange}></Input>
-              <Input name='username' label='Username' required onChange={handleChange}></Input>
+              <Input
+                name='name'
+                label='Name'
+                required
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+              ></Input>
+              <Input
+                name='username'
+                label='Username'
+                required
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+              ></Input>
               <Input
                 name='phone'
                 label='Phone Number'
                 required
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 type='number'
               ></Input>
               <Input
@@ -167,6 +253,7 @@ const SignUp = () => {
                 label='Email'
                 required
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 type='email'
               ></Input>
               <Input
@@ -174,13 +261,16 @@ const SignUp = () => {
                 label='Password'
                 required
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 type='password'
               ></Input>
+
               <Input
                 name='confirmPassword'
                 label='Confirm Password'
                 required
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 type='password'
               ></Input>
             </Form>
@@ -203,14 +293,6 @@ const SignUp = () => {
                   </div>
                   Continue with Google
                 </GoogleOAuthProvider>
-              </Button>
-              <Button
-                onClick={() => {}}
-                icon={<PhoneBold />}
-                className='--text-sm'
-                disabled={loading}
-              >
-                Continue with Phone number
               </Button>
             </div>
           </div>

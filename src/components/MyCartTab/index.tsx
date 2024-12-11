@@ -23,6 +23,7 @@ interface myCartProp {
   isSignedIn: boolean;
   onToggle: any;
   toggleCart: () => void;
+  handleShopNow: () => void;
   account_id: any;
   refetch?: boolean;
 }
@@ -33,6 +34,7 @@ const MyCartTab: React.FC<myCartProp> = ({
   toggleCart,
   account_id,
   refetch,
+  handleShopNow,
 }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -84,7 +86,12 @@ const MyCartTab: React.FC<myCartProp> = ({
             <div className='MyCart-empty'>
               <EmptyCard></EmptyCard>
               <span>Your shopping cart is currently empty.</span>
-              <div className='MyCart-shopping'>
+              <div
+                className='MyCart-shopping'
+                onClick={() => {
+                  handleShopNow();
+                }}
+              >
                 <p>Shop Now</p>
                 <Right></Right>
               </div>

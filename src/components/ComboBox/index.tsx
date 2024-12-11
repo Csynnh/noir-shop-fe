@@ -24,7 +24,7 @@ export interface ComboBoxProps {
 }
 export const ComboBox = ({ data, value, setValue, classname }: ComboBoxProps) => {
   const [open, setOpen] = React.useState(true);
-
+  console.log(value);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -49,6 +49,7 @@ export const ComboBox = ({ data, value, setValue, classname }: ComboBoxProps) =>
                   key={item.value}
                   value={item.value}
                   onSelect={(currentValue) => {
+                    console.log(currentValue === value ? data[0] : item);
                     setValue(currentValue === value ? data[0] : item);
                     setOpen(false);
                   }}

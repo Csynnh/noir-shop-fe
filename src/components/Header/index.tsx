@@ -40,13 +40,31 @@ const Header = () => {
         navigate(`/products/${searchQuery}`, {
           state: { id: response.data.responseData },
         });
+        if (response.status === 500) {
+          toast.error('Not found!', {
+            description: 'Please try another keyword',
+          });
+        }
       } catch (error) {
         console.error('Error fetching product:', error);
+        toast.error('Not found!', {
+          description: 'Please try another keyword',
+        });
       }
     }
   };
   const handleSearchClick = () => {
     handleSearch();
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleShopNow = () => {
+    setIsCartOpen(false);
   };
 
   useEffect(() => {
@@ -169,9 +187,6 @@ const Header = () => {
               </span>
             </Tooltip>
             <Tooltip title='Search' arrow={false}>
-              {/* <span className='icon'>
-                <SearchIcon></SearchIcon>
-              </span> */}
               <div>
                 <div className='search-box'>
                   <button className='btn-search' onClick={handleSearchClick}>
@@ -183,6 +198,7 @@ const Header = () => {
                     className={`input-search ${searchQuery ? 'is-active' : ''}`}
                     placeholder='Type to Search...'
                     onChange={handleSearchChange}
+                    onKeyDown={handleKeyDown}
                   ></input>
                 </div>
               </div>
@@ -221,6 +237,7 @@ const Header = () => {
           onToggle={setIsCartOpen}
           account_id={userInfo?.account_id}
           refetch={newNotify}
+          handleShopNow={handleShopNow}
         ></MyCartTab>
       </div>
       <Toaster position='top-right' richColors></Toaster>

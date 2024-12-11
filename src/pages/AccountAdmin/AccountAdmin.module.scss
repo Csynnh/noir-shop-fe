@@ -1,0 +1,134 @@
+.AccountAdmin {
+  :global {
+    .AccountAdmin {
+      &-container {
+        padding: 10px 3rem;
+        margin-bottom: 30px;
+
+        h1 {
+          font-size: 40px;
+          font-family: 'gilroy-semibold';
+          text-transform: none;
+          margin-bottom: 2rem;
+        }
+        p,
+        button {
+          font-size: 13px;
+        }
+        button {
+          .button {
+            padding: 9.5px 0;
+          }
+        }
+      }
+      &-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 24px;
+      }
+      &-right,
+      &-left-top,
+      &-left-bottom {
+        padding: 40px 30px 20px 30px;
+        height: 100%;
+        border: 1px solid var(--line-color);
+        border-radius: 5px;
+        p.tittle-header {
+          font-size: 30px;
+        }
+      }
+      &-left {
+        display: grid;
+        grid-template-rows: 130px 1fr;
+        gap: 24px;
+      }
+      &-left-top {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        justify-content: space-between;
+        position: relative;
+      }
+      &-text {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        justify-content: space-between;
+        .light {
+          display: block;
+          width: 100%;
+          font-family: 'gilroy-regular';
+        }
+        .strong {
+          display: block;
+          width: 100%;
+          font-family: 'gilroy-semibold';
+        }
+      }
+      &-left-bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: center;
+      }
+      &-infor {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      &-image {
+        width: 100px;
+        height: 100px;
+        svg {
+          width: 100%;
+        }
+      }
+      &-icon {
+        position: absolute;
+        bottom: -7px;
+        right: 0;
+      }
+      &-right-bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      &-tittle {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line-color);
+        > p {
+          font-size: 16px;
+          font-family: 'gilroy-semibold';
+        }
+      }
+      &-summary {
+        display: flex;
+        gap: 4px;
+        .light {
+          display: block;
+          width: 100%;
+          font-family: 'gilroy-regular';
+        }
+      }
+      &-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 40px;
+      }
+      &-bottom {
+        display: flex;
+        justify-content: space-between;
+        button {
+          width: 40%;
+        }
+      }
+    }
+  }
+}

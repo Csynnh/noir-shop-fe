@@ -17,6 +17,17 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import EmployeeList from './Components/EmployeeList';
 import styles from './ManagementEmployee.module.scss';
+import Pagination from '@components/Pagination';
+import { Spinner } from '@components/ui/spiner';
+import NoData from '@components/Icons/NoData/NoData';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@components/ui/table';
 enum EmployeeTab {
   INFORMATION = 'INFORMATION',
   SALARY = 'SALARY',
@@ -39,7 +50,7 @@ export interface EmployeeResponse {
   totalItems: number;
   totalPages: number;
 }
-const PositionDummyData: ComboBoxValueProps[] = [
+export const PositionDummyData: ComboBoxValueProps[] = [
   {
     label: 'Manager',
     value: 'Manager',
@@ -54,9 +65,22 @@ const PositionDummyData: ComboBoxValueProps[] = [
   },
 ];
 
+const salaryPerHourMapping = {
+  Manager: 30, // Salary per hour for Manager
+  Cashier: 15, // Salary per hour for Cashier
+  Customer_Service: 20, // Salary per hour for Customer Service
+};
+
 const ManagementEmployee = () => {
+  const PAGE_SIZE = 6;
   const { user } = useAuth();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<EmployeeResponse>({
+    data: [],
+    pageNumber: 1,
+    pageSize: 2,
+    totalItems: 0,
+    totalPages: 0,
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [sumManHourFrom, setSumManHourFrom] = useState<number>(0);
   const [sumManHourTo, setSumManHourTo] = useState<number>(0);
@@ -68,53 +92,15 @@ const ManagementEmployee = () => {
   const [phone, setPhone] = useState<string>('');
   const [hired_date, setHired_date] = useState<Date | undefined>(dayjs().toDate());
   const [avatar, setAvatar] = useState<string>('');
+  const [refecth, setRefetch] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState(false);
 
-  const getListEmployees = async () => {
+  const getListEmployees = async (pageNumber?: number) => {
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/employees`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      if (response.status === 200) {
-        const responseData = response.data.responseData;
-        console.log('responseData', responseData);
-        const employees: Employee[] = responseData.map((employee: any) => ({
-          id: employee.id,
-          name: employee.name,
-          position: employee.position,
-          sumManHours: employee.man_hours,
-          hiredDate: employee.hired_date,
-          email: employee.email,
-          phone: employee.phone,
-          location: employee.location,
-        }));
-        setData(employees);
-      }
-    } catch (error) {
-      console.error('Failed to fetch employees: ', error);
-    }
-  };
-
-  const handleFilter = async () => {
-    console.log('sumManHourFrom', sumManHourFrom);
-    console.log('sumManHourTo', sumManHourTo);
-    try {
-      if (!sumManHourFrom && !sumManHourTo) {
-        toast.error('Error!', {
-          description: "Min sum man-hour and Max sum man-hour can't be 0 at the same time",
-        });
-        return;
-      } else {
-        if (sumManHourFrom >= sumManHourTo) {
-          toast.error('Error!', {
-            description: "Min sum man-hour can't be greater than or equal to Max sum man-hour.",
-          });
-          return;
-        }
-      }
+      setLoading(true);
       const response = await axios.get(
-        `${API_BACKEND_ENDPOINT}/api/employees?${hiredDate ? 'hiredDate=' + hiredDate?.toISOString() + '&' : ''}sumManHoursFrom=${sumManHourFrom}&sumManHoursTo=${sumManHourTo}`,
+        `${API_BACKEND_ENDPOINT}/api/employees?${hiredDate ? 'hiredDate=' + hiredDate?.toISOString() + '&' : ''}sumManHoursFrom=${sumManHourFrom}&sumManHoursTo=${sumManHourTo}${pageNumber ? '&pageNumber=' + pageNumber + '&pageSize=' + PAGE_SIZE : ''}`,
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -124,7 +110,7 @@ const ManagementEmployee = () => {
       if (response.status === 200) {
         const responseData = response.data.responseData;
         console.log('responseData', responseData);
-        const employees: Employee[] = responseData.map((employee: any) => ({
+        const employees: Employee[] = responseData.employeeList.map((employee: any) => ({
           id: employee.id,
           name: employee.name,
           position: employee.position,
@@ -134,14 +120,71 @@ const ManagementEmployee = () => {
           phone: employee.phone,
           location: employee.location,
         }));
-        setData(employees);
+        setData({
+          data: employees,
+          pageNumber: pageNumber || 1,
+          pageSize: PAGE_SIZE,
+          totalItems: responseData.totalCount,
+          totalPages: Math.ceil(responseData.totalCount / PAGE_SIZE),
+        });
       }
     } catch (error) {
       console.error('Failed to fetch employees: ', error);
     }
+    setLoading(false);
+  };
+
+  const handleFilter = async () => {
+    setLoading(true);
+    try {
+      if (sumManHourFrom !== 0 && sumManHourTo !== 0 && sumManHourFrom >= sumManHourTo) {
+        toast.error('Error!', {
+          description: "Min sum man-hour can't be greater than or equal to Max sum man-hour.",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get(
+        `${API_BACKEND_ENDPOINT}/api/employees?${hiredDate ? 'hiredDate=' + hiredDate?.toISOString() + '&' : ''}sumManHoursFrom=${sumManHourFrom}&sumManHoursTo=${sumManHourTo}&pageNumber=1&pageSize=3`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const responseData = response.data.responseData;
+        console.log('responseData', responseData);
+        const employees: Employee[] = responseData.employeeList.map((employee: any) => ({
+          id: employee.id,
+          name: employee.name,
+          position: employee.position,
+          sumManHours: employee.man_hours,
+          hiredDate: employee.hired_date,
+          email: employee.email,
+          phone: employee.phone,
+          location: employee.location,
+        }));
+        if (employees.length === 0) {
+        }
+        setData({
+          data: employees,
+          pageNumber: employees.length === 0 ? 0 : 1,
+          pageSize: employees.length === 0 ? 0 : PAGE_SIZE,
+          totalItems: responseData.totalCount,
+          totalPages: Math.ceil(responseData.totalCount / PAGE_SIZE),
+        });
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.error('Failed to fetch employees: ', error);
+    }
+    setLoading(false);
   };
 
   const addNewEmployee = async () => {
+    setLoading(true);
     // Validate email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const phoneRegex = /^\+?[1-9]\d{1,14}(\s?\(?\d+\)?[\s\-]?)?[\d\s\-]{6,}$/;
@@ -196,9 +239,12 @@ const ManagementEmployee = () => {
     } catch (error) {
       console.error('Failed to add new employee: ', error);
     }
+    setLoading(false);
   };
 
   const handleDeleteEmployee = async (id: string) => {
+    setLoading(true);
+
     try {
       const response = await axios.delete(`${API_BACKEND_ENDPOINT}/api/employee/${id}`, {
         headers: {
@@ -217,6 +263,7 @@ const ManagementEmployee = () => {
         description: 'Failed to delete employee',
       });
     }
+    setLoading(false);
   };
 
   const handleCancel = () => {
@@ -226,17 +273,22 @@ const ManagementEmployee = () => {
   const handleChangTab = (value: string) => {
     console.log('value', value);
   };
-  const handleChangePage = (pageNumber: number) => {
-    console.log('pageNumber', pageNumber);
+  const handleChangePage = async (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    await getListEmployees(pageNumber);
+  };
+  const getSalary = (manHours: number, salaryPerHour: number) => {
+    return manHours * salaryPerHour; // Total salary = man hours * salary per hour
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && refecth) {
       // console.log('user', user);
-      getListEmployees();
+      getListEmployees(1);
+      setRefetch(false);
     }
-  }, [user]);
-
+  }, [user, refecth]);
+  console.log('position', position);
   return (
     <div className={styles.ManagementEmployee}>
       <div className='ManagementEmployee-container'>
@@ -315,13 +367,63 @@ const ManagementEmployee = () => {
                     <span className='underline text-[15px]'>Add New Employee</span>
                   </div>
 
-                  {/* <Pagination data={data} onPageChange={handleChangePage}></Pagination> */}
+                  <Pagination data={data} onPageChange={handleChangePage}></Pagination>
                 </div>
-                <TabsContent value={EmployeeTab.INFORMATION}>
-                  <EmployeeList
-                    data={data}
-                    handleDeleteEmployee={handleDeleteEmployee}
-                  ></EmployeeList>
+                {loading ? (
+                  <div className='flex items-center gap-3 justify-center mt-10'>
+                    <Spinner></Spinner>
+                    Loading...
+                  </div>
+                ) : data.data.length ? (
+                  <TabsContent value={EmployeeTab.INFORMATION}>
+                    <EmployeeList
+                      refecth={setRefetch}
+                      data={data.data}
+                      handleDeleteEmployee={handleDeleteEmployee}
+                    ></EmployeeList>
+                  </TabsContent>
+                ) : (
+                  <div className='flex flex-col gap-[10px] w-full h-full justify-center items-center border '>
+                    <NoData></NoData>
+                    <p className='text-[13px] text-[var(--main-color)]'>No Results Found</p>
+                  </div>
+                )}
+                <TabsContent value={EmployeeTab.SALARY}>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Employee Name</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Man-hours</TableHead>
+                        <TableHead>Salary/Hour</TableHead>
+                        <TableHead>Sum Salary</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.data.map((employee) => (
+                        <TableRow key={employee.id}>
+                          <TableCell>{employee.name}</TableCell>
+                          <TableCell>{employee.position}</TableCell>
+                          <TableCell>{employee.sumManHours}</TableCell>
+                          <TableCell>
+                            {
+                              salaryPerHourMapping[
+                                employee.position as keyof typeof salaryPerHourMapping
+                              ]
+                            }
+                          </TableCell>
+                          <TableCell>
+                            {getSalary(
+                              employee.sumManHours,
+                              salaryPerHourMapping[
+                                employee.position as keyof typeof salaryPerHourMapping
+                              ],
+                            ).toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </TabsContent>
               </div>
             </div>
@@ -356,7 +458,7 @@ const ManagementEmployee = () => {
               <ComboBox
                 classname='p-0 max-w-full font-[gilroy-light] text-[13px]'
                 data={PositionDummyData}
-                value={position?.value || PositionDummyData[0].value}
+                value={position!.value}
                 setValue={setPosition}
               ></ComboBox>
               <div className='border-b-[var(--line-color)] border-b '></div>

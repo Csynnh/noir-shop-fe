@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 import { useAuth } from '@contexts/AuthContext';
 import Notification from '@components/Notification';
+import { Toaster } from '@ui/sonner';
 
 enum Routes {
   ManageProduct = '/admin',
@@ -102,7 +103,9 @@ const HeaderAdmin = () => {
             </div>
             <Notification></Notification>
             <div className='p-5 border-r border-[#c9c5c9]'>
-              <AccountAdmin></AccountAdmin>
+              <Link to={'/admin/account'} className='cursor-pointer'>
+                <AccountAdmin></AccountAdmin>
+              </Link>
             </div>
           </div>
         </div>
@@ -125,6 +128,7 @@ const HeaderAdmin = () => {
           <p className='text-sm mb-5'>Are you sure you want to sign out?</p>
         </div>
       </Modal>
+      <Toaster position='top-right' richColors></Toaster>
     </div>
   );
 };
