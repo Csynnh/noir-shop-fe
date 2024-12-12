@@ -285,10 +285,7 @@ const ProductDetails = () => {
                       ))}
                     </div>
                   </div>
-                  <div className='item-price'>
-                    <span className='item-label'>Price: </span>
-                    <span className='item-value'>${product?.price.toFixed(2)}</span>
-                  </div>
+
                   <div className='item-demention'>
                     <span className='item-label'>Size: </span>
                     {product?.variants
@@ -319,7 +316,8 @@ const ProductDetails = () => {
 
                 <div className='item-detail-bottom'>
                   <p className='item-price-total'>
-                    ${((product?.price || 0) * ProductVariantSelected.count).toFixed(2)}
+                    ${product?.price || 0}
+                    <span> / item </span>
                   </p>
                   <div className='item-price-tools'>
                     <div className='item-price-btns'>

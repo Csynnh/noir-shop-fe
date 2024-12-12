@@ -375,56 +375,58 @@ const ManagementEmployee = () => {
                     Loading...
                   </div>
                 ) : data.data.length ? (
-                  <TabsContent value={EmployeeTab.INFORMATION}>
-                    <EmployeeList
-                      refecth={setRefetch}
-                      data={data.data}
-                      handleDeleteEmployee={handleDeleteEmployee}
-                    ></EmployeeList>
-                  </TabsContent>
+                  <div className=''>
+                    <TabsContent value={EmployeeTab.INFORMATION}>
+                      <EmployeeList
+                        refecth={setRefetch}
+                        data={data.data}
+                        handleDeleteEmployee={handleDeleteEmployee}
+                      ></EmployeeList>
+                    </TabsContent>
+                    <TabsContent value={EmployeeTab.SALARY}>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Employee Name</TableHead>
+                            <TableHead>Position</TableHead>
+                            <TableHead>Man-hours</TableHead>
+                            <TableHead>Salary/Hour</TableHead>
+                            <TableHead>Sum Salary</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {data.data.map((employee) => (
+                            <TableRow key={employee.id}>
+                              <TableCell>{employee.name}</TableCell>
+                              <TableCell>{employee.position}</TableCell>
+                              <TableCell>{employee.sumManHours}</TableCell>
+                              <TableCell>
+                                {
+                                  salaryPerHourMapping[
+                                    employee.position as keyof typeof salaryPerHourMapping
+                                  ]
+                                }
+                              </TableCell>
+                              <TableCell>
+                                {getSalary(
+                                  employee.sumManHours,
+                                  salaryPerHourMapping[
+                                    employee.position as keyof typeof salaryPerHourMapping
+                                  ],
+                                ).toFixed(2)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TabsContent>
+                  </div>
                 ) : (
                   <div className='flex flex-col gap-[10px] w-full h-full justify-center items-center border '>
                     <NoData></NoData>
                     <p className='text-[13px] text-[var(--main-color)]'>No Results Found</p>
                   </div>
                 )}
-                <TabsContent value={EmployeeTab.SALARY}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Employee Name</TableHead>
-                        <TableHead>Position</TableHead>
-                        <TableHead>Man-hours</TableHead>
-                        <TableHead>Salary/Hour</TableHead>
-                        <TableHead>Sum Salary</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.data.map((employee) => (
-                        <TableRow key={employee.id}>
-                          <TableCell>{employee.name}</TableCell>
-                          <TableCell>{employee.position}</TableCell>
-                          <TableCell>{employee.sumManHours}</TableCell>
-                          <TableCell>
-                            {
-                              salaryPerHourMapping[
-                                employee.position as keyof typeof salaryPerHourMapping
-                              ]
-                            }
-                          </TableCell>
-                          <TableCell>
-                            {getSalary(
-                              employee.sumManHours,
-                              salaryPerHourMapping[
-                                employee.position as keyof typeof salaryPerHourMapping
-                              ],
-                            ).toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TabsContent>
               </div>
             </div>
           </Tabs>

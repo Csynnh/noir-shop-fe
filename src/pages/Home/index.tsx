@@ -32,7 +32,7 @@ export interface ProductType {
 }
 
 export interface ProductVariantType {
-  id: string
+  id: string;
   color: string;
   size: string;
   inventory: number;

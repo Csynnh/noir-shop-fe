@@ -106,9 +106,11 @@ const Account = () => {
     }
     removeToken();
     navigate('/sign-in', {
-      state: { from: {
-        pathname: '/account',
-      } },
+      state: {
+        from: {
+          pathname: '/account',
+        },
+      },
     });
   }, [userInfo]);
 

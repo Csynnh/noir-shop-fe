@@ -85,7 +85,7 @@ const ManagementProduct = () => {
       if (size) {
         ENDPOINT += '&size=' + size;
       }
-      if (minPrice !== undefined && maxPrice !== undefined) {
+      if (minPrice !== undefined && maxPrice) {
         ENDPOINT += '&minPrice=' + minPrice + '&maxPrice=' + maxPrice;
       }
       const response = await axios.get(ENDPOINT);

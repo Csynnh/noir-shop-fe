@@ -1,13 +1,23 @@
 import React from 'react';
 import { ContactEmail } from '../AccountAdmin';
 import styles from './ContactItem.module.scss';
+import { NotificationResponse } from '@constant/Notify';
+import { getTimeElapsed } from '@lib/utils';
 
 interface ContactItemProps {
-  contactEmail: ContactEmail;
-  // handleDeleteEmployee: (id: string) => void;
-  // refecth: (a: boolean) => void;
+  NotificationResponse: NotificationResponse;
 }
-const ContactItem = ({ contactEmail }: ContactItemProps) => {
+const ContactItem = ({ NotificationResponse }: ContactItemProps) => {
+  const formatDate = (dateString: any) => {
+    const date = new Date(dateString); // Parse the ISO date string
+    const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zero if needed
+    const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes and pad with zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get month (JavaScript months are 0-based)
+    const day = String(date.getDate()).padStart(2, '0'); // Get day of the month and pad with zero if needed
+    const year = date.getFullYear(); // Get full year
+
+    return `${month}/${day}/${year} ${hours}:${minutes} `; // Return formatted date
+  };
   return (
     <div className={styles.ContactItem}>
       <div className='ContactItem-container'>
@@ -91,15 +101,12 @@ const ContactItem = ({ contactEmail }: ContactItemProps) => {
             </svg>
           </span>
           <div className='ContactItem-content'>
-            <p>
-              You have recieved a contact email from{' '}
-              <span className='light'>{contactEmail.email}</span>
-            </p>
-            <p className='light'>Sent on {contactEmail.sentDate}</p>
+            <p>{NotificationResponse.content.message}</p>
+            <p className='light'>Sent on {formatDate(NotificationResponse.content.createdAt)}</p>
           </div>
         </div>
         <div className='ContactItem-time'>
-          <p>5 minutes ago</p>
+          <p>{getTimeElapsed(NotificationResponse.content.createdAt)}</p>
         </div>
       </div>
     </div>

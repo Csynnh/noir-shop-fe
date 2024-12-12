@@ -115,7 +115,9 @@ const Notification: React.FC = () => {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-[450px] pt-16 max-h-[500px] overflow-y-scroll'>
-          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          <DropdownMenuLabel className='text-[gilroy-bold] text-[18px] mb-[20px] ml-[20px]'>
+            Notifications
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             {notifications.map((note, idx) => (

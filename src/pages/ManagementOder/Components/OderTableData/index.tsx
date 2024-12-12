@@ -163,33 +163,6 @@ const OderColumns: ColumnDef<Order>[] = [
       </div>
     ),
   },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <ButtonCpn variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <DotsHorizontalIcon className='h-4 w-4' />
-            </ButtonCpn>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 export interface OderTableDataProps {
   data?: Order[] | null;
@@ -406,7 +379,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
           </div>
         </div>
         <div className='w-full'>
-          <div className='flex items-center py-4'>
+          <div className='flex items-center pb-5'>
             <Input
               placeholder='Filter customers...'
               value={(table.getColumn('customer')?.getFilterValue() as string) ?? ''}

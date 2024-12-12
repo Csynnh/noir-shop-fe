@@ -2,6 +2,7 @@ export interface NotificationType {
   id: string;
   message: string;
   createdAt: string;
+  phone?: string;
 }
 
 export interface NotificationResponse {

@@ -15,7 +15,11 @@ const ProductItem = ({ product }: ProductItemProps) => {
           <Delete></Delete>
         </span>
         <div className='w-[160px] h-[160px]'>
-          <img src={product.variants[0].image} alt='product image' className='object-cover w-full h-full' />
+          <img
+            src={product.variants[0].image}
+            alt='product image'
+            className='object-cover w-full h-full'
+          />
         </div>
         <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
           <Option></Option>
