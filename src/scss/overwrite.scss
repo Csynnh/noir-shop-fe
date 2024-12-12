@@ -5,7 +5,17 @@
     }
   }
 }
-
+.ant-modal-content {
+  padding: 30px 40px !important;
+  .ant-modal-header {
+    margin-bottom: 24px;
+  }
+  .ant-modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
 .radio-group {
   .ant-radio-group {
     label {
@@ -43,7 +53,20 @@
     }
   }
 }
-
+.ant-radio-checked .ant-radio-inner {
+  border-color: #1b352a !important;
+  background-color: #fff !important;
+  &::after {
+    background-color: #1b352a !important;
+    transform: scale(0.575);
+  }
+  &:hover {
+    border-color: #1b352a !important;
+  }
+}
+.ant-radio-wrapper {
+  font-size: 14px !important;
+}
 .ant-modal-root {
   .bulk-modal-wrapper {
     .ant-modal-content {

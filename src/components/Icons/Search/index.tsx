@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
-
 const Search = () => {
   return (
-    <Link to='#'>
+    <span>
       <svg
         width='14'
         height='14'
@@ -18,7 +16,7 @@ const Search = () => {
           strokeLinejoin='round'
         />
       </svg>
-    </Link>
+    </span>
   );
 };
 

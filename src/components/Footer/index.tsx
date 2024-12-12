@@ -1,17 +1,18 @@
-import Address from '@icons/Address';
-import Fb from '@icons/Fb';
-import In from '@icons/In';
-import Insta from '@icons/Insta';
-import Mail from '@icons/Mail';
-import Phone from '@icons/Phone';
-import Up from '@icons/Up';
+import Address from '@components/Icons/Address';
+import Fb from '@components/Icons/Fb';
+import In from '@components/Icons/In';
+import Insta from '@components/Icons/Insta';
+import Mail from '@components/Icons/Mail';
+import Phone from '@components/Icons/Phone';
+import Up from '@components/Icons/Up';
 import styles from './styles.module.scss';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
     <div className={styles.Footer}>
       <div className='footer-wrapper'>
-        <div className='footer-container'>
+        <div className='footer-container1'>
           <div className='footer-contact'>
             <h5>Contact us</h5>
             <div className='footer-contact-item'>
@@ -57,17 +58,17 @@ const Footer = () => {
           <div className='footer-policy'>
             <h5>Policy</h5>
             <div className='footer-item-content'>
-              <span>Private Policy</span>
+              <Link to={'/private-policy'}>Private Policy</Link>
             </div>
             <div className='footer-item-content'>
-              <span>Shipping and Return Policy</span>
+              <Link to={'/shipping-and-return-policy'}>Shipping and Return Policy</Link>
             </div>
             <div className='footer-item-content'>
-              <span>Membership Policy</span>
+              <Link to={'/membership-policy'}>Membership Policy</Link>
             </div>
           </div>
         </div>
-        <div className='footer-container'>
+        <div className='footer-container2'>
           <div className='footer-shortcut'>
             <span>Shopping Now</span>
             <span>
@@ -75,13 +76,13 @@ const Footer = () => {
             </span>
           </div>
           <div className='footer-meta'>
-            <span className='footer-meta-item'>
+            <span className='footer-meta-item icon'>
               <In></In>
             </span>
-            <span className='footer-meta-item'>
+            <span className='footer-meta-item icon'>
               <Fb></Fb>
             </span>
-            <span className='footer-meta-item'>
+            <span className='footer-meta-item icon'>
               <Insta></Insta>
             </span>
           </div>

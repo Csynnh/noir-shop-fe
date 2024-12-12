@@ -1,0 +1,63 @@
+.ManagementItem {
+  :global {
+    .ManagementItem {
+      &-container {
+        padding: 25px;
+        border: 1px solid var(--line-color);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      &-infor {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        .bold {
+          font-family: 'gilroy-semibold';
+          font-size: 14px;
+        }
+        .light {
+          font-family: 'gilroy-light';
+          font-size: 12px;
+        }
+      }
+      &-middle {
+        display: flex;
+        justify-content: space-between;
+        .light {
+          font-family: 'gilroy-light';
+          font-size: 12px;
+        }
+        .bold {
+          font-family: 'gilroy-semibold';
+          font-size: 12px;
+        }
+      }
+      &-hours,
+      &-date {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      &-detail {
+        display: flex;
+        gap: 4px;
+        .bold {
+          font-family: 'gilroy-semibold';
+          font-size: 12px;
+        }
+        .light {
+          font-family: 'gilroy-light';
+          font-size: 12px;
+        }
+      }
+      &-contact {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  }
+}

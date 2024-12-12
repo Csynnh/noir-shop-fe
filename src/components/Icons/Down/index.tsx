@@ -1,8 +1,14 @@
-import { Link } from 'react-router-dom';
+interface DownProps {
+  to: React.RefObject<HTMLDivElement>;
+}
+const Down = ({ to }: DownProps) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
+    to.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
-const Down = () => {
   return (
-    <Link to='#'>
+    <div onClick={handleClick} style={{ cursor: 'pointer' }}>
       <svg
         width='23'
         height='36'
@@ -33,7 +39,7 @@ const Down = () => {
           mask='url(#path-1-inside-1_138_704)'
         />
       </svg>
-    </Link>
+    </div>
   );
 };
 

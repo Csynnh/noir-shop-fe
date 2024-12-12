@@ -1,0 +1,260 @@
+.Item {
+  :global {
+    .item {
+      &-wrapper {
+        padding: 0 64px;
+        margin-top: 14px;
+        span {
+          font-size: 13px;
+          letter-spacing: 0cm;
+        }
+        .item {
+          &-size {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: center;
+          }
+          &-name {
+            font-family: 'gilroy-semibold';
+            font-size: 20px;
+            line-height: 1.5;
+          }
+          &-desc {
+            font-family: 'gilroy-light';
+            line-height: 2;
+          }
+          &-label,
+          &-value {
+            line-height: 1.21;
+            font-size: 13px;
+          }
+          &-value {
+            font-family: 'gilroy-light';
+          }
+          &-price {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            &-total {
+              font-family: 'gilroy-regular';
+              font-size: 20px;
+              line-height: 1.2;
+              margin-top: 40px;
+              span {
+                font-family: 'gilroy-light';
+                font-size: 13px;
+                line-height: 1.5;
+              }
+            }
+            &-tools {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            &-btns {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              max-width: 120px;
+              width: 100%;
+            }
+          }
+          &-inventory {
+            line-height: 1.2;
+            font-family: 'gilroy-light';
+            font-size: 13px;
+          }
+          &-btns {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+          }
+          &-color {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            &-list {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            &-item {
+              width: 24px;
+              height: 24px;
+              border-radius: 50%;
+              background-color: #333;
+              &.--red {
+                background: #f23939;
+              }
+              &.--purple {
+                background-color: #9971a9;
+              }
+              &.--brown {
+                background-color: #af4420;
+              }
+              &.--green {
+                background-color: #167148;
+              }
+              &.--blue {
+                background-color: #1e68af;
+              }
+              &.--white {
+                background-color: #edece8;
+              }
+            }
+          }
+          &-detail {
+            padding: 30px 48.5px;
+            border: 0.5px solid var(--line-color);
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+            &-info {
+              padding-top: 20px;
+              width: 60%;
+              display: flex;
+              justify-content: space-between;
+              flex-direction: column;
+            }
+            &-bottom {
+              display: flex;
+              flex-direction: column;
+              gap: 30px;
+            }
+            &-top {
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+            }
+            &-images {
+              max-height: 500px;
+              height: 100%;
+              display: flex;
+              gap: 30px;
+            }
+            &-media {
+              display: flex;
+              justify-content: space-between;
+              flex-direction: column;
+              &-item {
+                border: 0.5px solid var(--line-color);
+              }
+              img {
+                max-width: 6.8vw;
+                height: 100%;
+              }
+            }
+          }
+          &-more-info {
+            padding: 35px 48.5px;
+            border: 0.5px solid var(--line-color);
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 66px;
+            gap: 24px;
+            &-title {
+              font-family: 'gilroy-semibold';
+              font-size: 20px;
+              line-height: 1.5;
+            }
+            &-desc {
+              font-size: 13px;
+              font-family: 'gilroy-light';
+              line-height: 2;
+            }
+            &-lable {
+              font-family: 'gilroy';
+              font-size: 13px;
+              line-height: 1.5;
+              margin-right: 8px;
+            }
+            &-value {
+              font-family: 'gilroy-light';
+              font-size: 13px;
+              line-height: 1.5;
+              &-list {
+                margin-top: 6px;
+              }
+              &-item {
+                margin-left: 24px;
+              }
+            }
+            &-note {
+              display: flex;
+              align-items: center;
+              justify-content: flex-end;
+            }
+          }
+          &-feedback {
+            margin-bottom: 55.5px;
+            padding-bottom: 40px;
+            &-header {
+              margin-bottom: 42px;
+              font-size: 20px;
+              font-family: 'gilroy-semibold';
+              line-height: 1.5;
+            }
+            &-list {
+              display: flex;
+              flex-direction: column;
+              gap: 36px;
+              width: 100%;
+            }
+            &-content {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+              padding-bottom: 30px;
+              border-bottom: 0.5px solid var(--line-color);
+            }
+            &-author {
+              line-height: 1.5;
+              font-family: 'gilroy-semibold';
+            }
+            &-rating {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              &-stars {
+                display: flex;
+                align-items: center;
+                gap: 5.5px;
+                list-style: none;
+              }
+              &-star {
+                width: 10px;
+                height: 10px;
+              }
+            }
+            &-date,
+            &-desc {
+              font-size: 13px;
+              line-height: 2;
+              font-family: 'gilroy-light-italic';
+              margin-bottom: 8px;
+            }
+            &-desc {
+              font-family: 'gilroy-light';
+            }
+            &-images {
+              display: flex;
+              align-items: center;
+              gap: 18px;
+              width: 100%;
+            }
+            &-image {
+              max-width: max(6.8vw, 168px);
+              height: auto;
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

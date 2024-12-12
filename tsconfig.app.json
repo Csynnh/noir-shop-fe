@@ -23,9 +23,12 @@
     /* Emit */
     "baseUrl": "./src",
     "paths": {
-      "@icons/*": ["components/Icons/*"],
+      "@ui/*": ["components/ui/*"],
+      "@mocks/*": ["mocks/*"],
+      "@constant/*": ["constant/*"],
+      "@contexts/*": ["contexts/*"],
       "@components/*": ["components/*"],
-      "@ui/*": ["components/common/ui/*"],
+      "@lib/*": ["lib/*"],
       "@pages/*": ["pages/*"],
       "@hooks/*": ["hooks/*"],
       "@api/*": ["api/*"],

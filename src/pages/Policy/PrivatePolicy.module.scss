@@ -1,0 +1,50 @@
+.PrivatePolicy {
+  :global {
+    .PrivatePolicy {
+      &-container {
+        padding: 0 64px;
+        width: 100%;
+        margin-bottom: 40px;
+        h1 {
+          display: flex;
+          justify-content: space-between;
+          padding: 40px 0;
+        }
+        p {
+          font-family: 'gilroy-semibold';
+          font-size: 13px;
+        }
+      }
+      &-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      &-collect,
+      &-intro {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      &-intro,
+      &-collect > p {
+        font-size: 13px;
+        font-family: 'gilroy-semibold';
+        line-height: 1.5;
+      }
+      &-intro span,
+      &-collect li,
+      &-collect ul {
+        font-size: 13px;
+        font-family: 'gilroy-light';
+        line-height: 2;
+      }
+      &-collect li {
+        margin-left: 20px;
+        &::marker {
+          font-size: 8px; // Adjust the size as needed
+        }
+      }
+    }
+  }
+}

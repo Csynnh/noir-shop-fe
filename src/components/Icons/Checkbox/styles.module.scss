@@ -1,0 +1,11 @@
+.Checkbox {
+  :global {
+    input {
+      width: 14px;
+      height: 14px;
+      outline: none;
+      box-shadow: none;
+      //   background-color: aliceblue;
+    }
+  }
+}

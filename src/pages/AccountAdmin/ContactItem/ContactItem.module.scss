@@ -1,0 +1,35 @@
+.ContactItem {
+  :global {
+    .ContactItem {
+      &-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        p.light,
+        span.light {
+          size: 13px;
+          font-family: 'gilroy-regular';
+        }
+        p {
+          font-family: 'gilroy-semibold';
+          font-size: 13px;
+        }
+      }
+      &-left {
+        display: flex;
+        gap: 14px;
+      }
+      &-content {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
+      &-time {
+        p {
+          font-family: 'gilroy-light';
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

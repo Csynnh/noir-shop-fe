@@ -1,0 +1,73 @@
+.About {
+  :global {
+    .About {
+      &-container {
+        padding: 0 64px;
+        width: 100%;
+        h1 {
+          display: flex;
+          justify-content: space-between;
+          padding: 5rem 0 30px 0;
+        }
+      }
+      &-content {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding-bottom: 40px;
+      }
+      &-Story,
+      &-Commitment,
+      &-Community,
+      &-Values {
+        height: 450px;
+        border: 1px solid var(--line-color);
+        padding: 50px 30px;
+
+        gap: 24px;
+        text-align: center;
+      }
+      &-Story > p.tittle,
+      &-Commitment > p.tittle,
+      &-Community > p.tittle,
+      &-Values > p.tittle {
+        font-family: 'gilroy-bold';
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      &-Story > span.brand,
+      &-Commitment > span.brand,
+      &-Community > span.brand,
+      &-Values > span.brand {
+        font-family: 'channe';
+        font-size: 14px;
+      }
+      &-Story > span,
+      &-Commitment > span,
+      &-Community > span,
+      &-Values > span {
+        font-family: 'gilroy-regular';
+        font-size: 13px;
+        line-height: 2;
+      }
+      &-Values {
+        ul {
+          font-family: 'gilroy-regular';
+          font-size: 13px;
+          line-height: 2;
+          margin-left: 20px;
+          text-align: left;
+        }
+      }
+      &-social {
+        margin-top: 30px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+      }
+    }
+  }
+}

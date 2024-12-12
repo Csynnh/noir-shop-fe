@@ -1,0 +1,57 @@
+.Button {
+  min-width: 50px;
+  width: 100%;
+  border: 0.5px solid #837f83;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: center;
+  display: inline-block;
+  span {
+    font-family: 'gilroy-regular';
+    line-height: 1.2;
+    color: black;
+  }
+
+  :global {
+    .button {
+      padding: 15.5px 0;
+      transition: all ease-in-out 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      &.--primary {
+        background-color: var(--main-color);
+        span {
+          color: #fff;
+        }
+        &:hover {
+          background-color: #fff;
+          span {
+            color: #000;
+            font-family: 'gilroy';
+          }
+        }
+      }
+      &.--text-sm {
+        span {
+          font-size: 15px;
+          font-family: 'gilroy-light';
+        }
+      }
+      &.disable {
+        user-select: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .loading {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
+        border-top: 2px solid #000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}

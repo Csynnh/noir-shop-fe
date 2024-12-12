@@ -1,0 +1,43 @@
+.ShippingPolicy {
+  :global {
+    .ShippingPolicy {
+      &-container {
+        padding: 0 64px;
+        width: 100%;
+        margin-bottom: 40px;
+
+        h1 {
+          display: flex;
+          justify-content: space-between;
+          padding: 40px 0;
+        }
+        p {
+          font-family: 'gilroy-semibold';
+          font-size: 13px;
+        }
+      }
+      &-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      &-shipping {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      &-shipping li,
+      &-shipping ul {
+        font-size: 13px;
+        font-family: 'gilroy-light';
+        line-height: 2;
+      }
+      &-shipping li {
+        margin-left: 20px;
+        &::marker {
+          font-size: 8px; // Adjust the size as needed
+        }
+      }
+    }
+  }
+}
