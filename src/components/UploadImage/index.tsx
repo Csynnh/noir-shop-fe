@@ -17,7 +17,14 @@ type ImgSelectedType = {
 export const UploadImage = ({ name, label, onChange, className = '', image }: UploadImageProps) => {
   const [imgSelected, setImgSelected] = useState<ImgSelectedType | null>(null);
   useEffect(() => {
-    if (image) setImgSelected(image);
+    if (image) {
+      let url = image.url;
+      if (!!image.url && typeof image.url !== 'string') {
+        url = URL.createObjectURL(image.url);
+        image.url = url;
+      }
+      setImgSelected(image);
+    }
   }, [image]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e);

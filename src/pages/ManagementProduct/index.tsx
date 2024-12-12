@@ -4,7 +4,6 @@ import AddNew from '@components/Icons/AddNew';
 import Filter from '@components/Icons/Filter';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { snakeToCapitalCase } from '@lib/utils';
-import { ProductType, ProductVariantType } from '@pages/Home';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
 import { Slider } from '@ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
@@ -15,7 +14,7 @@ import CreateProductModel from './Components/CreateProductModal';
 import ProductList from './Components/ProductList';
 import { Toaster } from '@ui/sonner';
 
-enum productType {
+export enum productType {
   NEW_COLLECTION = 'NEW_COLLECTION',
   BAG = 'BAGS',
   JACKET = 'JACKETS',
@@ -25,9 +24,7 @@ export interface Product {
   id: number;
   name: string;
   description: string;
-  details: {
-    
-  };
+  details: {};
   price: number;
   variants: {
     size: string;
@@ -70,31 +67,36 @@ const ManagementProduct = () => {
   const totalPages = Math.ceil(
     filteredProducts.reduce((sum, group) => sum + group.products.length, 0) / itemsPerPage,
   );
+  const [operator, setOperator] = useState('CREATE');
 
   // Lấy danh sách sản phẩm từ API
-  const getListProducts = async () => {
+  const getListProducts = async (type?: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/products/collections`);
+      const response = await axios.get(
+        `${API_BACKEND_ENDPOINT}/api/products/collections/${type || 'NEW_COLLECTION'}`,
+      );
       if (response.status === 200) {
         const responseData = response.data.responseData;
-
-        const mappedProducts = responseData.map((item: any) => ({
+        console.info(responseData);
+        const mappedProducts = responseData.items.map((item: any) => ({
           type: item.type,
-          products: item.products.map((product: ProductType) => ({
-            id: product.id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            variants: product.variants,
-            details: product.details,
-          })),
+          products: {
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            variants: item.variants,
+            details: item.details,
+            type: item.type,
+          },
         }));
-
+        console.info(mappedProducts);
         setProducts(mappedProducts);
         setFilteredProducts(mappedProducts); // Initialize filtered products
       }
     } catch (error: any) {
+      console.error(error);
       toast.error('Error!', {
         description: error.response?.data?.messageToClient || 'An error occurred.',
       });
@@ -140,8 +142,8 @@ const ManagementProduct = () => {
     }
   };
 
-  const handleChangTab = (value: string) => {
-    console.log('value', value);
+  const handleChangTab = async (value: string) => {
+    await getListProducts(value);
   };
 
   return (
@@ -250,14 +252,11 @@ const ManagementProduct = () => {
                     Object.values(productType).map((type) => (
                       <TabsContent key={type} value={type}>
                         <ProductList
-                          data={
-                            filteredProducts
-                              .find((item) => item.type === type)
-                              ?.products.slice(
-                                (currentPage - 1) * itemsPerPage,
-                                currentPage * itemsPerPage,
-                              ) || []
-                          }
+                          data={{
+                            products: filteredProducts.filter((item) => item.type === type) || [],
+                            type: type,
+                          }}
+                          refetch={setRefetch}
                         />
                       </TabsContent>
                     ))
@@ -274,6 +273,8 @@ const ManagementProduct = () => {
         refetch={setRefetch}
         open={isOpenCreateProdModel}
         setIsOpen={setIsOpenCreateProdModel}
+        oparator={operator}
+        setOparator={setOperator}
       ></CreateProductModel>
       <Toaster position='top-right' richColors />
     </>

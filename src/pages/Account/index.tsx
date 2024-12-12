@@ -72,36 +72,6 @@ interface OrderType {
   prods: Product[];
 }
 
-const mockData = {
-  id: '00131991293',
-  prods: [
-    {
-      id: '001',
-      name: 'Product Name',
-      price: 120,
-      quantity: 2,
-      img: 'https://via.placeholder.com/150',
-      color: '#000',
-    },
-    {
-      id: '002',
-      name: 'Product Name',
-      price: 120,
-      quantity: 2,
-      img: 'https://via.placeholder.com/150',
-      color: '#000',
-    },
-    {
-      id: '003',
-      name: 'Product Name',
-      price: 120,
-      quantity: 2,
-      img: 'https://via.placeholder.com/150',
-      color: '#000',
-    },
-  ],
-};
-
 const Account = () => {
   const navigate = useNavigate();
   const { user: userInfo, removeToken, saveUserInfo } = useAuth();
@@ -136,7 +106,9 @@ const Account = () => {
     }
     removeToken();
     navigate('/sign-in', {
-      state: { from: '/account' },
+      state: { from: {
+        pathname: '/account',
+      } },
     });
   }, [userInfo]);
 

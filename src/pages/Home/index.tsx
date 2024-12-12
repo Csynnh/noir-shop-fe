@@ -7,15 +7,10 @@ import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { CardItemProps } from '@components/CardItem';
-
-export enum Type {
-  BAGS = 'BAGS',
-  JACKETS = 'JACKETS',
-  'NEW COLLECTION' = 'NEW COLLECTION',
-}
+import { productType } from '@pages/ManagementProduct';
 
 export interface CollectionType {
-  type: Type;
+  type: productType;
   products: ProductType[];
 }
 
@@ -37,6 +32,7 @@ export interface ProductType {
 }
 
 export interface ProductVariantType {
+  id: string
   color: string;
   size: string;
   inventory: number;
@@ -127,7 +123,7 @@ const Home = () => {
         </div>
       ) : (
         products
-          .filter((collection: CollectionType) => collection.type in Type)
+          .filter((collection: CollectionType) => collection.type in productType)
           .map((collection: CollectionType, index: number) => {
             const listProducts: CardItemProps[] = collection.products.map((product) => {
               return {

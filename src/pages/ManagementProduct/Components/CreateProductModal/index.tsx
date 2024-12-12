@@ -5,8 +5,10 @@ import { Selection } from '@components/Selection';
 import { UploadImage } from '@components/UploadImage';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth } from '@contexts/AuthContext';
-import { ProductType } from '@pages/Home';
+import { createFileFromUrl, uploadImageToAzure } from '@lib/utils';
+import { ProductType, ProductVariantType } from '@pages/Home';
 import { Checkbox } from '@ui/checkbox';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@ui/tooltip';
 import { Form, Modal } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useReducer, useState } from 'react';
@@ -15,8 +17,10 @@ import { toast } from 'sonner';
 interface CreateProductModelProps {
   open?: boolean;
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setOparator?: React.Dispatch<React.SetStateAction<string>>;
   refetch?: (value: boolean) => void;
   data?: ProductType | null;
+  oparator?: string;
 }
 interface FormState {
   name: string;
@@ -75,17 +79,25 @@ const formReducer = (state: FormState, action: Action): FormState => {
   }
 };
 
-const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductModelProps) => {
+const CreateProductModel = ({
+  open,
+  setIsOpen,
+  refetch,
+  data,
+  oparator,
+  setOparator,
+}: CreateProductModelProps) => {
   const { user } = useAuth();
   const [formState, dispatch] = useReducer(formReducer, initialState);
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [isPending, setIsPending] = useState(false);
+  const [currentVariantProd, setCurrentVariantProd] = useState<string | null>();
 
   useEffect(() => {
     if (data) {
       const price = data.price.toString();
       const inventory = data.variants.reduce((acc, cur) => acc + cur.inventory, 0).toString();
-      console.log(price, inventory);
+
       dispatch({ type: 'SET_FIELD', field: 'name', value: data.name });
       dispatch({ type: 'SET_FIELD', field: 'size', value: data.variants[0].size });
       dispatch({ type: 'SET_FIELD', field: 'color', value: data.variants[0].color });
@@ -97,11 +109,39 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
       dispatch({ type: 'SET_FIELD', field: 'productDesc', value: data.description });
       dispatch({ type: 'SET_FIELD', field: 'sortDescription', value: data.details.shortDesc });
       dispatch({ type: 'SET_FIELD', field: 'origin', value: data.details.origin });
+      dispatch({ type: 'SET_FIELD', field: 'collection', value: data.type });
+      console.log('data', data);
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'imageThubnail',
+        value: data.variants[0].images.imageThumbnail,
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageFirst',
+        value: data.variants[0].images.additionalImages[0],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageSecond',
+        value: data.variants[0].images.additionalImages[1],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageThird',
+        value: data.variants[0].images.additionalImages[2],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageFourd',
+        value: data.variants[0].images.additionalImages[3],
+      });
       dispatch({
         type: 'SET_FIELD',
         field: 'careInstructions',
         value: data.details.careInstructions,
       });
+      setCurrentVariantProd(data.variants[0].id);
     }
   }, [data]);
 
@@ -151,12 +191,36 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
       formData.append('Details.Origin', formState.origin);
       formData.append('Details.CareInstructions', formState.careInstructions);
       formData.append('Details.ShortDesc', formState.sortDescription);
-      formData.append('Images.ImageThumbnail', formState.imageThubnail as File);
-      formData.append('Images.AdditionalImages', formState.additionalImageFirst as File);
-      formData.append('Images.AdditionalImages', formState.additionalImageSecond as File);
-      formData.append('Images.AdditionalImages', formState.additionalImageThird as File);
-      formData.append('Images.AdditionalImages', formState.additionalImageFourd as File);
-      console.log('formState', formState);
+      const imgThumbnail =
+        typeof formState.imageThubnail === 'string'
+          ? await createFileFromUrl(formState.imageThubnail, 'Image Thubnail')
+          : (formState.imageThubnail as File);
+      formData.append('Images.ImageThumbnail', imgThumbnail as File);
+
+      const additionalImageFirst =
+        typeof formState.additionalImageFirst === 'string'
+          ? await createFileFromUrl(formState.additionalImageFirst, 'Additional Image First')
+          : (formState.additionalImageFirst as File);
+      formData.append('Images.AdditionalImages', additionalImageFirst as File);
+
+      const additionalImageSecond =
+        typeof formState.additionalImageSecond === 'string'
+          ? await createFileFromUrl(formState.additionalImageSecond, 'Additional Image Second')
+          : (formState.additionalImageSecond as File);
+      formData.append('Images.AdditionalImages', additionalImageSecond as File);
+
+      const additionalImageThird =
+        typeof formState.additionalImageThird === 'string'
+          ? await createFileFromUrl(formState.additionalImageThird, 'Additional Image Third')
+          : (formState.additionalImageThird as File);
+      formData.append('Images.AdditionalImages', additionalImageThird as File);
+
+      const additionalImageFourd =
+        typeof formState.additionalImageFourd === 'string'
+          ? await createFileFromUrl(formState.additionalImageFourd, 'Additional Image Fourd')
+          : (formState.additionalImageFourd as File);
+      formData.append('Images.AdditionalImages', additionalImageFourd as File);
+
       const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/products`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -178,11 +242,125 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
       });
     }
     setIsOpen && setIsOpen(false);
+    setOparator && setOparator('CREATE');
     setIsPending(false);
   };
 
+  const handleUpdate = async () => {
+    if (!user?.token) return;
+    setIsPending(true);
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      toast.error('Error!', {
+        description: Object.values(errors).join(', '),
+      });
+      return;
+    }
+    try {
+      const imageThubnail = formState.imageThubnail;
+      const additionalImageFirst = formState.additionalImageFirst;
+      const additionalImageSecond = formState.additionalImageSecond;
+      const additionalImageThird = formState.additionalImageThird;
+      const additionalImageFourd = formState.additionalImageFourd;
+      let imgThubnailUrl;
+      let addImgFirstUrl;
+      let addImgSecondUrl;
+      let addImgThirdUrl;
+      let addImgFourdUrl;
+      await Promise.all([
+        (async () => {
+          if (typeof imageThubnail !== 'string') {
+            imgThubnailUrl = await uploadImageToAzure(imageThubnail as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageFirst !== 'string') {
+            addImgFirstUrl = await uploadImageToAzure(additionalImageFirst as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageSecond !== 'string') {
+            addImgSecondUrl = await uploadImageToAzure(additionalImageSecond as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageThird !== 'string') {
+            addImgThirdUrl = await uploadImageToAzure(additionalImageThird as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageFourd !== 'string') {
+            addImgFourdUrl = await uploadImageToAzure(additionalImageFourd as File, user);
+          }
+        })(),
+      ]);
+
+      let data = {
+        ProductName: formState.name,
+        ProductDescription: formState.productDesc,
+        Price: formState.price.toString(),
+        Inventory: formState.inventory.toString(),
+        Size: formState.size,
+        Type: formState.collection,
+        Color: formState.color,
+        Details: {
+          Material: formState.material,
+          Dimensions: formState.dimensions,
+          Waterproof: formState.waterproof,
+          Origin: formState.origin,
+          CareInstructions: formState.careInstructions,
+          ShortDesc: formState.sortDescription,
+        },
+        Images: {
+          ImageThumbnail:
+            typeof formState.imageThubnail === 'string' ? formState.imageThubnail : imgThubnailUrl,
+          AdditionalImages: [
+            typeof formState.additionalImageFirst === 'string'
+              ? formState.additionalImageFirst
+              : addImgFirstUrl,
+            typeof formState.additionalImageSecond === 'string'
+              ? formState.additionalImageSecond
+              : addImgSecondUrl,
+            typeof formState.additionalImageThird === 'string'
+              ? formState.additionalImageThird
+              : addImgThirdUrl,
+            typeof formState.additionalImageFourd === 'string'
+              ? formState.additionalImageFourd
+              : addImgFourdUrl,
+          ],
+        },
+      };
+      const response = await axios.put(
+        `${API_BACKEND_ENDPOINT}/api/products${oparator === 'UPDATE' ? '/' + currentVariantProd : ''}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        toast.success('Success!', {
+          description: 'Add product to store successfully',
+        });
+        dispatch({ type: 'RESET' });
+        refetch && refetch(true);
+      } else {
+        throw new Error('Error when add product to store');
+      }
+    } catch (error) {
+      toast.error('Error!', {
+        description: 'Error when add product to store',
+      });
+      console.info(error);
+    }
+    setIsOpen && setIsOpen(false);
+    setOparator && setOparator('CREATE');
+    setIsPending(false);
+  };
   const handleCancel = () => {
     setIsOpen && setIsOpen(false);
+    setOparator && setOparator('CREATE');
   };
 
   const validateForm = () => {
@@ -221,25 +399,78 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
     return errors;
   };
 
+  const handleSelectColor = (variant: ProductVariantType) => {
+    dispatch({ type: 'SET_FIELD', field: 'color', value: variant.color });
+    dispatch({ type: 'SET_FIELD', field: 'imageThubnail', value: variant.images.imageThumbnail });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageFirst',
+      value: variant.images.additionalImages[0],
+    });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageSecond',
+      value: variant.images.additionalImages[1],
+    });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageThird',
+      value: variant.images.additionalImages[2],
+    });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageFourd',
+      value: variant.images.additionalImages[3],
+    });
+    setCurrentVariantProd(variant.id);
+  };
+
   return (
     <Modal open={open} onCancel={handleCancel} width={'90%'} footer={[]}>
       <Form className='grid grid-cols-1 md:grid-cols-3 gap-14 px-5 py-5'>
         {/* Cột 1: Hình ảnh, tên sản phẩm, loại sản phẩm */}
         <div className='flex flex-col justify-between'>
           <div className='mb-10'>
+            {oparator === 'UPDATE' ? (
+              <div className='mb-4 '>
+                <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
+                <div className='flex items-center gap-2'>
+                  {data?.variants.map((variant, index) => {
+                    const isActived = variant.color === formState.color;
+                    return (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={`w-7 h-8 rounded-[5px] p-[2px] ${isActived ? 'border-[1px] border-[var(--line-color)]' : ''} cursor-pointer`}
+                              key={index}
+                              onClick={() => handleSelectColor(variant)}
+                            >
+                              <div
+                                style={{ backgroundColor: variant.color }}
+                                className='w-full h-full rounded-[3px]'
+                              ></div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{variant.color}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
             <UploadImage
               name='imageThubnail'
               label='Image Thumbnail'
               onChange={handleChange}
               className={`h-[140px] [&>img]:h-full ${errors.imageThubnail ? 'border-red-400 text-red-400' : ''}`}
-              image={
-                data
-                  ? {
-                      url: data.variants[0].images.imageThumbnail,
-                      name: 'Image Thumbnail',
-                    }
-                  : undefined
-              }
+              image={{
+                url: data ? (formState.imageThubnail as any) : '',
+                name: 'Image Thumbnail',
+              }}
             ></UploadImage>
             <UploadImage
               name='additionalImageFirst'
@@ -248,7 +479,7 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
               image={
                 data
                   ? {
-                      url: data.variants[0].images.additionalImages[0],
+                      url: data ? (formState.additionalImageFirst as any) : '',
                       name: 'Image Thumbnail',
                     }
                   : undefined
@@ -262,7 +493,7 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
               image={
                 data
                   ? {
-                      url: data.variants[0].images.additionalImages[1],
+                      url: data ? (formState.additionalImageSecond as any) : '',
                       name: 'Image Thumbnail',
                     }
                   : undefined
@@ -276,7 +507,7 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
               image={
                 data
                   ? {
-                      url: data.variants[0].images.additionalImages[2],
+                      url: data ? (formState.additionalImageThird as any) : '',
                       name: 'Image Thumbnail',
                     }
                   : undefined
@@ -290,7 +521,7 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
               image={
                 data
                   ? {
-                      url: data.variants[0].images.additionalImages[3],
+                      url: data ? (formState.additionalImageFourd as any) : '',
                       name: 'Image Thumbnail',
                     }
                   : undefined
@@ -351,16 +582,18 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
             ></Selection>
           </div>
           {/* Màu sắc */}
-          <div className='mb-4 '>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
+          {oparator === 'CREATE' ? (
+            <div className='mb-4 '>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
 
-            <ColorPicker
-              setBackground={handleChange}
-              name='color'
-              background={formState.color}
-              className='max-w-full'
-            ></ColorPicker>
-          </div>
+              <ColorPicker
+                setBackground={handleChange}
+                name='color'
+                background={formState.color}
+                className='max-w-full'
+              ></ColorPicker>
+            </div>
+          ) : null}
 
           {/* Tồn kho */}
           <div className='mb-4 mt-4 flex items-end'>
@@ -374,7 +607,6 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
             ></Input>
             <span className='ml-3'>items</span>
           </div>
-
           {/* Giá */}
           <div className='mb-4 flex items-end'>
             <Input
@@ -387,65 +619,104 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
             ></Input>
             <span className='ml-3'>$/item</span>
           </div>
+          {oparator === 'UPDATE' ? (
+            <div className='mb-4 row flex justify-content-between'>
+              {/* Tỉ lệ */}
+              <Input
+                type='text'
+                name='dimensions'
+                label='Dimensions'
+                onChange={handleChange}
+                defaultValue={formState.dimensions}
+                className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
+              />
+
+              <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
+                <label
+                  htmlFor='waterproof'
+                  className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                >
+                  Waterproof
+                </label>
+                <Checkbox
+                  className='p-0'
+                  id='waterproof'
+                  name='waterproof'
+                  onClick={() => {
+                    dispatch({
+                      type: 'SET_FIELD',
+                      field: 'waterproof',
+                      value: !formState.waterproof,
+                    });
+                  }}
+                  checked={formState.waterproof}
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {/* Cột 3: Specification, Feature, Sort Description, Additional Information */}
         <div className='flex flex-col gap-4'>
-          <div className='mb-4 row flex justify-content-between'>
-            {/* Tỉ lệ */}
-            <Input
-              type='text'
-              name='dimensions'
-              label='Dimensions'
-              onChange={handleChange}
-              defaultValue={formState.dimensions}
-              className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
-            />
+          <>
+            {oparator === 'CREATE' ? (
+              <div className='mb-4 row flex justify-content-between'>
+                {/* Tỉ lệ */}
+                <Input
+                  type='text'
+                  name='dimensions'
+                  label='Dimensions'
+                  onChange={handleChange}
+                  defaultValue={formState.dimensions}
+                  className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
+                />
 
-            <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
-              <label
-                htmlFor='waterproof'
-                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-              >
-                Waterproof
-              </label>
-              <Checkbox
-                className='p-0'
-                id='waterproof'
-                name='waterproof'
-                onChange={() => {
-                  dispatch({
-                    type: 'SET_FIELD',
-                    field: 'waterproof',
-                    value: !formState.waterproof,
-                  });
-                }}
-                checked={formState.waterproof}
-              />
+                <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
+                  <label
+                    htmlFor='waterproof'
+                    className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                  >
+                    Waterproof
+                  </label>
+                  <Checkbox
+                    className='p-0'
+                    id='waterproof'
+                    name='waterproof'
+                    onClick={() => {
+                      dispatch({
+                        type: 'SET_FIELD',
+                        field: 'waterproof',
+                        value: !formState.waterproof,
+                      });
+                    }}
+                    checked={formState.waterproof}
+                  />
+                </div>
+              </div>
+            ) : null}
+            {/* Chất liệu */}
+            <div className='mb-4 rounded'>
+              <Input
+                type='text'
+                name='material'
+                label='Material'
+                onChange={handleChange}
+                defaultValue={formState.material}
+                className={`${errors.material ? '[&>input]:border-red-400 text-red-400' : ''}`}
+              ></Input>
             </div>
-          </div>
-          {/* Chất liệu */}
-          <div className='mb-4 rounded'>
-            <Input
-              type='text'
-              name='material'
-              label='Material'
-              onChange={handleChange}
-              defaultValue={formState.material}
-              className={`${errors.material ? '[&>input]:border-red-400 text-red-400' : ''}`}
-            ></Input>
-          </div>
-          {/* Specification */}
-          <div className='mb-4'>
-            <Input
-              type='text'
-              name='productDesc'
-              label='Product Description'
-              onChange={handleChange}
-              defaultValue={formState.productDesc}
-              className={`${errors.productDesc ? '[&>input]:border-red-400 text-red-400' : ''}`}
-            ></Input>
-          </div>
+            {/* Specification */}
+            <div className='mb-4'>
+              <Input
+                type='text'
+                name='productDesc'
+                label='Product Description'
+                onChange={handleChange}
+                defaultValue={formState.productDesc}
+                className={`${errors.productDesc ? '[&>input]:border-red-400 text-red-400' : ''}`}
+              ></Input>
+            </div>
+          </>
 
           {/* Sort Description */}
           <div className='mb-4 mt-4'>
@@ -483,12 +754,19 @@ const CreateProductModel = ({ open, setIsOpen, refetch, data }: CreateProductMod
             ></Input>
           </div>
 
-          {/* Add to store Button */}
-          <div className='mb-4'>
-            <Button isPrimary onClick={handleOk} loading={isPending}>
-              Add to store
-            </Button>
-          </div>
+          {oparator === 'UPDATE' ? (
+            <div className='mb-20 mt-auto'>
+              <Button isPrimary onClick={handleUpdate} loading={isPending}>
+                Update product
+              </Button>
+            </div>
+          ) : (
+            <div className='mb-4 mt-auto'>
+              <Button isPrimary onClick={handleOk} loading={isPending}>
+                Add to store
+              </Button>
+            </div>
+          )}
         </div>
       </Form>
     </Modal>
