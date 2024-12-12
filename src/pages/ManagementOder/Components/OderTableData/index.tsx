@@ -167,8 +167,9 @@ const OderColumns: ColumnDef<Order>[] = [
 export interface OderTableDataProps {
   data?: Order[] | null;
   oderType?: OderType | null;
+  refetch?: () => void;
 }
-export function OderTableData({ data, oderType }: OderTableDataProps) {
+export function OderTableData({ data, oderType, refetch }: OderTableDataProps) {
   const { user } = useAuth();
   const location = useLocation();
   const oderId = location.state?.id;
@@ -305,7 +306,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
         content: 'An error occurred while updating orders.',
       });
     } finally {
-      window.location.reload();
+      refetch && refetch();
       setIsModelOpen(false);
     }
   };
