@@ -16,6 +16,7 @@ interface InputProps {
   disabled?: boolean;
   error?: string;
   className?: string;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 const Input = ({
   label,
@@ -30,6 +31,7 @@ const Input = ({
   disabled,
   error,
   className,
+  onKeyDown,
 }: InputProps) => {
   const typeValue = type || 'text';
   const inputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +62,7 @@ const Input = ({
       <input
         disabled={disabled}
         onChange={handleInputChange}
+        onKeyDown={onKeyDown}
         ref={inputRef}
         type={typeValue}
         id={name}
@@ -71,7 +74,7 @@ const Input = ({
       />
       {typeValue === 'password' && (
         <span onClick={handleShowPassword} className='input-icon'>
-          {showPassword ? <CloseEye /> : <OpenEye />}
+          {showPassword ? <OpenEye /> : <CloseEye />}
         </span>
       )}
     </div>

@@ -25,6 +25,7 @@ import { JwtPayload, ROLE } from '@constant/Api';
 import ManagementEmployee from '@pages/ManagementEmployee';
 import { useAuth } from '@contexts/AuthContext';
 import dayjs from 'dayjs';
+import AccountAdmin from '@pages/AccountAdmin/AccountAdmin';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
                     <Route path='/analyze-revenue' element={<ManagementProduct />} />
                     <Route path='/analyze' element={<AnalyzeRevenue />} />
                     <Route path='/manage-employee' element={<ManagementEmployee />} />
+                    <Route path='/account' element={<AccountAdmin />} />
                   </Route>
                   <Route path='/sign-in' element={<SignIn />} />
                 </Routes>
@@ -60,27 +62,33 @@ function App() {
             <Route
               path='/*'
               element={
-                <div className='flex flex-col min-h-screen'>
-                  <Header />
-                  <div className='flex-1'>
-                    <Routes>
-                      <Route path='/' element={<Home />} />
-                      <Route path='/gift-card' element={<GiftCard />} />
-                      <Route path='/contact' element={<Contact />} />
-                      <Route path='/about' element={<About />} />
-                      <Route path='/products/:name' element={<ProductDetails />} />
-                      <Route path='/private-policy' element={<PrivatePolicy />} />
-                      <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
-                      <Route path='/membership-policy' element={<MembershipPolicy />} />
-                      <Route path='/sign-in' element={<SignIn />} />
-                      <Route path='/sign-up' element={<SignUp />} />
-                      <Route path='/checkout' element={<Checkout />} />
-                      <Route path='/account' element={<Account />} />
-                      <Route path='/search/:name' element={<SearchingResult />} />
-                    </Routes>
-                  </div>
-                  <Footer />
-                </div>
+                <Routes>
+                  <Route
+                    element={
+                      <div className='flex flex-col min-h-screen'>
+                        <Header />
+                        <div className='flex-1'>
+                          <Outlet />
+                        </div>{' '}
+                        <Footer />
+                      </div>
+                    }
+                  >
+                    <Route path='/' element={<Home />} />
+                    <Route path='/gift-card' element={<GiftCard />} />
+                    <Route path='/contact' element={<Contact />} />
+                    <Route path='/about' element={<About />} />
+                    <Route path='/products/:name' element={<ProductDetails />} />
+                    <Route path='/private-policy' element={<PrivatePolicy />} />
+                    <Route path='/shipping-and-return-policy' element={<ShippingPolicy />} />
+                    <Route path='/membership-policy' element={<MembershipPolicy />} />
+                    <Route path='/sign-up' element={<SignUp />} />
+                    <Route path='/checkout' element={<Checkout />} />
+                    <Route path='/account' element={<Account />} />
+                    <Route path='/search/:name' element={<SearchingResult />} />
+                  </Route>
+                  <Route path='/sign-in' element={<SignIn />} />
+                </Routes>
               }
             />
           </Routes>

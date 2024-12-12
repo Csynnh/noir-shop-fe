@@ -13,9 +13,10 @@ import { SelectSingleEventHandler } from 'react-day-picker';
 interface DatePickerProp {
   className?: string;
   onChange?: (day: Date | undefined) => void;
+  defaultValue?: Date;
 }
-const DatePicker = ({ className, onChange }: DatePickerProp) => {
-  const [date, setDate] = React.useState<Date>(dayjs().toDate());
+const DatePicker = ({ className, onChange, defaultValue }: DatePickerProp) => {
+  const [date, setDate] = React.useState<Date>(defaultValue ?? dayjs().toDate());
   const handleDateChange: SelectSingleEventHandler = (day: Date | undefined) => {
     if (day) {
       setDate(day);
