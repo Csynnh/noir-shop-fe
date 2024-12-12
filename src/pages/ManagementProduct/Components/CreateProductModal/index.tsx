@@ -92,7 +92,7 @@ const CreateProductModel = ({
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [isPending, setIsPending] = useState(false);
   const [currentVariantProd, setCurrentVariantProd] = useState<string | null>();
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   useEffect(() => {
     if (data && data.name) {
       const price = data.price.toString();
@@ -113,7 +113,6 @@ const CreateProductModel = ({
       dispatch({ type: 'SET_FIELD', field: 'sortDescription', value: data.details.shortDesc });
       dispatch({ type: 'SET_FIELD', field: 'origin', value: data.details.origin });
       dispatch({ type: 'SET_FIELD', field: 'collection', value: data.type });
-      console.log('data', data);
       dispatch({
         type: 'SET_FIELD',
         field: 'imageThubnail',
@@ -179,7 +178,6 @@ const CreateProductModel = ({
       return;
     }
     try {
-      // Call API to add product to store
       const formData = new FormData();
       formData.append('ProductName', formState.name);
       formData.append('ProductDescription', formState.productDesc);
@@ -365,6 +363,7 @@ const CreateProductModel = ({
   const handleCancel = () => {
     setIsOpen && setIsOpen(false);
     setOparator && setOparator('CREATE');
+    setIsDeleteModalOpen(false);
   };
 
   const validateForm = () => {
@@ -401,6 +400,30 @@ const CreateProductModel = ({
 
     setErrors(errors);
     return errors;
+  };
+
+  const handleDeleteColor = async () => {
+    try {
+      const response = await axios.delete(
+        `${API_BACKEND_ENDPOINT}/api/products/color/${currentVariantProd}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.data.responseData) {
+        toast.success(`Delete product color successfully!`);
+        refetch && refetch(true);
+      } else {
+        toast.error(`Delete product color failed!`);
+      }
+    } catch (error) {
+      toast.error(`Delete product color failed!`);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setIsOpen && setIsOpen(false);
+    }
   };
 
   const handleSelectColor = (variant: ProductVariantType) => {
@@ -532,7 +555,7 @@ const CreateProductModel = ({
                     }
                   : undefined
               }
-              className={`${errors.additionalImageFourd ? 'border-red-400 text-red-400' : ''}`}
+              className={`${errors.additionalImageFourd ? 'border-red-400 text-red-400' : ''} !mb-0`}
             ></UploadImage>
           </div>
           <div className=''></div>
@@ -660,9 +683,9 @@ const CreateProductModel = ({
                   />
                 </div>
               </div>
-              <div className=''>
-                <Button isPrimary onClick={handleUpdate} loading={isPending}>
-                  Delete this color
+              <div className='mt-auto'>
+                <Button isPrimary onClick={handleUpdate} disabled={isPending}>
+                  Update product
                 </Button>
               </div>
             </>
@@ -768,9 +791,9 @@ const CreateProductModel = ({
           </div>
 
           {oparator === 'UPDATE' ? (
-            <div className=''>
-              <Button isPrimary onClick={handleUpdate} loading={isPending}>
-                Update product
+            <div className='mt-auto'>
+              <Button onClick={() => setIsDeleteModalOpen(true)} disabled={isPending}>
+                Delete this product color
               </Button>
             </div>
           ) : (
@@ -782,6 +805,19 @@ const CreateProductModel = ({
           )}
         </div>
       </Form>
+      <Modal
+        open={isDeleteModalOpen}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        width={'30%'}
+        footer={[
+          <Button onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>,
+          <Button onClick={handleDeleteColor} isPrimary>
+            Confirm
+          </Button>,
+        ]}
+      >
+        <div className='mt-4 mb-8'>Please confirm if you want to delete this product color?</div>
+      </Modal>
     </Modal>
   );
 };

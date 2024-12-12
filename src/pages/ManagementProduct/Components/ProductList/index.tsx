@@ -41,7 +41,6 @@ const ProductList = ({ data, refetch }: { data: Product[]; refetch: any }) => {
 
   const handleConfirmDelete = async () => {
     if (currentProduct && user) {
-      console.log(`Sản phẩm đã xóa: ${currentProduct.id}`);
       const response = await axios.delete(
         `${API_BACKEND_ENDPOINT}/api/products/${currentProduct.id}`,
         {

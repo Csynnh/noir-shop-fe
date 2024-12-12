@@ -148,7 +148,9 @@ const ProductDetails = () => {
   const getListProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/products/collections/new_collection`);
+      const response = await axios.get(
+        `${API_BACKEND_ENDPOINT}/api/products/collections/new_collection`,
+      );
       if (response.status === 200) {
         const responseData = response.data.responseData.items;
         setCollection({

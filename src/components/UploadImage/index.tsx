@@ -36,9 +36,9 @@ export const UploadImage = ({ name, label, onChange, className = '', image }: Up
   };
 
   return (
-    <div className='mb-5 min-h-16'>
+    <div className='min-h-16'>
       <label
-        className={`w-full h-20 border-[0.5px] border-dashed border-[#837F83] flex items-center gap-3 px-3 cursor-pointer ${className}`}
+        className={`w-full h-20 border-[0.5px] border-dashed border-[#837F83] flex items-center gap-3 px-3 cursor-pointer mb-5 ${className}`}
       >
         <input
           type='file'
