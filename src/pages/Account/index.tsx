@@ -651,7 +651,9 @@ const Account = () => {
                   items
                 </p>
               </div>
-              {oderData.length ? (
+              {loading ? (
+                <p className='text-center'>Loading ...</p>
+              ) : oderData.length ? (
                 oderData.map((order: OrderType) => (
                   <div className='bg-[#EBF4EB] py-5 px-8 mb-4'>
                     <h5 className='mb-4 text-xl'>ID: {order.id}</h5>

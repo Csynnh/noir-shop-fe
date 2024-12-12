@@ -142,9 +142,9 @@ const ProductList = ({ data, refetch }: { data: Product[]; refetch: any }) => {
                   {product.variants.reduce((acc, variant) => acc + variant.inventory!, 0)}
                 </p>
                 {product.variants.every((variant) => variant.inventory === 0) && (
-                  <div className=''>
-                    <div className='ProdItem-overlay'></div>
-                    <div className='ProdItem-oldout'>
+                  <div className='ProdItem-wrap'>
+                    {/* <div className='ProdItem-overlay'></div> */}
+                    <div className='ProdItem-soldout'>
                       <Soldout></Soldout>
                     </div>
                   </div>

@@ -305,7 +305,6 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
         content: 'An error occurred while updating orders.',
       });
     } finally {
-      window.location.reload();
       setIsModelOpen(false);
     }
   };
