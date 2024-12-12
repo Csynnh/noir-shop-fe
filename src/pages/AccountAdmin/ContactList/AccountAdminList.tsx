@@ -7,7 +7,7 @@ interface ContactListProps {
 const ContactList = ({ data }: ContactListProps) => {
   console.log(data);
   return (
-    <div className='flex flex-col gap-[20px] max-h-[166px] overflow-y-scroll scroll-smooth pr-5'>
+    <div className='flex flex-col gap-[20px] max-h-[166px] overflow-y-scroll scroll-smooth pr-5 align-[flex-start]'>
       {data?.map((ContactEmail) => (
         <ContactItem key={ContactEmail.id} NotificationResponse={ContactEmail} />
       ))}

@@ -137,7 +137,10 @@
               display: flex;
               justify-content: space-between;
               flex-direction: column;
+              gap: 10px;
               &-item {
+                width: 100%;
+                height: calc((100% - 10px * 3) / 4);
                 border: 0.5px solid var(--line-color);
               }
               img {

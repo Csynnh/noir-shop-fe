@@ -508,7 +508,9 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
                   </p>
                 </div>
                 <div className='text-right'>
-                  <span className='mb-2 inline-block'>Code oder: {selectedOder.id}</span>
+                  <span className='mb-2 inline-block'>
+                    Code oder: #{selectedOder.id.slice(0, 8)}
+                  </span>
                   <p className='mb-2 font-[gilroy-light] inline-block'>
                     Date of order:{' '}
                     <span className='font-[gilroy-light-italic]'>

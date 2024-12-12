@@ -3,8 +3,8 @@ import { ProductCheckoutType } from '.';
 
 export enum ShippingMethodType {
   GO_TO_STORE = 'GO_TO_STORE',
-  STANDARD_SHIPPING = 'STANDARD_SHIPPING_($12.00)',
-  EXPRESS_SHIPPING = 'EXPRESS_SHIPPING_($50.00)',
+  STANDARD_SHIPPING = 'STANDARD_SHIPPING_($12.60)',
+  EXPRESS_SHIPPING = 'EXPRESS_SHIPPING_($20.20)',
 }
 
 export enum PaymentMethodType {

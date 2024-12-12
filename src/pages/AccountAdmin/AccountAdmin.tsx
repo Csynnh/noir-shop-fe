@@ -14,6 +14,8 @@ import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import * as signalR from '@microsoft/signalr';
 import { ModelState } from '@pages/Account';
 import { toast } from 'sonner';
+import { Spinner } from '@ui/spiner';
+import NoData from '@components/Icons/NoData/NoData';
 
 export interface ContactEmail {
   id: string;
@@ -130,31 +132,18 @@ const AccountAdmin = () => {
                 <div className='AccountAdmin-text'>
                   <p className='strong'>Username:</p>
                   <p className='light'>{user?.name}</p>
-                  {/* <span className='block w-[30px]' onClick={handleChangeAccountInfo}>
-                    {' '}
-                    <Edit></Edit>
-                  </span> */}
                 </div>
                 <div className='AccountAdmin-text'>
                   <p className='strong'>Email:</p>
                   <p className='light'>{user?.email}</p>
-                  {/* <span className='block w-[30px]'>
-                    <Edit></Edit>
-                  </span> */}
                 </div>{' '}
                 <div className='AccountAdmin-text'>
                   <p className='strong'>Phone Number:</p>
                   <p className='light'>{user?.phone}</p>
-                  {/* <span className='block w-[30px]'>
-                    <Edit></Edit>
-                  </span> */}
                 </div>
                 <div className='AccountAdmin-text'>
                   <p className='strong'>Password:</p>
                   <p className='light'>********</p>
-                  {/* <span className='block w-[30px]'>
-                    <Edit></Edit>
-                  </span> */}
                 </div>
               </div>
               <Button onClick={handleChangeAccount}>Change Account</Button>
@@ -169,12 +158,26 @@ const AccountAdmin = () => {
                 <p>{lenNoti}</p>
               </div>
             </div>
-            <ContactList data={notifications}></ContactList>
-            <div className='AccountAdmin-bottom'>
-              <Button isPrimary onClick={handleEmailClick}>
-                Check Email Now
-              </Button>
-            </div>
+            {loading ? (
+              <div className='flex items-center gap-3 justify-center mt-10'>
+                <Spinner></Spinner>
+                Loading...
+              </div>
+            ) : notifications.length ? (
+              <div className='flex flex-col justify-between h-full'>
+                <ContactList data={notifications}></ContactList>
+                <div className='AccountAdmin-bottom'>
+                  <Button isPrimary onClick={handleEmailClick}>
+                    Check Email Now
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className='flex flex-col gap-[10px] w-full h-full justify-center items-center border '>
+                <NoData></NoData>
+                <p className='text-[13px] text-[var(--main-color)]'>No Results Found</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
