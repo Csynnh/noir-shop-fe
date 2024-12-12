@@ -147,6 +147,13 @@ const ManagementOder = () => {
     }
   };
 
+  const handleRetch = async () => {
+    if (user) {
+      await fetchOrderStatus(user);
+      await fetchOrdersByStatus(user, oderType);
+    }
+  }
+
   return (
     <div className='w-full pl-[64px] pr-[64px]'>
       <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Oder</h1>
@@ -192,7 +199,7 @@ const ManagementOder = () => {
             </TabsList>
             <div className='mt-12'></div>
             <TabsContent value={oderType} className='min-h-[600px] h-full'>
-              <OderTableData data={orders} oderType={oderType}></OderTableData>
+              <OderTableData data={orders} oderType={oderType} refetch={handleRetch}></OderTableData>
             </TabsContent>
           </Tabs>
         </div>
