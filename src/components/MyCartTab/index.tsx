@@ -6,8 +6,9 @@ import SignInAlert from '@components/Icons/SignInAlert';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './styles.module.scss';
+import { ProductCheckoutType } from '@pages/Checkout';
 
 export interface CartItemData {
   id: string;
@@ -38,6 +39,7 @@ const MyCartTab: React.FC<myCartProp> = ({
 }) => {
   const [cartItemList, setCartItemList] = useState<CartItemData[]>([]);
   const [isEmpty, setIsEmpty] = useState(true);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,6 +71,28 @@ const MyCartTab: React.FC<myCartProp> = ({
     }
   }, [cartItemList]);
 
+  const handleBuyNow = () => {
+    const listProd = cartItemList.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        variants: [
+          {
+            id: item.id,
+            color: item.color,
+            image: item.image,
+            count: item.count,
+          },
+        ],
+      };
+    });
+    navigate('/checkout', {
+      state: {
+        products: listProd,
+      },
+    });
+  };
   return (
     <div className={`${styles.MyCart}`}>
       <>
@@ -155,7 +179,7 @@ const MyCartTab: React.FC<myCartProp> = ({
                       .toFixed(2)}
                   </p>
                 </div>
-                <Button className='btn_submitContact' onClick={() => {}} isPrimary>
+                <Button className='btn_submitContact' onClick={handleBuyNow} isPrimary>
                   Buy now
                 </Button>
               </div>

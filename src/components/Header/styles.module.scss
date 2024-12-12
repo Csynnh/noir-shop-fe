@@ -6,6 +6,7 @@
   :global {
     .header {
       position: relative;
+
       &-wrapper {
         .header-top {
           display: flex;
@@ -24,6 +25,9 @@
               align-items: center;
               width: 36px;
               height: 36px;
+            }
+            span.burger-menu {
+              display: none;
             }
             .search-box {
               width: fit-content;
@@ -96,6 +100,43 @@
         top: 0;
         left: 50%;
         transform: translateY(100%);
+      }
+    }
+  }
+  @media only screen and (min-width: 600px) and (max-width: 901px) {
+    :global {
+      .header {
+        position: relative;
+        &-container {
+          .burger-menu {
+            display: block !important;
+          }
+          span.icon {
+            display: none !important;
+          }
+        }
+        &-nav {
+          display: none;
+        }
+      }
+    }
+  }
+  @media only screen and (max-width: 600px) {
+    :global {
+      .header {
+        position: relative;
+        &-container {
+          span.burger-menu {
+            display: block !important;
+          }
+          span.icon {
+            display: none !important;
+          }
+        }
+
+        &-nav {
+          display: none;
+        }
       }
     }
   }

@@ -1,6 +1,8 @@
 import Right from '@components/Icons/Right';
 import styles from './styles.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Button from '@components/Button';
+import { log } from 'console';
 
 export interface CardItemProps {
   id: string;
@@ -11,6 +13,14 @@ export interface CardItemProps {
 }
 // @ts-ignore
 const CardItem = (prop: CardItemProps) => {
+  const navigate = useNavigate();
+  const handleBuyNow = () => {
+    navigate(`/products/${name}`, { state: { id: id } });
+  };
+  const handleAddToCart = () => {
+    console.log('Add to cart');
+  };
+
   const { id, name, price, color, img_url } = prop;
   return (
     <div className={styles.Card}>
@@ -21,8 +31,11 @@ const CardItem = (prop: CardItemProps) => {
           </div>
           <div className='card-content'>
             <h3 className='card-name'>{name}</h3>
-            <p className='card-price'>${price}</p>
+            <p className='card-price'>
+              <span>Price: </span>${price}
+            </p>
             <ul className='card-color'>
+              <span>Color:</span>
               {color.map((item, index) => (
                 <li
                   key={index}
@@ -41,6 +54,12 @@ const CardItem = (prop: CardItemProps) => {
                 <Right></Right>
               </Link>
             </span>
+          </div>
+          <div className='card-footer-mobile'>
+            <Button onClick={handleAddToCart}>Add to cart</Button>
+            <Button isPrimary onClick={handleBuyNow}>
+              Buy now
+            </Button>
           </div>
         </div>
       </div>

@@ -70,4 +70,52 @@
       }
     }
   }
+  @media only screen and (min-width: 901px) and (max-width: 1280px) {
+    :global {
+      .collection {
+        &-item {
+          width: calc(33.3333% - 24px * 3 / 3);
+        }
+        &-content {
+          gap: 40px;
+        }
+      }
+    }
+  }
+  @media only screen and (min-width: 600px) and (max-width: 901px) {
+    :global {
+      .collection {
+        &-container {
+          justify-content: space-between;
+        }
+        &-item {
+          width: calc(50% - 10px);
+        }
+        &-content {
+          gap: 30px;
+        }
+      }
+    }
+  }
+
+  @media only screen and (max-width: 600px) {
+    :global {
+      padding-inline: 40px;
+      .collection {
+        &-header {
+          font-family: 'gilroy-bold';
+          font-size: 30px;
+          text-align: left;
+        }
+        &-content {
+          align-items: flex-start;
+          gap: 20px;
+          text-align: left;
+        }
+        &-item {
+          width: 100%;
+        }
+      }
+    }
+  }
 }

@@ -12,7 +12,7 @@ const Footer = () => {
   return (
     <div className={styles.Footer}>
       <div className='footer-wrapper'>
-        <div className='footer-container'>
+        <div className='footer-container1'>
           <div className='footer-contact'>
             <h5>Contact us</h5>
             <div className='footer-contact-item'>
@@ -68,7 +68,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className='footer-container'>
+        <div className='footer-container2'>
           <div className='footer-shortcut'>
             <span>Shopping Now</span>
             <span>

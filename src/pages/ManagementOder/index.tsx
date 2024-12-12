@@ -148,7 +148,7 @@ const ManagementOder = () => {
   };
 
   return (
-    <div className='w-full p-12'>
+    <div className='w-full pl-[64px] pr-[64px]'>
       <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Oder</h1>
       {loading && !oderStatus.length ? (
         <div className='grid grid-cols-5 '>
@@ -180,7 +180,7 @@ const ManagementOder = () => {
                         {snakeToCapitalCase(status.status)}
                       </span>
                     </div>
-                    <div className='flex justify-end items-end'>
+                    <div className='flex justify-end items-end gap-[4px]'>
                       <span className='text-[30px] leading-[36px] font-[gilroy-regular]'>
                         {status.count}
                       </span>
