@@ -249,7 +249,6 @@ const CreateProductModel = ({
 
   const handleUpdate = async () => {
     if (!user?.token) return;
-    setIsPending(true);
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       toast.error('Error!', {
@@ -257,6 +256,7 @@ const CreateProductModel = ({
       });
       return;
     }
+    setIsPending(true);
     try {
       const imageThubnail = formState.imageThubnail;
       const additionalImageFirst = formState.additionalImageFirst;
