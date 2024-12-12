@@ -31,7 +31,6 @@ import {
 enum EmployeeTab {
   INFORMATION = 'INFORMATION',
   SALARY = 'SALARY',
-  WORK_SCHEDULE = 'WORK_SCHEDULE',
 }
 export interface Employee {
   id: string;

@@ -1,5 +1,6 @@
 import Button from '@components/Button';
 import AccountGirl from '@components/Icons/AccountGirl';
+import styles from './Account.module.scss';
 import Close from '@components/Icons/Close';
 import Edit from '@components/Icons/Edit';
 import Finished from '@components/Icons/Finished';
@@ -484,12 +485,13 @@ const Account = () => {
   };
 
   return (
-    <div className='px-16 pb-14'>
+    <div className={styles.Account}>
       <div>
-        <div className='flex justify-between items-end pb-7 border-b-[0.5px] border-[#c9c5c9]'>
-          <div className=''>
+        <div className='flex justify-between items-end pb-7 border-b-[0.5px] border-[#c9c5c9] pl-[180px] Account-block h-[200px]'>
+          <div className='Account-icon'>
             <AccountGirl></AccountGirl>
           </div>
+          <h3>Hello, {userInfo?.name}</h3>
           <div className='flex items-center gap-4 max-w-[360px] w-full'>
             <Button onClick={handleSignOut} isPrimary className=''>
               Sign Out

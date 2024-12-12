@@ -9,6 +9,9 @@ import styles from './styles.module.scss';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
+  const hanldeShopNow = () => {
+    window.scrollTo({ top: 600, behavior: 'smooth' });
+  };
   return (
     <div className={styles.Footer}>
       <div className='footer-wrapper'>
@@ -69,7 +72,7 @@ const Footer = () => {
           </div>
         </div>
         <div className='footer-container2'>
-          <div className='footer-shortcut'>
+          <div className='footer-shortcut' onClick={hanldeShopNow}>
             <span>Shopping Now</span>
             <span>
               <Up></Up>

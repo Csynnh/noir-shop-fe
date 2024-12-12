@@ -5,11 +5,17 @@
   :global {
     .SignIn {
       &-container {
+        position: relative;
         height: 100%;
         display: grid;
         grid-template-columns: 33.5% 66.5%;
         gap: 1px;
         background-color: var(--line-color);
+      }
+      &-Logo {
+        position: absolute;
+        top: 6%;
+        left: 3%;
       }
       &-left,
       &-right {
