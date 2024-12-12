@@ -148,7 +148,7 @@ const ProductDetails = () => {
   const getListProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/products/collections/bags`);
+      const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/products/collections/new_collection`);
       if (response.status === 200) {
         const responseData = response.data.responseData.items;
         setCollection({
@@ -580,7 +580,7 @@ const ProductDetails = () => {
                 products={
                   collection?.products.map((product: ProductType) => {
                     return {
-                      id: product.variants[0].id || '',
+                      id: product.id || '',
                       name: product.name,
                       price: product.price,
                       color: product.variants?.map((variant) => variant.color) || [],

@@ -3,6 +3,7 @@ import CardItem, { CardItemProps } from '@components/CardItem';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import ArrowLeft from '@components/Icons/ArrowLeft';
 import ArrowRight from '@components/Icons/ArrowRight';
+import { snakeToCapitalCase } from '@lib/utils';
 
 interface CollectionProps {
   type: string;
@@ -58,7 +59,7 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type, products
   return (
     <div ref={ref} className={styles.Collection}>
       <div className='collection-content'>
-        <h2 className='collection-header'>{type}</h2>
+        <h2 className='collection-header uppercase'>{snakeToCapitalCase(type)}</h2>
         <div className='collection-wrapper'>
           {/* Left Scroll Button */}
           {canScrollLeft && !scrolling && (
