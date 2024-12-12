@@ -92,6 +92,7 @@ const MyCartTab: React.FC<myCartProp> = ({
         products: listProd,
       },
     });
+    handleShopNow();
   };
   return (
     <div className={`${styles.MyCart}`}>

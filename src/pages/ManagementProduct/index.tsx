@@ -81,7 +81,7 @@ const ManagementProduct = () => {
   ) => {
     setLoading(true);
     try {
-      let ENDPOINT = `${API_BACKEND_ENDPOINT}/api/products/collections/${type || 'NEW_COLLECTION'}?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+      let ENDPOINT = `${API_BACKEND_ENDPOINT}/api/products/collections/${type || currentTab || 'NEW_COLLECTION'}?pageNumber=${pageNumber}&pageSize=${pageSize}`;
       if (size) {
         ENDPOINT += '&size=' + size;
       }
@@ -105,6 +105,7 @@ const ManagementProduct = () => {
   // Gọi API khi component mount
   useEffect(() => {
     getListProducts();
+    setRefetch(false);
   }, [refetch]);
 
   const handleChangePrice = (value: number[]) => {

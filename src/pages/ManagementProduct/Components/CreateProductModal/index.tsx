@@ -96,16 +96,19 @@ const CreateProductModel = ({
   useEffect(() => {
     if (data && data.name) {
       const price = data.price.toString();
-      const inventory = data.variants.reduce((acc, cur) => acc + cur.inventory, 0).toString();
 
       dispatch({ type: 'SET_FIELD', field: 'name', value: data.name });
       dispatch({ type: 'SET_FIELD', field: 'size', value: data.variants[0].size });
       dispatch({ type: 'SET_FIELD', field: 'color', value: data.variants[0].color });
-      dispatch({ type: 'SET_FIELD', field: 'inventory', value: inventory });
+      dispatch({ type: 'SET_FIELD', field: 'inventory', value: data.variants[0].inventory });
       dispatch({ type: 'SET_FIELD', field: 'price', value: price });
       dispatch({ type: 'SET_FIELD', field: 'material', value: data.details.material });
       dispatch({ type: 'SET_FIELD', field: 'dimensions', value: data.details.dimensions });
-      dispatch({ type: 'SET_FIELD', field: 'waterproof', value: data.details.waterproof });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'waterproof',
+        value: data.details.waterproof === 'true',
+      });
       dispatch({ type: 'SET_FIELD', field: 'productDesc', value: data.description });
       dispatch({ type: 'SET_FIELD', field: 'sortDescription', value: data.details.shortDesc });
       dispatch({ type: 'SET_FIELD', field: 'origin', value: data.details.origin });
@@ -306,7 +309,7 @@ const CreateProductModel = ({
         Details: {
           Material: formState.material,
           Dimensions: formState.dimensions,
-          Waterproof: formState.waterproof,
+          Waterproof: formState.waterproof.toString(),
           Origin: formState.origin,
           CareInstructions: formState.careInstructions,
           ShortDesc: formState.sortDescription,
@@ -423,15 +426,17 @@ const CreateProductModel = ({
       field: 'additionalImageFourd',
       value: variant.images.additionalImages[3],
     });
+    dispatch({ type: 'SET_FIELD', field: 'size', value: variant.size });
+    dispatch({ type: 'SET_FIELD', field: 'inventory', value: variant.inventory });
     setCurrentVariantProd(variant.id);
   };
 
   return (
     <Modal open={open} onCancel={handleCancel} width={'90%'} footer={[]}>
-      <Form className='grid grid-cols-1 md:grid-cols-3 gap-14 px-5 py-5'>
+      <Form className='grid grid-cols-1 md:grid-cols-3 gap-14 px-5 py-5 mb-20'>
         {/* Cột 1: Hình ảnh, tên sản phẩm, loại sản phẩm */}
         <div className='flex flex-col justify-between'>
-          <div className='mb-10'>
+          <div className=''>
             {oparator === 'UPDATE' ? (
               <div className='mb-4 '>
                 <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
@@ -621,39 +626,46 @@ const CreateProductModel = ({
             <span className='ml-3'>$/item</span>
           </div>
           {oparator === 'UPDATE' ? (
-            <div className='mb-4 row flex justify-content-between'>
-              {/* Tỉ lệ */}
-              <Input
-                type='text'
-                name='dimensions'
-                label='Dimensions'
-                onChange={handleChange}
-                defaultValue={formState.dimensions}
-                className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
-              />
-
-              <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
-                <label
-                  htmlFor='waterproof'
-                  className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                >
-                  Waterproof
-                </label>
-                <Checkbox
-                  className='p-0'
-                  id='waterproof'
-                  name='waterproof'
-                  onClick={() => {
-                    dispatch({
-                      type: 'SET_FIELD',
-                      field: 'waterproof',
-                      value: !formState.waterproof,
-                    });
-                  }}
-                  checked={formState.waterproof}
+            <>
+              <div className='mb-4 row flex justify-content-between'>
+                {/* Tỉ lệ */}
+                <Input
+                  type='text'
+                  name='dimensions'
+                  label='Dimensions'
+                  onChange={handleChange}
+                  defaultValue={formState.dimensions}
+                  className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
                 />
+
+                <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
+                  <label
+                    htmlFor='waterproof'
+                    className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                  >
+                    Waterproof
+                  </label>
+                  <Checkbox
+                    className='p-0'
+                    id='waterproof'
+                    name='waterproof'
+                    onClick={() => {
+                      dispatch({
+                        type: 'SET_FIELD',
+                        field: 'waterproof',
+                        value: !formState.waterproof,
+                      });
+                    }}
+                    checked={formState.waterproof}
+                  />
+                </div>
               </div>
-            </div>
+              <div className=''>
+                <Button isPrimary onClick={handleUpdate} loading={isPending}>
+                  Delete this color
+                </Button>
+              </div>
+            </>
           ) : null}
         </div>
 
@@ -756,7 +768,7 @@ const CreateProductModel = ({
           </div>
 
           {oparator === 'UPDATE' ? (
-            <div className='mb-20 mt-auto'>
+            <div className=''>
               <Button isPrimary onClick={handleUpdate} loading={isPending}>
                 Update product
               </Button>

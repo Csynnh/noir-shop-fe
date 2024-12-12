@@ -29,6 +29,7 @@ import {
   ShippingMethodType,
 } from './reducer';
 import styles from './styles.module.scss';
+import { id } from 'date-fns/locale';
 
 export interface ProductCheckoutType {
   id?: string;
@@ -100,6 +101,9 @@ const Checkout = () => {
   };
 
   useEffect(() => {
+    if (!user) {
+      navigator('/sign-in');
+    }
     dispatchCheckout({ type: 'UPDATE_FIELD', field: 'products', value: products });
   }, []);
 
@@ -193,7 +197,13 @@ const Checkout = () => {
           account_id: user?.account_id,
           shippingMethod: checkoutState.values.shippingMethod,
           paymentMethod: checkoutState.values.paymentMethod,
-          products: checkoutState.values.products,
+          products: checkoutState.values.products.map((prod) => ({
+            id: prod.id,
+            variants: prod.variants?.map((variant) => ({
+              id: variant.id,
+              count: variant.count,
+            })),
+          })),
           userInfo: {
             address: checkoutState.values.address,
             name: checkoutState.values.name,

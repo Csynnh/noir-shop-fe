@@ -12,8 +12,13 @@ import { useState } from 'react';
 import CreateProductModel from '../CreateProductModal';
 import DeleteProductModal from '../DeleteProductModel';
 import { Product } from '@pages/ManagementProduct';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { useAuth } from '@contexts/AuthContext';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 const ProductList = ({ data, refetch }: { data: Product[]; refetch: any }) => {
+  const { user } = useAuth();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isOpenCreateProdModel, setIsOpenCreateProdModel] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<ProductType | null>(null);
@@ -34,11 +39,24 @@ const ProductList = ({ data, refetch }: { data: Product[]; refetch: any }) => {
     setOparator('UPDATE');
   };
 
-  const handleConfirmDelete = () => {
-    if (currentProduct) {
-      alert(`Xóa sản phẩm \"${currentProduct.name}\" thành công!`);
-      console.log(`Sản phẩm đã xóa: ${currentProduct.name}`);
-      // TODO: Thực hiện logic xóa sản phẩm tại đây
+  const handleConfirmDelete = async () => {
+    if (currentProduct && user) {
+      console.log(`Sản phẩm đã xóa: ${currentProduct.id}`);
+      const response = await axios.delete(
+        `${API_BACKEND_ENDPOINT}/api/products/${currentProduct.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.data.responseData) {
+        toast.success(`Delete product ${currentProduct.name} successfully!`);
+        setCurrentProduct(null);
+        refetch(true);
+      } else {
+        toast.error(`Delete product ${currentProduct.name} failed!`);
+      }
     }
     setIsDeleteModalOpen(false);
   };
@@ -94,40 +112,32 @@ const ProductList = ({ data, refetch }: { data: Product[]; refetch: any }) => {
               <div className='flex gap-2 mt-2 flex-col'>
                 <div className='text-sm text-gray-500 flex gap-2'>
                   Size:
-                  {Array.from(new Set(product.variants?.map((variant) => variant.size))).map(
-                    (size, idx) => (
-                      <span key={idx}>{size}</span>
+                  {Array.from(
+                    new Set(
+                      product.variants
+                        ?.sort((a, b) => a.size.localeCompare(b.size))
+                        .map((variant) => variant.size),
                     ),
-                  )}
+                  ).map((size, idx) => (
+                    <span key={idx}>{size}</span>
+                  ))}
                 </div>
                 <div className='text-sm text-gray-500  flex gap-2'>
                   Color:
-                  {product.variants?.map((variant, idx) => (
-                    <div
-                      className='w-[17px] h-[17px] rounded-[50%]'
-                      key={idx}
-                      style={{ backgroundColor: variant.color }}
-                    ></div>
-                  ))}
+                  {product.variants
+                    ?.sort((a, b) => a.color.localeCompare(b.color))
+                    .map((variant, idx) => (
+                      <div
+                        className='w-[17px] h-[17px] rounded-[50%]'
+                        key={idx}
+                        style={{ backgroundColor: variant.color }}
+                      ></div>
+                    ))}
                 </div>
               </div>
               <p className='text-sm text-gray-500 mt-2'>
                 Inventory: {product.variants.reduce((acc, variant) => acc + variant.inventory!, 0)}
               </p>
-              {/* <div className='flex gap-2 mt-4 justify-between pl-3 pr-3'>
-              <button
-                onClick={() => handleUpdateClick(product)}
-                className='flex items-center justify-center px-3 py-2 rounded bg-blue-500 text-white hover:bg-blue-600'
-              >
-                Update
-              </button>
-              <button
-                onClick={() => handleDeleteClick(product)}
-                className='flex items-center justify-center px-3 py-2 rounded bg-red-500 text-white hover:bg-red-600'
-              >
-                Delete
-              </button>
-            </div> */}
             </div>
           );
         })}
