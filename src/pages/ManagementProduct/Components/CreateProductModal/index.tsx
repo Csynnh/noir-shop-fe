@@ -169,7 +169,6 @@ const CreateProductModel = ({
 
   const handleOk = async () => {
     if (!user?.token) return;
-    setIsPending(true);
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       toast.error('Error!', {
@@ -178,6 +177,7 @@ const CreateProductModel = ({
       return;
     }
     try {
+      setIsPending(true);
       const formData = new FormData();
       formData.append('ProductName', formState.name);
       formData.append('ProductDescription', formState.productDesc);
