@@ -63,6 +63,7 @@ const Home = () => {
                 price: product.price,
                 variants: product.variants.map((variant: ProductVariantType) => {
                   return {
+                    id: variant.id,
                     color: variant.color,
                     size: variant.size,
                     inventory: variant.inventory,
@@ -127,7 +128,7 @@ const Home = () => {
           .map((collection: CollectionType, index: number) => {
             const listProducts: CardItemProps[] = collection.products.map((product) => {
               return {
-                id: product.id || '',
+                id: product.variants[0].id || '',
                 name: product.name,
                 price: product.price,
                 color: product.variants.map((variant) => variant.color),
