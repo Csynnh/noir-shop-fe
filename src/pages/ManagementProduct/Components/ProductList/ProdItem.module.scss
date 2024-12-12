@@ -2,12 +2,9 @@
   :global {
     .ProdItem {
       &-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        row-gap: 26px;
       }
       &-card {
         position: relative;
