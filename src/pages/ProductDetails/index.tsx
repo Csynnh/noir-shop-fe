@@ -578,7 +578,7 @@ const ProductDetails = () => {
                 products={
                   collection?.products.map((product: ProductType) => {
                     return {
-                      id: product.id || '',
+                      id: product.variants[0].id || '',
                       name: product.name,
                       price: product.price,
                       color: product.variants?.map((variant) => variant.color) || [],
