@@ -1,4 +1,3 @@
-import React from 'react';
 import ContactItem from '../ContactItem/ContactItem';
 import { NotificationResponse } from '@constant/Notify';
 interface ContactListProps {

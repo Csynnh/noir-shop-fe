@@ -8,7 +8,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './styles.module.scss';
-import { ProductCheckoutType } from '@pages/Checkout';
 
 export interface CartItemData {
   id: string;

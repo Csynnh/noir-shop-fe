@@ -1,4 +1,3 @@
-import { Action } from '@pages/Account/reducer';
 import { ProductCheckoutType } from '.';
 
 export enum ShippingMethodType {

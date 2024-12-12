@@ -1,5 +1,3 @@
-import React from 'react';
-import styles from './Search.css';
 const SearchIcon = () => {
   return (
     <div>

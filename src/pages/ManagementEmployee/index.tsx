@@ -86,13 +86,10 @@ const ManagementEmployee = () => {
   const [hiredDate, setHiredDate] = useState<Date | undefined>(undefined);
   const [name, setName] = useState<string>('');
   const [position, setPosition] = useState<ComboBoxValueProps | null>(PositionDummyData[0]);
-  const [manHours, setManHours] = useState<number>(0);
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [hired_date, setHired_date] = useState<Date | undefined>(dayjs().toDate());
-  const [avatar, setAvatar] = useState<string>('');
   const [refecth, setRefetch] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
 
   const getListEmployees = async (pageNumber?: number) => {
@@ -172,7 +169,6 @@ const ManagementEmployee = () => {
           totalItems: responseData.totalCount,
           totalPages: Math.ceil(responseData.totalCount / PAGE_SIZE),
         });
-        setCurrentPage(1);
       }
     } catch (error) {
       console.error('Failed to fetch employees: ', error);
@@ -212,7 +208,7 @@ const ManagementEmployee = () => {
         {
           name: name,
           position: position?.value,
-          man_hours: manHours,
+          man_hours: 0,
           hired_date: hired_date?.toISOString(),
           email: email,
           phone: phone,
@@ -266,7 +262,6 @@ const ManagementEmployee = () => {
   };
 
   const handleChangePage = async (pageNumber: number) => {
-    setCurrentPage(pageNumber);
     await getListEmployees(pageNumber);
   };
   const getSalary = (manHours: number, salaryPerHour: number) => {

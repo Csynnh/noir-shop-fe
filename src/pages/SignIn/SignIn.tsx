@@ -3,7 +3,6 @@ import Checkbox from '@components/Checkbox';
 import Girl from '@components/Icons/Girl/girl';
 import Google from '@components/Icons/Google';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import PhoneBold from '@components/Icons/PhoneBold';
 import Input from '@components/Input';
 import { API_BACKEND_ENDPOINT, GOOGLE_CLIENT_ID } from '@constant/Api';
 import { useAuth } from '@contexts/AuthContext';
@@ -358,10 +357,7 @@ const SignIn = () => {
           setOpenSubmitOTP(false);
         }}
         handleResendOtp={handleResendOtp}
-        handleSubmitOTP={() => {
-          setOpenChangePass(true);
-          setOpenSubmitOTP(false);
-        }}
+        handleSubmitOTP={handleSubmitOTP}
         isOTPModalOpen={openSubmitOTP}
         loading={loading}
         otpValue={OTPSubmited}

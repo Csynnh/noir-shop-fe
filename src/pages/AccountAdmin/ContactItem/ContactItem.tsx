@@ -1,5 +1,3 @@
-import React from 'react';
-import { ContactEmail } from '../AccountAdmin';
 import styles from './ContactItem.module.scss';
 import { NotificationResponse } from '@constant/Notify';
 import { getTimeElapsed } from '@lib/utils';

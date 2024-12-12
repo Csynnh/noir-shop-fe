@@ -1,10 +1,6 @@
-import Fb from '@components/Icons/Fb';
-import In from '@components/Icons/In';
-import Insta from '@components/Icons/Insta';
-import ItemDetails from '@images/item-primary.png';
-import styles from './Gift.module.scss';
-import { Mail, Phone } from 'lucide-react';
 import Address from '@components/Icons/Address';
+import { Mail, Phone } from 'lucide-react';
+import styles from './Gift.module.scss';
 const GiftCard = () => {
   return (
     <div className={styles.Gift}>

@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import CreateProductModel from './Components/CreateProductModal';
 import ProductList from './Components/ProductList';
 import { Toaster } from '@ui/sonner';
-import Pagination, { PaginationProps } from '@components/Pagination';
+import Pagination from '@components/Pagination';
 
 export enum productType {
   NEW_COLLECTION = 'NEW_COLLECTION',

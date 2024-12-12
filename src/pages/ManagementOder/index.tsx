@@ -5,7 +5,6 @@ import { OderTableData } from './Components/OderTableData';
 import { snakeToCapitalCase } from '@lib/utils';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
-import { useLocation } from 'react-router-dom';
 import { Skeleton } from '@ui/skeleton';
 
 export enum OderType {

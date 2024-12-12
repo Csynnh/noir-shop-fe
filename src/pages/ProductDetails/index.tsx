@@ -2,7 +2,6 @@ import Button from '@components/Button';
 import Collection from '@components/Collection';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
-import Star from '@components/Icons/Star';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth } from '@contexts/AuthContext';
 import { CollectionType, ProductType, ProductVariantType } from '@pages/Home';

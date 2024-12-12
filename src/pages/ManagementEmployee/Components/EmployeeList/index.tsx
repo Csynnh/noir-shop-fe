@@ -1,7 +1,5 @@
-import React from 'react';
-import EmployeeItem from '../EmployeeItem';
 import { Employee } from '@pages/ManagementEmployee';
-import Input from '@components/Input';
+import EmployeeItem from '../EmployeeItem';
 interface EmployeeListProps {
   data?: Employee[] | null;
   handleDeleteEmployee: (id: string) => void;

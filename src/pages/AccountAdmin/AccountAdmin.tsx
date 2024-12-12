@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import styles from './AccountAdmin.module.scss';
-import Avatar from '@components/Icons/Avatar';
-import Edit from '@components/Icons/Edit';
 import Button from '@components/Button';
 import Boy from '@components/Icons/Boy/Boy';
-import ContactList from './ContactList/AccountAdminList';
-import Pagination from '@components/Pagination';
-import { useNavigate } from 'react-router-dom';
-import { useAuth, UserInfo } from '@contexts/AuthContext';
-import axios from 'axios';
-import { NotificationResponse } from '@constant/Notify';
-import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import * as signalR from '@microsoft/signalr';
-import { ModelState } from '@pages/Account';
-import { toast } from 'sonner';
-import { Spinner } from '@ui/spiner';
 import NoData from '@components/Icons/NoData/NoData';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { NotificationResponse } from '@constant/Notify';
+import { useAuth, UserInfo } from '@contexts/AuthContext';
+import { Spinner } from '@ui/spiner';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import styles from './AccountAdmin.module.scss';
+import ContactList from './ContactList/AccountAdminList';
 
 export interface ContactEmail {
   id: string;
@@ -32,16 +27,10 @@ export interface ContactEmaiResponse {
 
 const AccountAdmin = () => {
   const { user } = useAuth();
-  const { user: userInfo, removeToken, saveUserInfo } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [emailAddress, setEmailAddress] = useState('');
   const navigator = useNavigate();
   const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
   const [lenNoti, setLenNoti] = useState<number>(0);
-  const [modelState, setModelState] = useState<ModelState | null>(null);
-  const [isAccountInfoModalOpen, setIsAccountInfoModalOpen] = useState(false);
-  const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -49,26 +38,33 @@ const AccountAdmin = () => {
     }
   }, [user]);
   const handleRetrieveNotification = async (user: UserInfo) => {
-    // Call API to retrieve notifications
     if (user) {
-      const response = await axios.get(
-        `${API_BACKEND_ENDPOINT}/api/notifications?type=CONTACT_NOTIFICATION`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${API_BACKEND_ENDPOINT}/api/notifications?type=CONTACT_NOTIFICATION`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
           },
-        },
-      );
-      const data: NotificationResponse[] = response.data.responseData;
-      const newNotification = data.sort((a, b) => {
-        if (a.is_read !== b.is_read) {
-          return a.is_read ? 1 : -1;
-        }
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
-      setNotifications(newNotification);
-      setLenNoti(data.map((item) => item.is_read).filter((item) => !item).length);
-      setEmailAddress(user.email);
+        );
+        const data: NotificationResponse[] = response.data.responseData;
+        const newNotification = data.sort((a, b) => {
+          if (a.is_read !== b.is_read) {
+            return a.is_read ? 1 : -1;
+          }
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        setNotifications(newNotification);
+        setLenNoti(data.map((item) => item.is_read).filter((item) => !item).length);
+      } catch (error) {
+        toast.error('Error!', {
+          description: 'Failed to retrieve notifications',
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
   const handleEmailClick = () => {
@@ -77,40 +73,7 @@ const AccountAdmin = () => {
   const handleChangeAccount = () => {
     navigator('/admin/sign-in');
   };
-  const handleChangeAccountInfo = async () => {
-    setModelState(ModelState.ACCOUNT_INFO);
-    await handleSendOTP();
-    setIsAccountInfoModalOpen(false);
-  };
-  const handleSendOTP = async () => {
-    setLoading(true);
-    try {
-      const email = userInfo?.email;
-      const response = await axios.post(
-        `${API_BACKEND_ENDPOINT}/api/auth/request-otp/`,
-        {
-          email: email,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo?.token}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        toast.success('Succesfully!', {
-          description: response.data.messageToClient,
-        });
-      }
-    } catch (error: any) {
-      toast.error('Error!', {
-        description: error.response.data.messageToClient,
-      });
-    }
-    setLoading(false);
-    isEmailModalOpen && setIsEmailModalOpen(false);
-    !isOTPModalOpen && setIsOTPModalOpen(true);
-  };
+
   return (
     <div className={`${styles.AccountAdmin}`}>
       <div className='AccountAdmin-container'>

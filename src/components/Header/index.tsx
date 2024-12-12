@@ -16,7 +16,6 @@ import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { NotificationResponse } from '@constant/Notify';
 import { toast } from 'sonner';
 import { Toaster } from '@ui/sonner';
-import BurgerMenu from '@components/Icons/BurgerMenu';
 
 const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);

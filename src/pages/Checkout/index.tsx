@@ -29,7 +29,6 @@ import {
   ShippingMethodType,
 } from './reducer';
 import styles from './styles.module.scss';
-import { id } from 'date-fns/locale';
 
 export interface ProductCheckoutType {
   id?: string;

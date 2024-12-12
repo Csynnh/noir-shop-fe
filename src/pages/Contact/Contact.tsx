@@ -13,7 +13,6 @@ import { useEffect, useReducer, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { set } from 'lodash';
 
 interface ContactFormState {
   name: string;
