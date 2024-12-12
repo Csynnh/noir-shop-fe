@@ -584,6 +584,10 @@ const ProductDetails = () => {
                       price: product.price,
                       color: product.variants?.map((variant) => variant.color) || [],
                       img_url: product.variants[0].images.imageThumbnail,
+                      inventory: product.variants?.reduce(
+                        (acc, current) => acc + current.inventory,
+                        0,
+                      ),
                     };
                   }) || []
                 }
