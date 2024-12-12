@@ -7,7 +7,6 @@ import Avatar from '@components/Icons/Avatar';
 import Mail from '@components/Icons/Mail';
 import Phone from '@components/Icons/Phone';
 import dayjs from 'dayjs';
-import Input from '@components/Input';
 import { Modal } from 'antd';
 import Button from '@components/Button';
 import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';

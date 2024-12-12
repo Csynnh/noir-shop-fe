@@ -1,5 +1,5 @@
 export const API_BACKEND_ENDPOINT = import.meta.env.VITE_API_BACKEND_ENDPOINT;
-
+export const AZURE_STORAGE_CONNECTION_STRING = import.meta.env.VITE_AZURE_STORAGE_CONNECTION_STRING as string;
 export interface JwtPayload {
   sub: string;
   jti: string;

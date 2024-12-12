@@ -69,7 +69,9 @@ const OderColumns: ColumnDef<Order>[] = [
   {
     accessorKey: 'id',
     header: 'Oder Code',
-    cell: ({ row }) => <div className='capitalize'>{row.getValue('id')}</div>,
+    cell: ({ row }) => (
+      <div className='capitalize'>#{(row.getValue('id') as string)?.slice(0, 8)}</div>
+    ),
   },
   {
     accessorKey: 'customer',
@@ -367,7 +369,6 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       if (response.status === 200) {
         const data = response.data.responseData;
         const order: Order = {
-          // id: '#' + data.id.slice(0, 8),
           id: data.id,
           customer: {
             name: data.user_info.name,

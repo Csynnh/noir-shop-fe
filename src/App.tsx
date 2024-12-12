@@ -23,6 +23,8 @@ import { Navigate } from 'react-router-dom';
 import AnalyzeRevenue from '@pages/Analyze';
 import { JwtPayload, ROLE } from '@constant/Api';
 import ManagementEmployee from '@pages/ManagementEmployee';
+import { useAuth } from '@contexts/AuthContext';
+import dayjs from 'dayjs';
 import AccountAdmin from '@pages/AccountAdmin/AccountAdmin';
 
 function App() {
@@ -97,10 +99,14 @@ function App() {
 }
 
 function ProtectedRoute({ children }: any) {
-  const token = JSON.parse(localStorage.getItem('user') ?? '{}')?.token;
+  const { user } = useAuth();
+  const token = user?.token;
+  const expiredTime = dayjs(user?.expiredTime);
 
   const decodedToken: JwtPayload = token ? JSON.parse(atob(token?.split('.')[1])) : {};
-  if (decodedToken[ROLE] === 'Admin') {
+  const isExpired = dayjs() > expiredTime;
+
+  if (decodedToken[ROLE] === 'Admin' && !isExpired) {
     return children;
   }
   return (

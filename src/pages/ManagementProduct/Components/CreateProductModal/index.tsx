@@ -1,63 +1,68 @@
 import Button from '@components/Button';
-import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
-import Upload from '@components/Icons/Upload';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
-import { Modal, Select } from 'antd';
-import React, { useReducer } from 'react';
+import { ColorPicker } from '@components/ColorPicker';
+import Input from '@components/Input';
+import { Selection } from '@components/Selection';
+import { UploadImage } from '@components/UploadImage';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import { useAuth } from '@contexts/AuthContext';
+import { createFileFromUrl, uploadImageToAzure } from '@lib/utils';
+import { ProductType, ProductVariantType } from '@pages/Home';
+import { Checkbox } from '@ui/checkbox';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@ui/tooltip';
+import { Form, Modal } from 'antd';
+import axios from 'axios';
+import React, { useEffect, useReducer, useState } from 'react';
+import { toast } from 'sonner';
 
 interface CreateProductModelProps {
   open?: boolean;
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setOparator?: React.Dispatch<React.SetStateAction<string>>;
+  refetch?: (value: boolean) => void;
+  data?: ProductType | null;
+  oparator?: string;
 }
 interface FormState {
   name: string;
-  image: File;
+  imageThubnail: File | null;
+  additionalImageFirst: File | null;
+  additionalImageSecond: File | null;
+  additionalImageThird: File | null;
+  additionalImageFourd: File | null;
   collection: string;
-  // type: string;
-  // size: string;
-  // color: string;
-  // inventory: number;
-  // price: number;
-  // material: string;
+  size: string;
+  color: string;
+  inventory: number | string;
+  price: number | string;
+  material: string;
+  dimensions: string;
+  waterproof: boolean;
+  productDesc: string;
+  sortDescription: string;
+  origin: string;
+  careInstructions: string;
 }
 
 type Action = { type: 'SET_FIELD'; field: string; value: any } | { type: 'RESET' };
-const mockData = [
-  {
-    label: 'Jacket',
-    value: 'Jacket',
-  },
-  {
-    label: 'Bag',
-    value: 'Bag',
-  },
-  {
-    label: 'Shirt',
-    value: 'Shirt',
-  },
-  {
-    label: 'Pants',
-    value: 'Pants',
-  },
-  {
-    label: 'Shoes',
-    value: 'Shoes',
-  },
-  {
-    label: 'Hat',
-    value: 'Hat',
-  },
-];
 const initialState: FormState = {
   name: '',
-  // type: 'Jacket',
-  // size: 'XS',
-  // color: '',
-  // inventory: 0,
-  // price: 0,
-  // material: '',
-  image: new File([''], 'filename'),
-  collection: 'Jacket',
+  size: 'XS',
+  color: '#000000',
+  inventory: 0,
+  price: 0,
+  material: '',
+  imageThubnail: null,
+  additionalImageFirst: null,
+  additionalImageSecond: null,
+  additionalImageThird: null,
+  additionalImageFourd: null,
+  collection: 'JACKETS',
+  dimensions: '',
+  waterproof: false,
+  productDesc: '',
+  sortDescription: '',
+  origin: '',
+  careInstructions: '',
 };
 
 const formReducer = (state: FormState, action: Action): FormState => {
@@ -74,102 +79,696 @@ const formReducer = (state: FormState, action: Action): FormState => {
   }
 };
 
-const CreateProductModel = ({ open, setIsOpen }: CreateProductModelProps) => {
+const CreateProductModel = ({
+  open,
+  setIsOpen,
+  refetch,
+  data,
+  oparator,
+  setOparator,
+}: CreateProductModelProps) => {
+  const { user } = useAuth();
   const [formState, dispatch] = useReducer(formReducer, initialState);
-  const [collection, setCollection] = React.useState<ComboBoxValueProps | null>({
-    label: 'Jacket',
-    value: 'Jacket',
-  });
+  const [errors, setErrors] = useState<Partial<FormState>>({});
+  const [isPending, setIsPending] = useState(false);
+  const [currentVariantProd, setCurrentVariantProd] = useState<string | null>();
+
+  useEffect(() => {
+    if (data) {
+      const price = data.price.toString();
+      const inventory = data.variants.reduce((acc, cur) => acc + cur.inventory, 0).toString();
+
+      dispatch({ type: 'SET_FIELD', field: 'name', value: data.name });
+      dispatch({ type: 'SET_FIELD', field: 'size', value: data.variants[0].size });
+      dispatch({ type: 'SET_FIELD', field: 'color', value: data.variants[0].color });
+      dispatch({ type: 'SET_FIELD', field: 'inventory', value: inventory });
+      dispatch({ type: 'SET_FIELD', field: 'price', value: price });
+      dispatch({ type: 'SET_FIELD', field: 'material', value: data.details.material });
+      dispatch({ type: 'SET_FIELD', field: 'dimensions', value: data.details.dimensions });
+      dispatch({ type: 'SET_FIELD', field: 'waterproof', value: data.details.waterproof });
+      dispatch({ type: 'SET_FIELD', field: 'productDesc', value: data.description });
+      dispatch({ type: 'SET_FIELD', field: 'sortDescription', value: data.details.shortDesc });
+      dispatch({ type: 'SET_FIELD', field: 'origin', value: data.details.origin });
+      dispatch({ type: 'SET_FIELD', field: 'collection', value: data.type });
+      console.log('data', data);
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'imageThubnail',
+        value: data.variants[0].images.imageThumbnail,
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageFirst',
+        value: data.variants[0].images.additionalImages[0],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageSecond',
+        value: data.variants[0].images.additionalImages[1],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageThird',
+        value: data.variants[0].images.additionalImages[2],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'additionalImageFourd',
+        value: data.variants[0].images.additionalImages[3],
+      });
+      dispatch({
+        type: 'SET_FIELD',
+        field: 'careInstructions',
+        value: data.details.careInstructions,
+      });
+      setCurrentVariantProd(data.variants[0].id);
+    }
+  }, [data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target ?? e;
-    const expectValue = name === 'image' ? (e.target as HTMLInputElement).files![0] : value;
+    const expectValue = [
+      'imageThubnail',
+      'additionalImageFirst',
+      'additionalImageSecond',
+      'additionalImageThird',
+      'additionalImageFourd',
+    ].includes(name)
+      ? (e.target as HTMLInputElement).files![0]
+      : value;
     dispatch({ type: 'SET_FIELD', field: name, value: expectValue });
+    if (errors[name as keyof FormState]) {
+      setErrors((prev) => {
+        delete prev[name as keyof FormState];
+        return prev;
+      });
+    }
   };
 
-  const handleOk = () => {
-    // Handle form submission (e.g., API call)
-    dispatch({ type: 'RESET' });
+  const handleOk = async () => {
+    if (!user?.token) return;
+    setIsPending(true);
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      toast.error('Error!', {
+        description: Object.values(errors).join(', '),
+      });
+      return;
+    }
+    try {
+      // Call API to add product to store
+      const formData = new FormData();
+      formData.append('ProductName', formState.name);
+      formData.append('ProductDescription', formState.productDesc);
+      formData.append('Price', formState.price.toString());
+      formData.append('Inventory', formState.inventory.toString());
+      formData.append('Size', formState.size);
+      formData.append('Type', formState.collection);
+      formData.append('Color', formState.color);
+      formData.append('Details.Material', formState.material);
+      formData.append('Details.Dimensions', formState.dimensions);
+      formData.append('Details.Waterproof', formState.waterproof.toString());
+      formData.append('Details.Origin', formState.origin);
+      formData.append('Details.CareInstructions', formState.careInstructions);
+      formData.append('Details.ShortDesc', formState.sortDescription);
+      const imgThumbnail =
+        typeof formState.imageThubnail === 'string'
+          ? await createFileFromUrl(formState.imageThubnail, 'Image Thubnail')
+          : (formState.imageThubnail as File);
+      formData.append('Images.ImageThumbnail', imgThumbnail as File);
+
+      const additionalImageFirst =
+        typeof formState.additionalImageFirst === 'string'
+          ? await createFileFromUrl(formState.additionalImageFirst, 'Additional Image First')
+          : (formState.additionalImageFirst as File);
+      formData.append('Images.AdditionalImages', additionalImageFirst as File);
+
+      const additionalImageSecond =
+        typeof formState.additionalImageSecond === 'string'
+          ? await createFileFromUrl(formState.additionalImageSecond, 'Additional Image Second')
+          : (formState.additionalImageSecond as File);
+      formData.append('Images.AdditionalImages', additionalImageSecond as File);
+
+      const additionalImageThird =
+        typeof formState.additionalImageThird === 'string'
+          ? await createFileFromUrl(formState.additionalImageThird, 'Additional Image Third')
+          : (formState.additionalImageThird as File);
+      formData.append('Images.AdditionalImages', additionalImageThird as File);
+
+      const additionalImageFourd =
+        typeof formState.additionalImageFourd === 'string'
+          ? await createFileFromUrl(formState.additionalImageFourd, 'Additional Image Fourd')
+          : (formState.additionalImageFourd as File);
+      formData.append('Images.AdditionalImages', additionalImageFourd as File);
+
+      const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/products`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      if (response.status === 201) {
+        toast.success('Success!', {
+          description: 'Add product to store successfully',
+        });
+        dispatch({ type: 'RESET' });
+        refetch && refetch(true);
+      } else {
+        throw new Error('Error when add product to store');
+      }
+    } catch (error) {
+      toast.error('Error!', {
+        description: 'Error when add product to store',
+      });
+    }
+    setIsOpen && setIsOpen(false);
+    setOparator && setOparator('CREATE');
+    setIsPending(false);
+  };
+
+  const handleUpdate = async () => {
+    if (!user?.token) return;
+    setIsPending(true);
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      toast.error('Error!', {
+        description: Object.values(errors).join(', '),
+      });
+      return;
+    }
+    try {
+      const imageThubnail = formState.imageThubnail;
+      const additionalImageFirst = formState.additionalImageFirst;
+      const additionalImageSecond = formState.additionalImageSecond;
+      const additionalImageThird = formState.additionalImageThird;
+      const additionalImageFourd = formState.additionalImageFourd;
+      let imgThubnailUrl;
+      let addImgFirstUrl;
+      let addImgSecondUrl;
+      let addImgThirdUrl;
+      let addImgFourdUrl;
+      await Promise.all([
+        (async () => {
+          if (typeof imageThubnail !== 'string') {
+            imgThubnailUrl = await uploadImageToAzure(imageThubnail as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageFirst !== 'string') {
+            addImgFirstUrl = await uploadImageToAzure(additionalImageFirst as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageSecond !== 'string') {
+            addImgSecondUrl = await uploadImageToAzure(additionalImageSecond as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageThird !== 'string') {
+            addImgThirdUrl = await uploadImageToAzure(additionalImageThird as File, user);
+          }
+        })(),
+        (async () => {
+          if (typeof additionalImageFourd !== 'string') {
+            addImgFourdUrl = await uploadImageToAzure(additionalImageFourd as File, user);
+          }
+        })(),
+      ]);
+
+      let data = {
+        ProductName: formState.name,
+        ProductDescription: formState.productDesc,
+        Price: formState.price.toString(),
+        Inventory: formState.inventory.toString(),
+        Size: formState.size,
+        Type: formState.collection,
+        Color: formState.color,
+        Details: {
+          Material: formState.material,
+          Dimensions: formState.dimensions,
+          Waterproof: formState.waterproof,
+          Origin: formState.origin,
+          CareInstructions: formState.careInstructions,
+          ShortDesc: formState.sortDescription,
+        },
+        Images: {
+          ImageThumbnail:
+            typeof formState.imageThubnail === 'string' ? formState.imageThubnail : imgThubnailUrl,
+          AdditionalImages: [
+            typeof formState.additionalImageFirst === 'string'
+              ? formState.additionalImageFirst
+              : addImgFirstUrl,
+            typeof formState.additionalImageSecond === 'string'
+              ? formState.additionalImageSecond
+              : addImgSecondUrl,
+            typeof formState.additionalImageThird === 'string'
+              ? formState.additionalImageThird
+              : addImgThirdUrl,
+            typeof formState.additionalImageFourd === 'string'
+              ? formState.additionalImageFourd
+              : addImgFourdUrl,
+          ],
+        },
+      };
+      const response = await axios.put(
+        `${API_BACKEND_ENDPOINT}/api/products${oparator === 'UPDATE' ? '/' + currentVariantProd : ''}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        toast.success('Success!', {
+          description: 'Add product to store successfully',
+        });
+        dispatch({ type: 'RESET' });
+        refetch && refetch(true);
+      } else {
+        throw new Error('Error when add product to store');
+      }
+    } catch (error) {
+      toast.error('Error!', {
+        description: 'Error when add product to store',
+      });
+      console.info(error);
+    }
+    setIsOpen && setIsOpen(false);
+    setOparator && setOparator('CREATE');
+    setIsPending(false);
   };
   const handleCancel = () => {
     setIsOpen && setIsOpen(false);
+    setOparator && setOparator('CREATE');
   };
+
+  const validateForm = () => {
+    const errors: Partial<FormState> = {};
+
+    if (!formState.name) {
+      errors.name = 'Name is required';
+    }
+    if (!formState.material) {
+      errors.material = 'Material is required';
+    }
+    if (!formState.productDesc) {
+      errors.productDesc = 'Product description is required';
+    }
+    if (!formState.sortDescription) {
+      errors.sortDescription = 'Sort description is required';
+    }
+    if (!formState.origin) {
+      errors.origin = 'Origin is required';
+    }
+    if (!formState.careInstructions) {
+      errors.careInstructions = 'Care instructions is required';
+    }
+    if ((formState.inventory as number) <= 0) {
+      errors.inventory = 'Inventory must be greater than 0';
+    }
+    if ((formState.price as number) <= 0) {
+      errors.price = 'Price must be greater than 0';
+    }
+
+    if (!formState.dimensions) {
+      errors.dimensions = 'Dimensions is required';
+    }
+
+    setErrors(errors);
+    return errors;
+  };
+
+  const handleSelectColor = (variant: ProductVariantType) => {
+    dispatch({ type: 'SET_FIELD', field: 'color', value: variant.color });
+    dispatch({ type: 'SET_FIELD', field: 'imageThubnail', value: variant.images.imageThumbnail });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageFirst',
+      value: variant.images.additionalImages[0],
+    });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageSecond',
+      value: variant.images.additionalImages[1],
+    });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageThird',
+      value: variant.images.additionalImages[2],
+    });
+    dispatch({
+      type: 'SET_FIELD',
+      field: 'additionalImageFourd',
+      value: variant.images.additionalImages[3],
+    });
+    setCurrentVariantProd(variant.id);
+  };
+
   return (
-    <Modal
-      open={open}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      width={'90%'}
-      footer={
-        [
-          // <Button key='back' onClick={handleCancel} loading={false}>
-          //   Cancle
-          // </Button>,
-          // <Button key='submit' isPrimary loading={false} onClick={handleOk}>
-          //   Save
-          // </Button>,
-        ]
-      }
-    >
-      <div className=''>
-        <h2 className='text-2xl font-[gilroy-bold] mb-7'>Add new product</h2>
-        <form className='grid grid-cols-[1fr_1fr_1.67fr] h-full gap-14'>
-          <div className=''>
-            <div className='mb-12'>
-              <label className='w-full h-full border-[0.5px] border-dashed border-[#837F83] aspect-[0.9] flex items-center justify-center flex-col gap-3 cursor-pointer'>
-                <input
-                  type='file'
-                  accept='image/png, image/jpg'
-                  name='image'
-                  // value={formState.image}
-                  onChange={handleChange}
-                  className='mt-1 w-full px-3 py-2 border border-gray-300 rounded-md hidden'
-                />
-                <div className=''>
-                  <Upload></Upload>
+    <Modal open={open} onCancel={handleCancel} width={'90%'} footer={[]}>
+      <Form className='grid grid-cols-1 md:grid-cols-3 gap-14 px-5 py-5'>
+        {/* Cột 1: Hình ảnh, tên sản phẩm, loại sản phẩm */}
+        <div className='flex flex-col justify-between'>
+          <div className='mb-10'>
+            {oparator === 'UPDATE' ? (
+              <div className='mb-4 '>
+                <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
+                <div className='flex items-center gap-2'>
+                  {data?.variants.map((variant, index) => {
+                    const isActived = variant.color === formState.color;
+                    return (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={`w-7 h-8 rounded-[5px] p-[2px] ${isActived ? 'border-[1px] border-[var(--line-color)]' : ''} cursor-pointer`}
+                              key={index}
+                              onClick={() => handleSelectColor(variant)}
+                            >
+                              <div
+                                style={{ backgroundColor: variant.color }}
+                                className='w-full h-full rounded-[3px]'
+                              ></div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{variant.color}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    );
+                  })}
                 </div>
-                <p className='text-[15px]'>
-                  Drop your image here , or <span className='font-[gilroy-bold]'>browse</span>
-                </p>
-                {formState.image ? (
-                  <p className='font-[gilroy-light]'>{formState.image.name}</p>
-                ) : (
-                  <p className='font-[gilroy-light]'>Supports JPG, PNG</p>
-                )}
-              </label>
-            </div>
-            <div className='mb-4'>
-              <label className='block text-sm font-medium text-gray-700'>Name of Product</label>
-              <input
-                type='text'
-                name='name'
-                value={formState.name}
-                onChange={handleChange}
-                className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md'
-              />
-            </div>
-            <div className='mb-4'>
-              <label className='block text-sm font-medium text-gray-700'>Type of Product</label>
-              <Select
-                id='collection'
-                className='w-full'
-                showSearch
-                onChange={(value) => handleChange({ target: { name: 'collection', value } } as any)}
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                options={[
-                  { value: 'Collection', label: 'Collection' },
-                  { value: 'Bag', label: 'Bag' },
-                  { value: 'Jacket', label: 'Jacket' },
-                ]}
-              />
-            </div>
+              </div>
+            ) : null}
+            <UploadImage
+              name='imageThubnail'
+              label='Image Thumbnail'
+              onChange={handleChange}
+              className={`h-[140px] [&>img]:h-full ${errors.imageThubnail ? 'border-red-400 text-red-400' : ''}`}
+              image={{
+                url: data ? (formState.imageThubnail as any) : '',
+                name: 'Image Thumbnail',
+              }}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageFirst'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data ? (formState.additionalImageFirst as any) : '',
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageFirst ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageSecond'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data ? (formState.additionalImageSecond as any) : '',
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageSecond ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageThird'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data ? (formState.additionalImageThird as any) : '',
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageThird ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
+            <UploadImage
+              name='additionalImageFourd'
+              label='Additional Image'
+              onChange={handleChange}
+              image={
+                data
+                  ? {
+                      url: data ? (formState.additionalImageFourd as any) : '',
+                      name: 'Image Thumbnail',
+                    }
+                  : undefined
+              }
+              className={`${errors.additionalImageFourd ? 'border-red-400 text-red-400' : ''}`}
+            ></UploadImage>
           </div>
           <div className=''></div>
-          <div className=''></div>
-        </form>
-      </div>
+        </div>
+
+        {/* Cột 2: Size, Màu sắc, Tồn kho, Giá và Chất liệu */}
+        <div className='flex flex-col gap-4'>
+          {/* Kích cỡ */}
+
+          {/* Tên sản phẩm */}
+          <div className='mb-4'>
+            <Input
+              name='name'
+              label='Name of Product'
+              onChange={handleChange}
+              defaultValue={formState.name}
+              className={`${errors.name ? '[&>input]:border-red-400 text-red-400' : ''}`}
+            ></Input>
+          </div>
+
+          {/* Loại sản phẩm */}
+          <div className='mb-4'>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Collection</label>
+
+            <Selection
+              name='collection'
+              data={[
+                { value: 'JACKETS', label: 'Jackets' },
+                { value: 'BAGS', label: 'Bags' },
+                { value: 'NEW_COLLECTION', label: 'New Collection' },
+              ]}
+              onChange={handleChange}
+              value={formState.collection}
+              classname='max-w-full'
+            ></Selection>
+          </div>
+          <div className='mb-4'>
+            <label className='block text-sm font-medium text-gray-700'>Size</label>
+            <Selection
+              name='size'
+              data={[
+                { value: 'XS', label: 'XS' },
+                { value: 'S', label: 'S' },
+                { value: 'M', label: 'M' },
+                { value: 'L', label: 'L' },
+                { value: 'XL', label: 'XL' },
+                { value: 'XXL', label: 'XXL' },
+                { value: '3XL', label: '3XL' },
+              ]}
+              onChange={handleChange}
+              classname='max-w-full'
+              value={formState.size}
+            ></Selection>
+          </div>
+          {/* Màu sắc */}
+          {oparator === 'CREATE' ? (
+            <div className='mb-4 '>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>Color</label>
+
+              <ColorPicker
+                setBackground={handleChange}
+                name='color'
+                background={formState.color}
+                className='max-w-full'
+              ></ColorPicker>
+            </div>
+          ) : null}
+
+          {/* Tồn kho */}
+          <div className='mb-4 mt-4 flex items-end'>
+            <Input
+              type='number'
+              name='inventory'
+              label='Inventory'
+              onChange={handleChange}
+              defaultValue={formState.inventory.toString()}
+              className={`${errors.inventory ? '[&>input]:border-red-400 text-red-400' : ''}`}
+            ></Input>
+            <span className='ml-3'>items</span>
+          </div>
+          {/* Giá */}
+          <div className='mb-4 flex items-end'>
+            <Input
+              type='number'
+              name='price'
+              label='Price'
+              onChange={handleChange}
+              defaultValue={formState.price.toString()}
+              className={`${errors.price ? '[&>input]:border-red-400 text-red-400' : ''}`}
+            ></Input>
+            <span className='ml-3'>$/item</span>
+          </div>
+          {oparator === 'UPDATE' ? (
+            <div className='mb-4 row flex justify-content-between'>
+              {/* Tỉ lệ */}
+              <Input
+                type='text'
+                name='dimensions'
+                label='Dimensions'
+                onChange={handleChange}
+                defaultValue={formState.dimensions}
+                className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
+              />
+
+              <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
+                <label
+                  htmlFor='waterproof'
+                  className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                >
+                  Waterproof
+                </label>
+                <Checkbox
+                  className='p-0'
+                  id='waterproof'
+                  name='waterproof'
+                  onClick={() => {
+                    dispatch({
+                      type: 'SET_FIELD',
+                      field: 'waterproof',
+                      value: !formState.waterproof,
+                    });
+                  }}
+                  checked={formState.waterproof}
+                />
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {/* Cột 3: Specification, Feature, Sort Description, Additional Information */}
+        <div className='flex flex-col gap-4'>
+          <>
+            {oparator === 'CREATE' ? (
+              <div className='mb-4 row flex justify-content-between'>
+                {/* Tỉ lệ */}
+                <Input
+                  type='text'
+                  name='dimensions'
+                  label='Dimensions'
+                  onChange={handleChange}
+                  defaultValue={formState.dimensions}
+                  className={`${errors.dimensions ? '[&>input]:border-red-400 text-red-400' : ''}`}
+                />
+
+                <div className='flex flex-col justify-between items-center ml-[20px] max-w-[20%] w-full'>
+                  <label
+                    htmlFor='waterproof'
+                    className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                  >
+                    Waterproof
+                  </label>
+                  <Checkbox
+                    className='p-0'
+                    id='waterproof'
+                    name='waterproof'
+                    onClick={() => {
+                      dispatch({
+                        type: 'SET_FIELD',
+                        field: 'waterproof',
+                        value: !formState.waterproof,
+                      });
+                    }}
+                    checked={formState.waterproof}
+                  />
+                </div>
+              </div>
+            ) : null}
+            {/* Chất liệu */}
+            <div className='mb-4 rounded'>
+              <Input
+                type='text'
+                name='material'
+                label='Material'
+                onChange={handleChange}
+                defaultValue={formState.material}
+                className={`${errors.material ? '[&>input]:border-red-400 text-red-400' : ''}`}
+              ></Input>
+            </div>
+            {/* Specification */}
+            <div className='mb-4'>
+              <Input
+                type='text'
+                name='productDesc'
+                label='Product Description'
+                onChange={handleChange}
+                defaultValue={formState.productDesc}
+                className={`${errors.productDesc ? '[&>input]:border-red-400 text-red-400' : ''}`}
+              ></Input>
+            </div>
+          </>
+
+          {/* Sort Description */}
+          <div className='mb-4 mt-4'>
+            <Input
+              type='text'
+              name='sortDescription'
+              label='Sort description of product'
+              onChange={handleChange}
+              defaultValue={formState.sortDescription}
+              className={`${errors.sortDescription ? '[&>input]:border-b-red-400 text-red-400' : ''}`}
+            ></Input>
+          </div>
+
+          {/* Nguồn gốc */}
+          <div className='mb-4'>
+            <Input
+              type='text'
+              name='origin'
+              label='Origin'
+              onChange={handleChange}
+              defaultValue={formState.origin}
+              className={`${errors.origin ? '[&>input]:border-b-red-400 text-red-400' : ''}`}
+            ></Input>
+          </div>
+
+          {/* Additional Information */}
+          <div className='mb-4 mt-3'>
+            <Input
+              type='text'
+              name='careInstructions'
+              label='Care Instructions'
+              onChange={handleChange}
+              defaultValue={formState.careInstructions}
+              className={`${errors.careInstructions ? '[&>input]:border-b-red-400 text-red-400' : ''}`}
+            ></Input>
+          </div>
+
+          {oparator === 'UPDATE' ? (
+            <div className='mb-20 mt-auto'>
+              <Button isPrimary onClick={handleUpdate} loading={isPending}>
+                Update product
+              </Button>
+            </div>
+          ) : (
+            <div className='mb-4 mt-auto'>
+              <Button isPrimary onClick={handleOk} loading={isPending}>
+                Add to store
+              </Button>
+            </div>
+          )}
+        </div>
+      </Form>
     </Modal>
   );
 };

@@ -7,6 +7,7 @@ interface ProductItemProps {
 }
 
 const ProductItem = ({ product }: ProductItemProps) => {
+  console.log(product);
   return (
     <div className='border-[0.5px] border-[#837F83] py-3 px-4'>
       <div className='flex justify-between mt-[10px]'>
@@ -14,7 +15,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
           <Delete></Delete>
         </span>
         <div className='w-[160px] h-[160px]'>
-          <img src={product.image} alt='product image' className='object-cover w-full h-full' />
+          <img src={product.variants[0].image} alt='product image' className='object-cover w-full h-full' />
         </div>
         <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
           <Option></Option>
@@ -31,14 +32,14 @@ const ProductItem = ({ product }: ProductItemProps) => {
           Price: <span className='font-[gilroy-light] ml-2'>${product.price.toFixed(2)}</span>
         </div>
         <div className='text-[15px] mb-2'>
-          Size: <span className='font-[gilroy-light] ml-2'>{product.size}</span>
+          Size: <span className='font-[gilroy-light] ml-2'>{product.variants[0].size}</span>
         </div>
         <div className='text-[15px] mb-2 flex items-center gap-3'>
           Color:
           <span
             className={`w-3 h-3 inline-block rounded-full`}
             style={{
-              backgroundColor: product.color,
+              backgroundColor: product.variants[0].color,
             }}
           ></span>
         </div>
