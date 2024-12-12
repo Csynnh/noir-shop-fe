@@ -67,7 +67,7 @@ const HeaderAdmin = () => {
             <Logo path='/admin'></Logo>
           </span>
           <div className='flex-[0_0_75%] flex justify-end '>
-            <div className='flex items-center gap-4 flex-1 mr-[20px]'>
+            <div className='flex justify-end items-center gap-4 flex-1 mr-[20px]'>
               <div className='max-w-[180px] w-full'>
                 <Button
                   isPrimary={currentRoute == Routes.ManageProduct}
