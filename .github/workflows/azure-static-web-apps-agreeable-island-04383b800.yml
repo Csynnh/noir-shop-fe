@@ -24,14 +24,16 @@ jobs:
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-          echo "export PATH=\"\$HOME/.bun/bin:\$PATH\"" >> $GITHUB_ENV
-          source $GITHUB_ENV
+          echo "BUN_PATH=$HOME/.bun/bin" >> $GITHUB_ENV
+          echo "PATH=$HOME/.bun/bin:\$PATH" >> $GITHUB_ENV
 
-      # Install dependencies and build with Bun
+      # Use Bun to install dependencies and build
       - name: Install dependencies and build
         run: |
           bun install
           bun run build
+        env:
+          PATH: ${{ env.BUN_PATH }}:${{ env.PATH }}
 
       - name: Build And Deploy
         id: builddeploy
