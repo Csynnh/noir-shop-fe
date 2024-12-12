@@ -17,8 +17,8 @@ import Pagination, { PaginationProps } from '@components/Pagination';
 
 export enum productType {
   NEW_COLLECTION = 'NEW_COLLECTION',
-  BAG = 'BAGS',
-  JACKET = 'JACKETS',
+  BAGS = 'BAGS',
+  JACKETS = 'JACKETS',
 }
 
 export interface Product {

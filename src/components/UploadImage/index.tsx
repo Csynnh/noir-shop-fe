@@ -17,7 +17,7 @@ type ImgSelectedType = {
 export const UploadImage = ({ name, label, onChange, className = '', image }: UploadImageProps) => {
   const [imgSelected, setImgSelected] = useState<ImgSelectedType | null>(null);
   useEffect(() => {
-    if (image) {
+    if (image && image.url) {
       let url = image.url;
       if (!!image.url && typeof image.url !== 'string') {
         url = URL.createObjectURL(image.url);

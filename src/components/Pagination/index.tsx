@@ -16,7 +16,6 @@ export interface PaginationProps {
   onPageChange: (pageNumber: number) => void;
 }
 const Pagination = ({ data, onPageChange }: PaginationProps) => {
-  console.info(data)
   return (
     <PaginationCpn>
       <PaginationContent>

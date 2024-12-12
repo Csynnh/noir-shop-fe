@@ -94,7 +94,7 @@ const CreateProductModel = ({
   const [currentVariantProd, setCurrentVariantProd] = useState<string | null>();
 
   useEffect(() => {
-    if (data) {
+    if (data && data.name) {
       const price = data.price.toString();
       const inventory = data.variants.reduce((acc, cur) => acc + cur.inventory, 0).toString();
 
@@ -358,6 +358,7 @@ const CreateProductModel = ({
     setOparator && setOparator('CREATE');
     setIsPending(false);
   };
+
   const handleCancel = () => {
     setIsOpen && setIsOpen(false);
     setOparator && setOparator('CREATE');
