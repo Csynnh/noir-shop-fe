@@ -31,7 +31,6 @@ import {
 enum EmployeeTab {
   INFORMATION = 'INFORMATION',
   SALARY = 'SALARY',
-  WORK_SCHEDULE = 'WORK_SCHEDULE',
 }
 export interface Employee {
   id: string;
@@ -66,9 +65,9 @@ export const PositionDummyData: ComboBoxValueProps[] = [
 ];
 
 const salaryPerHourMapping = {
-  Manager: 30, // Salary per hour for Manager
-  Cashier: 15, // Salary per hour for Cashier
-  Customer_Service: 20, // Salary per hour for Customer Service
+  Manager: 30,
+  Cashier: 15,
+  Customer_Service: 20,
 };
 
 const ManagementEmployee = () => {
@@ -86,14 +85,11 @@ const ManagementEmployee = () => {
   const [sumManHourTo, setSumManHourTo] = useState<number>(0);
   const [hiredDate, setHiredDate] = useState<Date | undefined>(undefined);
   const [name, setName] = useState<string>('');
-  const [position, setPosition] = useState<ComboBoxValueProps | null>(PositionDummyData[0]); //
-  const [manHours, setManHours] = useState<number>(0);
+  const [position, setPosition] = useState<ComboBoxValueProps | null>(PositionDummyData[0]);
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [hired_date, setHired_date] = useState<Date | undefined>(dayjs().toDate());
-  const [avatar, setAvatar] = useState<string>('');
   const [refecth, setRefetch] = useState<boolean>(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
 
   const getListEmployees = async (pageNumber?: number) => {
@@ -109,7 +105,6 @@ const ManagementEmployee = () => {
       );
       if (response.status === 200) {
         const responseData = response.data.responseData;
-        console.log('responseData', responseData);
         const employees: Employee[] = responseData.employeeList.map((employee: any) => ({
           id: employee.id,
           name: employee.name,
@@ -155,7 +150,6 @@ const ManagementEmployee = () => {
       );
       if (response.status === 200) {
         const responseData = response.data.responseData;
-        console.log('responseData', responseData);
         const employees: Employee[] = responseData.employeeList.map((employee: any) => ({
           id: employee.id,
           name: employee.name,
@@ -175,7 +169,6 @@ const ManagementEmployee = () => {
           totalItems: responseData.totalCount,
           totalPages: Math.ceil(responseData.totalCount / PAGE_SIZE),
         });
-        setCurrentPage(1);
       }
     } catch (error) {
       console.error('Failed to fetch employees: ', error);
@@ -185,7 +178,7 @@ const ManagementEmployee = () => {
 
   const addNewEmployee = async () => {
     setLoading(true);
-    // Validate email
+
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const phoneRegex = /^\+?[1-9]\d{1,14}(\s?\(?\d+\)?[\s\-]?)?[\d\s\-]{6,}$/;
 
@@ -203,7 +196,6 @@ const ManagementEmployee = () => {
       return;
     }
 
-    // Validate phone
     if (!phoneRegex.test(phone)) {
       toast.error('Invalid Phone Number!', {
         description: 'Please provide a valid phone number.',
@@ -211,13 +203,12 @@ const ManagementEmployee = () => {
       return;
     }
     try {
-      console.log('run addNewEmployee');
       const response = await axios.post(
         `${API_BACKEND_ENDPOINT}/api/employee`,
         {
           name: name,
           position: position?.value,
-          man_hours: manHours,
+          man_hours: 0,
           hired_date: hired_date?.toISOString(),
           email: email,
           phone: phone,
@@ -267,38 +258,28 @@ const ManagementEmployee = () => {
   };
 
   const handleCancel = () => {
-    console.log('object');
     setIsOpen && setIsOpen(false);
   };
-  const handleChangTab = (value: string) => {
-    console.log('value', value);
-  };
+
   const handleChangePage = async (pageNumber: number) => {
-    setCurrentPage(pageNumber);
     await getListEmployees(pageNumber);
   };
   const getSalary = (manHours: number, salaryPerHour: number) => {
-    return manHours * salaryPerHour; // Total salary = man hours * salary per hour
+    return manHours * salaryPerHour;
   };
 
   useEffect(() => {
     if (user && refecth) {
-      // console.log('user', user);
       getListEmployees(1);
       setRefetch(false);
     }
   }, [user, refecth]);
-  console.log('position', position);
   return (
     <div className={styles.ManagementEmployee}>
       <div className='ManagementEmployee-container'>
         <h1 className='ManagementEmployee-header'>Management Employee</h1>
         <div className='ManagementEmployee-tab'>
-          <Tabs
-            defaultValue={EmployeeTab.INFORMATION}
-            className='w-full'
-            onValueChange={handleChangTab}
-          >
+          <Tabs defaultValue={EmployeeTab.INFORMATION} className='w-full'>
             <TabsList>
               {Object.values(EmployeeTab).map((type) => (
                 <TabsTrigger key={type} value={type}>
@@ -432,21 +413,7 @@ const ManagementEmployee = () => {
           </Tabs>
         </div>
       </div>
-      <Modal
-        open={isOpen}
-        onCancel={handleCancel}
-        width={'30%'}
-        footer={
-          [
-            // <Button key='back' onClick={handleCancel} loading={false}>
-            //   Cancle
-            // </Button>,
-            // <Button key='submit' isPrimary loading={false} onClick={handleOk}>
-            //   Save
-            // </Button>,
-          ]
-        }
-      >
+      <Modal open={isOpen} onCancel={handleCancel} width={'30%'} footer={[]}>
         <div className=''>
           <h2 className='text-2xl font-[gilroy-bold] mb-7'>Add new product</h2>
           <div className='new-content'>

@@ -3,7 +3,6 @@ import Checkbox from '@components/Checkbox';
 import Girl from '@components/Icons/Girl/girl';
 import Google from '@components/Icons/Google';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import PhoneBold from '@components/Icons/PhoneBold';
 import Input from '@components/Input';
 import { API_BACKEND_ENDPOINT, GOOGLE_CLIENT_ID } from '@constant/Api';
 import { useAuth } from '@contexts/AuthContext';
@@ -19,6 +18,7 @@ import SubmitOTPModel from '@pages/Account/Models/SubmitOTPModel';
 import { formPasswordReducer, initialPasswordState } from '@pages/Account/reducer';
 import { ModelState } from '@pages/Account';
 import { Toaster } from '@ui/sonner';
+import Logo from '@components/Icons/Logo';
 
 interface FormState {
   username: string;
@@ -272,6 +272,9 @@ const SignIn = () => {
     <>
       <div className={styles.SignIn}>
         <div className='SignIn-container'>
+          <div className='SignIn-Logo'>
+            <Logo></Logo>
+          </div>
           <div className='SignIn-left'>
             <Girl></Girl>
             <div className='SignIn-left-content'>
@@ -354,10 +357,7 @@ const SignIn = () => {
           setOpenSubmitOTP(false);
         }}
         handleResendOtp={handleResendOtp}
-        handleSubmitOTP={() => {
-          setOpenChangePass(true);
-          setOpenSubmitOTP(false);
-        }}
+        handleSubmitOTP={handleSubmitOTP}
         isOTPModalOpen={openSubmitOTP}
         loading={loading}
         otpValue={OTPSubmited}

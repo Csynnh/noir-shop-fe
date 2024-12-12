@@ -1,10 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import styles from './styles.module.scss';
 import Minus from '@components/Icons/Minus';
 import Plus from '@components/Icons/Plus';
 import { CartItemData } from '@components/MyCartTab';
-import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
+import axios from 'axios';
+import React, { Dispatch, SetStateAction } from 'react';
+import styles from './styles.module.scss';
 interface CartItemProps {
   id: string;
   image: string;

@@ -52,6 +52,7 @@ const Checkout = () => {
   const { user } = useAuth();
   const navigator = useNavigate();
   const { products } = (location.state || {}) as { products: ProductCheckoutType[] | undefined };
+  const [shippingChart, setShippingChart] = useState<number>(0);
   const [checkoutState, dispatchCheckout] = useReducer(formCheckoutReducer, initialCheckoutState);
   const [shippingInfoData, setShippingInfoData] = useState<ShippingInfo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -100,6 +101,9 @@ const Checkout = () => {
   };
 
   useEffect(() => {
+    if (!user) {
+      navigator('/sign-in');
+    }
     dispatchCheckout({ type: 'UPDATE_FIELD', field: 'products', value: products });
   }, []);
 
@@ -193,7 +197,13 @@ const Checkout = () => {
           account_id: user?.account_id,
           shippingMethod: checkoutState.values.shippingMethod,
           paymentMethod: checkoutState.values.paymentMethod,
-          products: checkoutState.values.products,
+          products: checkoutState.values.products.map((prod) => ({
+            id: prod.id,
+            variants: prod.variants?.map((variant) => ({
+              id: variant.id,
+              count: variant.count,
+            })),
+          })),
           userInfo: {
             address: checkoutState.values.address,
             name: checkoutState.values.name,
@@ -401,6 +411,14 @@ const Checkout = () => {
                       field: e.target.name! as keyof FormCheckoutValues,
                       value: e.target.value,
                     });
+                    console.log(e.target.value);
+                    if (e.target.value === 'STANDARD_SHIPPING') {
+                      setShippingChart(12.6);
+                    } else if (e.target.value === 'EXPRESS_SHIPPING') {
+                      setShippingChart(20.2);
+                    } else {
+                      setShippingChart(0);
+                    }
                   }}
                   value={checkoutState.values.shippingMethod}
                 >
@@ -542,7 +560,7 @@ const Checkout = () => {
               </div>
               <div className='checkout-container-shipping flex items-center justify-between w-full mb-4'>
                 <span className='font-[gilroy-light] text-[16px]'>Shipping:</span>
-                <span className='font-[gilroy-light] text-[16px]'>${360}</span>
+                <span className='font-[gilroy-light] text-[16px]'>${shippingChart}</span>
               </div>
               <div className='checkout-container-total  flex items-center justify-between w-full border-t border-t-black pt-4 mb-6'>
                 <h5 className='checkout-container-header --mb0'>Subtotal: </h5>

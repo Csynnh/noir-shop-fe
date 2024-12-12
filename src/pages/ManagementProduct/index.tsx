@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import CreateProductModel from './Components/CreateProductModal';
 import ProductList from './Components/ProductList';
 import { Toaster } from '@ui/sonner';
-import Pagination, { PaginationProps } from '@components/Pagination';
+import Pagination from '@components/Pagination';
 
 export enum productType {
   NEW_COLLECTION = 'NEW_COLLECTION',
@@ -62,15 +62,12 @@ const ManagementProduct = () => {
   const [size, setSize] = useState<ComboBoxValueProps | null>(null);
   const [isOpenCreateProdModel, setIsOpenCreateProdModel] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [products, setProducts] = useState<ProductResponse | null>(null); // All products
-  // const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Filtered products
+  const [products, setProducts] = useState<ProductResponse | null>(null);
   const [refetch, setRefetch] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentTab, setCurrentTab] = useState<productType>(productType.NEW_COLLECTION);
   const ITEMSPERPAGE = 6;
   const [operator, setOperator] = useState('CREATE');
 
-  // Lấy danh sách sản phẩm từ API
   const getListProducts = async (
     type?: string,
     pageNumber?: number,
@@ -81,7 +78,7 @@ const ManagementProduct = () => {
   ) => {
     setLoading(true);
     try {
-      let ENDPOINT = `${API_BACKEND_ENDPOINT}/api/products/collections/${type || 'NEW_COLLECTION'}?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+      let ENDPOINT = `${API_BACKEND_ENDPOINT}/api/products/collections/${type || currentTab || 'NEW_COLLECTION'}?pageNumber=${pageNumber}&pageSize=${pageSize}`;
       if (size) {
         ENDPOINT += '&size=' + size;
       }
@@ -102,13 +99,12 @@ const ManagementProduct = () => {
     setLoading(false);
   };
 
-  // Gọi API khi component mount
   useEffect(() => {
     getListProducts();
+    setRefetch(false);
   }, [refetch]);
 
   const handleChangePrice = (value: number[]) => {
-    console.log('value', value);
     setPrice(value);
   };
 
@@ -118,7 +114,6 @@ const ManagementProduct = () => {
 
   const handlePageChange = async (pageNumber: number) => {
     await getListProducts(currentTab, pageNumber, ITEMSPERPAGE, size?.value, 0, price[0]);
-    setCurrentPage(pageNumber);
   };
 
   const handleChangTab = async (value: string) => {

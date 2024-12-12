@@ -1,35 +1,28 @@
-import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
-import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
-import { Modal } from 'antd';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import { Modal } from 'antd';
+import axios from 'axios';
 import ExcelJS from 'exceljs';
 
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table';
 import * as React from 'react';
 
-import { Button as ButtonCpn } from '@components/ui/button';
 import Button from '@components/Button';
+import OderItem from '@components/OderItem';
+import { Button as ButtonCpn } from '@components/ui/button';
 import { Checkbox } from '@components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@components/ui/dropdown-menu';
 import { Input } from '@components/ui/input';
 import {
   Table,
@@ -41,7 +34,6 @@ import {
 } from '@components/ui/table';
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
-import OderItem from '@components/OderItem';
 import { useLocation } from 'react-router-dom';
 
 const OderColumns: ColumnDef<Order>[] = [
@@ -167,8 +159,9 @@ const OderColumns: ColumnDef<Order>[] = [
 export interface OderTableDataProps {
   data?: Order[] | null;
   oderType?: OderType | null;
+  refetch?: () => void;
 }
-export function OderTableData({ data, oderType }: OderTableDataProps) {
+export function OderTableData({ data, oderType, refetch }: OderTableDataProps) {
   const { user } = useAuth();
   const location = useLocation();
   const oderId = location.state?.id;
@@ -200,11 +193,6 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
   }, [oderId]);
 
   const handleSubmitOder = async () => {
-    // Get selected row data
-    const selectedOrderIds = Object.keys(rowSelection).map(
-      (index) => oderValues && oderValues[parseInt(index)].id,
-    );
-
     setIsModelOpen(true);
   };
 
@@ -290,6 +278,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
     }
 
     try {
+      setLoading(true);
       selectedOrderIds.map(async (id) => {
         await axios.put(`${API_BACKEND_ENDPOINT}/api/orders/next-status/${id}`, {
           method: 'PUT',
@@ -305,8 +294,9 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
         content: 'An error occurred while updating orders.',
       });
     } finally {
-      window.location.reload();
+      refetch && refetch();
       setIsModelOpen(false);
+      setLoading(false);
     }
   };
   const handleShowOderDetails = (data: Order) => {
@@ -334,6 +324,7 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
 
   const fetchOrderById = async (user: UserInfo, id: string) => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_BACKEND_ENDPOINT}/api/orders/${id}`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -367,6 +358,8 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
       }
     } catch (error) {
       console.error('Failed to fetch order by id:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -508,7 +501,9 @@ export function OderTableData({ data, oderType }: OderTableDataProps) {
                   </p>
                 </div>
                 <div className='text-right'>
-                  <span className='mb-2 inline-block'>Code oder: {selectedOder.id}</span>
+                  <span className='mb-2 inline-block'>
+                    Code oder: #{selectedOder.id.slice(0, 8)}
+                  </span>
                   <p className='mb-2 font-[gilroy-light] inline-block'>
                     Date of order:{' '}
                     <span className='font-[gilroy-light-italic]'>

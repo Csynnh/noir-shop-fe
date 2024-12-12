@@ -1,14 +1,13 @@
-import { BlobServiceClient } from '@azure/storage-blob';
-import qs from 'qs';
-import axios from 'axios';
+import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { ChartDataPoint, ChartType, DAYSOFWEEK, TableRevenueRow } from '@constant/Date';
+import { UserInfo } from '@contexts/AuthContext';
+import axios from 'axios';
 import { clsx, type ClassValue } from 'clsx';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import qs from 'qs';
 import { twMerge } from 'tailwind-merge';
-import { API_BACKEND_ENDPOINT, AZURE_STORAGE_CONNECTION_STRING } from '@constant/Api';
-import { UserInfo } from '@contexts/AuthContext';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

@@ -2,7 +2,6 @@ import Right from '@components/Icons/Right';
 import styles from './styles.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '@components/Button';
-import { log } from 'console';
 
 export interface CardItemProps {
   id: string;

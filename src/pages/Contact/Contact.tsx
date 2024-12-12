@@ -45,6 +45,7 @@ const contactFormReducer = (state: ContactFormState, action: any): ContactFormSt
 };
 
 const Contact = () => {
+  const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [contactFormState, dispatch] = useReducer(contactFormReducer, initialContactFormState);
   const [error, setError] = useState<Partial<ContactFormState>>(initialContactFormState);
@@ -59,6 +60,7 @@ const Contact = () => {
         return;
       }
       try {
+        setLoading(true);
         const response = await axios.post(`${API_BACKEND_ENDPOINT}/api/contact`, {
           userName: contactFormState.name,
           userGender: contactFormState.gender,
@@ -72,6 +74,7 @@ const Contact = () => {
             description: 'Send contact successfully',
           });
           dispatch({ type: 'RESET' });
+          setLoading(false);
           return;
         }
         throw new Error('Error when send contact');
@@ -277,7 +280,7 @@ const Contact = () => {
             <Button
               className='btn_submitContact'
               onClick={handleSendContact}
-              loading={isPending}
+              loading={loading}
               isPrimary
             >
               Send now

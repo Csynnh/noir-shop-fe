@@ -5,7 +5,6 @@ import { OderTableData } from './Components/OderTableData';
 import { snakeToCapitalCase } from '@lib/utils';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
-import { useLocation } from 'react-router-dom';
 import { Skeleton } from '@ui/skeleton';
 
 export enum OderType {
@@ -147,6 +146,13 @@ const ManagementOder = () => {
     }
   };
 
+  const handleRetch = async () => {
+    if (user) {
+      await fetchOrderStatus(user);
+      await fetchOrdersByStatus(user, oderType);
+    }
+  }
+
   return (
     <div className='w-full pl-[64px] pr-[64px]'>
       <h1 className='text-[40px] font-[gilroy-semibold] capitalize mb-6'>Management Oder</h1>
@@ -192,7 +198,7 @@ const ManagementOder = () => {
             </TabsList>
             <div className='mt-12'></div>
             <TabsContent value={oderType} className='min-h-[600px] h-full'>
-              <OderTableData data={orders} oderType={oderType}></OderTableData>
+              <OderTableData data={orders} oderType={oderType} refetch={handleRetch}></OderTableData>
             </TabsContent>
           </Tabs>
         </div>

@@ -11,7 +11,6 @@ import { Modal } from 'antd';
 import Button from '@components/Button';
 import { ComboBox, ComboBoxValueProps } from '@components/ComboBox';
 import DatePicker from '@components/DatePicker';
-import { parse } from 'path';
 import axios from 'axios';
 import { API_BACKEND_ENDPOINT } from '@constant/Api';
 import { toast } from 'sonner';
@@ -33,7 +32,7 @@ const EmployeeItem = ({ employee, handleDeleteEmployee, refecth }: EmployeeItemP
   ); //
   const [manHours, setManHours] = useState<number>(employee.sumManHours);
   const [email, setEmail] = useState<string>(employee.email);
-  const [phone, setPhone] = useState<string>(employee.email);
+  const [phone, setPhone] = useState<string>(employee.phone);
   const [hired_date, setHired_date] = useState<Date | undefined>(
     dayjs(employee.hiredDate).toDate(),
   );
@@ -80,7 +79,7 @@ const EmployeeItem = ({ employee, handleDeleteEmployee, refecth }: EmployeeItemP
             </p>
           </span>
           <span className='w-4 h-4 cursor-pointer flex items-center justify-center'>
-            <p onClick={() => setIsOpenUpdate(true)}>
+            <p className='block' onClick={() => setIsOpenUpdate(true)}>
               <Option></Option>
             </p>
           </span>
@@ -159,7 +158,7 @@ const EmployeeItem = ({ employee, handleDeleteEmployee, refecth }: EmployeeItemP
             <p className='text-[14px] font-[gilroy-semibold] '>Employee name:</p>
             <Input
               name='name'
-              defaultValue={employee.name}
+              defaultValue={name}
               onChange={(e) => {
                 setName(e.target.value);
               }}
@@ -192,8 +191,8 @@ const EmployeeItem = ({ employee, handleDeleteEmployee, refecth }: EmployeeItemP
           <div className='new-content mt-[20px]'>
             <p className='text-[14px] font-[gilroy-semibold] '>Employee Email:</p>
             <Input
-              name='name'
-              defaultValue={employee.email}
+              name='email'
+              defaultValue={email}
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
@@ -204,7 +203,7 @@ const EmployeeItem = ({ employee, handleDeleteEmployee, refecth }: EmployeeItemP
             <Input
               type='number'
               name='sum-hours'
-              defaultValue={(employee.sumManHours || 0).toString()}
+              defaultValue={(manHours || 0).toString()}
               onChange={(e) => {
                 setManHours(parseInt(e.target.value));
               }}
@@ -214,7 +213,7 @@ const EmployeeItem = ({ employee, handleDeleteEmployee, refecth }: EmployeeItemP
             <p className='text-[14px] font-[gilroy-semibold] '>Employee Phone:</p>
             <Input
               name='name'
-              defaultValue={employee.phone}
+              defaultValue={phone}
               onChange={(e) => {
                 setPhone(e.target.value);
               }}
