@@ -1,26 +1,28 @@
-import { ProductResponse } from '@pages/ManagementProduct';
 import {
   PaginationContent,
+  Pagination as PaginationCpn,
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  Pagination as PaginationCpn,
 } from '@ui/pagination';
 
-interface PaginationProps {
-  data: any | null;
+export interface PaginationProps {
+  data: {
+    pageNumber?: number;
+    totalPages?: number;
+  } | null;
   onPageChange: (pageNumber: number) => void;
 }
 const Pagination = ({ data, onPageChange }: PaginationProps) => {
-  console.log(data);
+  console.info(data)
   return (
     <PaginationCpn>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            onClick={() => onPageChange(data ? data.pageNumber - 1 : 1)}
+            onClick={() => data?.pageNumber && onPageChange(data ? data.pageNumber - 1 : 1)}
             disabled={data?.pageNumber === 1 || data?.pageNumber === 0}
           />
         </PaginationItem>
@@ -63,7 +65,7 @@ const Pagination = ({ data, onPageChange }: PaginationProps) => {
         })}
         <PaginationItem>
           <PaginationNext
-            onClick={() => onPageChange(data ? data.pageNumber + 1 : 1)}
+            onClick={() => onPageChange(data?.pageNumber ? data.pageNumber + 1 : 1)}
             disabled={data?.pageNumber === data?.totalPages}
           />
         </PaginationItem>

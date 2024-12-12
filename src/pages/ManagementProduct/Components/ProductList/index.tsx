@@ -1,4 +1,4 @@
-import { CollectionType, ProductType } from '@pages/Home';
+import { ProductType } from '@pages/Home';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { Button } from '@ui/button';
 import {
@@ -11,18 +11,15 @@ import { Delete, Edit } from 'lucide-react';
 import { useState } from 'react';
 import CreateProductModel from '../CreateProductModal';
 import DeleteProductModal from '../DeleteProductModel';
+import { Product } from '@pages/ManagementProduct';
 
-interface ProductListProps {
-  data: ProductType[] | null;
-}
-
-const ProductList = ({ data, refetch }: { data: CollectionType; refetch: any }) => {
+const ProductList = ({ data, refetch }: { data: Product[]; refetch: any }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isOpenCreateProdModel, setIsOpenCreateProdModel] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<ProductType | null>(null);
   const [oparator, setOparator] = useState('CREATE');
 
-  if (!data || data.products.length === 0) {
+  if (!data || data.length === 0) {
     return <p>No products available.</p>;
   }
 
@@ -48,8 +45,7 @@ const ProductList = ({ data, refetch }: { data: CollectionType; refetch: any }) 
   return (
     <>
       <div className='flex items-center gap-4 flex-wrap'>
-        {data.products.map((product) => {
-          product = (product as any).products as ProductType;
+        {data.map((product) => {
           return (
             <div
               key={product.id}
