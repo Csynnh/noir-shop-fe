@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useRef, useState } from 'react';
 import ArrowLeft from '@components/Icons/ArrowLeft';
 import ArrowRight from '@components/Icons/ArrowRight';
 import { snakeToCapitalCase } from '@lib/utils';
+import Soldout from '@components/Icons/Soldout';
 
 interface CollectionProps {
   type: string;
@@ -72,6 +73,13 @@ const Collection = forwardRef<HTMLDivElement, CollectionProps>(({ type, products
             {products?.map((item, index) => (
               <div key={index} className='collection-item'>
                 <CardItem {...item}></CardItem>
+                {item.inventory === 0 && (
+                  <div className='collection-wrap'>
+                    <div className='collection-soldout'>
+                      <Soldout></Soldout>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

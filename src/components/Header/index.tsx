@@ -65,10 +65,6 @@ const Header = () => {
   };
 
   const handleShopNow = () => {
-    const curPath = location.pathname;
-    if (curPath !== '/') {
-      navigate('/');
-    }
     setIsCartOpen(false);
   };
 

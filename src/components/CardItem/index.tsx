@@ -9,6 +9,7 @@ export interface CardItemProps {
   price: number;
   color: string[];
   img_url: string;
+  inventory?: number;
 }
 // @ts-ignore
 const CardItem = (prop: CardItemProps) => {

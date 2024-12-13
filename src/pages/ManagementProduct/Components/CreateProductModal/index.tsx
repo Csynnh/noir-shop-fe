@@ -364,6 +364,8 @@ const CreateProductModel = ({
     setIsOpen && setIsOpen(false);
     setOparator && setOparator('CREATE');
     setIsDeleteModalOpen(false);
+    dispatch({ type: 'RESET' });
+    setErrors({});
   };
 
   const validateForm = () => {

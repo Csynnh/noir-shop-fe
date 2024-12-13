@@ -13,7 +13,7 @@ export interface CartItemData {
   id: string;
   name: string;
   price: number;
-  image: string;
+  variants: any;
   color: string;
   count: number;
 }
@@ -50,6 +50,7 @@ const MyCartTab: React.FC<myCartProp> = ({
           image: item.product_image,
           price: item.product_price,
           count: item.product_quantity,
+          variants: JSON.parse(item.variants)
         }));
         setCartItemList(data);
       } catch (error) {
@@ -78,9 +79,9 @@ const MyCartTab: React.FC<myCartProp> = ({
         price: item.price,
         variants: [
           {
-            id: item.id,
+            id: item.variants[0].Id,
             color: item.color,
-            image: item.image,
+            image: item.variants[0].Images,
             count: item.count,
           },
         ],
@@ -150,7 +151,7 @@ const MyCartTab: React.FC<myCartProp> = ({
                     name={item.name}
                     price={item.price}
                     count={item.count}
-                    image={item.image}
+                    image={item.variants[0].Images}
                     onChange={setCartItemList}
                   />
                 ))}

@@ -133,6 +133,7 @@ const Home = () => {
                 price: product.price,
                 color: product.variants.map((variant) => variant.color),
                 img_url: product.variants[0].images.imageThumbnail,
+                inventory: product.variants.reduce((acc, variant) => acc + variant.inventory, 0),
               };
             });
             return (
