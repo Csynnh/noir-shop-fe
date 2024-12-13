@@ -35,6 +35,7 @@ import {
 import { CustomerInfoProps, OderType, Order, StatusColorMap } from '@constant/Oder';
 import { snakeToCapitalCase } from '@lib/utils';
 import { useLocation } from 'react-router-dom';
+import { CheckedState } from '@radix-ui/react-checkbox';
 
 const OderColumns: ColumnDef<Order>[] = [
   {
@@ -42,7 +43,8 @@ const OderColumns: ColumnDef<Order>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table.getIsAllPageRowsSelected() ||
+          ((table.getIsSomePageRowsSelected() && 'indeterminate') as CheckedState)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label='Select all'

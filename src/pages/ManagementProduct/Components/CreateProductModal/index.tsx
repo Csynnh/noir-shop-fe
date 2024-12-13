@@ -148,7 +148,7 @@ const CreateProductModel = ({
   }, [data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target ?? e;
+    const { name, value } = (e.target as HTMLInputElement | HTMLSelectElement) ?? (e as any);
     const expectValue = [
       'imageThubnail',
       'additionalImageFirst',
