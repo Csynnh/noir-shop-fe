@@ -658,8 +658,6 @@ const Account = () => {
                 <p className='text-center'>Loading ...</p>
               ) : oderData.length ? (
                 oderData.map((order: OrderType) => {
-                  console.log(order);
-                  const orderDate = new Date(order.created_at);
                   const formattedDate = order.created_at;
                   return (
                     <div className='bg-[#EBF4EB] py-5 px-8 mb-4'>

@@ -8,7 +8,7 @@ import { Tooltip } from 'antd';
 import styles from './styles.module.scss';
 import { useEffect, useRef, useState } from 'react';
 import MyCartTab from '@components/MyCartTab';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, UserInfo } from '@contexts/AuthContext';
 import * as signalR from '@microsoft/signalr';
 import axios from 'axios';
@@ -21,7 +21,6 @@ const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
   const { user: userInfo, removeToken } = useAuth();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const inputref = useRef(null);
